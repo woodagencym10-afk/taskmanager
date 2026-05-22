@@ -1,510 +1,3 @@
-<!DOCTYPE html>
-<html lang="uk">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-
-<title>Marketing OS</title>
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
-<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-
-<style>
-
-:root{
-    --bg:#0f1117;
-    --sidebar:#151922;
-    --card:#1c2230;
-    --card-hover:#242c3d;
-    --border:#2b3448;
-    --text:#f3f5fa;
-    --muted:#95a2bd;
-    --primary:#4f8cff;
-    --danger:#ff5c5c;
-    --success:#22c55e;
-    --warning:#ffb547;
-    --radius:18px;
-}
-
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
-
-body{
-    background:var(--bg);
-    color:var(--text);
-    font-family:Inter,sans-serif;
-    overflow:hidden;
-}
-
-.app{
-    display:flex;
-    height:100vh;
-}
-
-.sidebar{
-    width:300px;
-    background:var(--sidebar);
-    border-right:1px solid var(--border);
-    padding:25px;
-    overflow:auto;
-}
-
-.logo{
-    font-size:26px;
-    font-weight:800;
-    margin-bottom:30px;
-}
-
-.stats{
-    display:flex;
-    flex-direction:column;
-    gap:15px;
-}
-
-.stat{
-    background:var(--card);
-    border:1px solid var(--border);
-    border-radius:var(--radius);
-    padding:18px;
-}
-
-.stat-label{
-    color:var(--muted);
-    font-size:13px;
-    margin-bottom:8px;
-}
-
-.stat-value{
-    font-size:30px;
-    font-weight:800;
-}
-
-.activity{
-    margin-top:30px;
-}
-
-.activity h3{
-    margin-bottom:15px;
-}
-
-.activity-list{
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-}
-
-.activity-item{
-    background:var(--card);
-    border:1px solid var(--border);
-    border-radius:14px;
-    padding:14px;
-    font-size:14px;
-    color:#d8deea;
-}
-
-.main{
-    flex:1;
-    overflow:auto;
-    padding:25px;
-}
-
-.topbar{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:25px;
-}
-
-.filters{
-    display:flex;
-    gap:10px;
-}
-
-.filter-btn{
-    background:var(--card);
-    border:1px solid var(--border);
-    color:var(--text);
-    padding:10px 15px;
-    border-radius:12px;
-    cursor:pointer;
-}
-
-.filter-btn.active{
-    background:var(--primary);
-}
-
-.create-task{
-    background:var(--card);
-    border:1px solid var(--border);
-    border-radius:22px;
-    padding:25px;
-    margin-bottom:25px;
-}
-
-.form-grid{
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:15px;
-}
-
-.full{
-    grid-column:1/-1;
-}
-
-input,
-textarea,
-select{
-    width:100%;
-    padding:15px;
-    border-radius:14px;
-    border:1px solid var(--border);
-    background:#131823;
-    color:white;
-    outline:none;
-}
-
-textarea{
-    resize:vertical;
-    min-height:110px;
-}
-
-.submit-btn{
-    background:var(--primary);
-    border:none;
-    color:white;
-    font-weight:700;
-    padding:16px;
-    border-radius:14px;
-    cursor:pointer;
-    transition:.2s;
-}
-
-.submit-btn:hover{
-    transform:translateY(-2px);
-}
-
-.board{
-    display:flex;
-    gap:20px;
-    align-items:flex-start;
-    overflow-x:auto;
-    padding-bottom:30px;
-}
-
-.column{
-    min-width:340px;
-    width:340px;
-    background:#131823;
-    border:1px solid var(--border);
-    border-radius:22px;
-    padding:18px;
-}
-
-.column-header{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:20px;
-}
-
-.column-title{
-    font-weight:700;
-    font-size:16px;
-}
-
-.column-count{
-    background:var(--card);
-    padding:5px 10px;
-    border-radius:999px;
-    font-size:12px;
-    color:var(--muted);
-}
-
-.task-list{
-    min-height:120px;
-}
-
-.task{
-    background:var(--card);
-    border:1px solid var(--border);
-    border-radius:18px;
-    padding:18px;
-    margin-bottom:15px;
-    cursor:grab;
-    transition:.2s;
-}
-
-.task:hover{
-    background:var(--card-hover);
-}
-
-.task.high{
-    border-left:5px solid var(--danger);
-}
-
-.task-header{
-    display:flex;
-    justify-content:space-between;
-    gap:10px;
-    margin-bottom:14px;
-}
-
-.task-type{
-    font-size:13px;
-    color:var(--muted);
-}
-
-.task-title{
-    font-size:17px;
-    font-weight:700;
-    line-height:1.3;
-}
-
-.direction{
-    display:inline-flex;
-    align-items:center;
-    gap:8px;
-    font-size:13px;
-    padding:7px 10px;
-    border-radius:999px;
-    margin-top:12px;
-}
-
-.task-meta{
-    display:flex;
-    flex-direction:column;
-    gap:7px;
-    margin-top:15px;
-    color:var(--muted);
-    font-size:13px;
-}
-
-.task-actions{
-    display:flex;
-    gap:10px;
-    margin-top:18px;
-}
-
-.task-btn{
-    flex:1;
-    border:none;
-    padding:11px;
-    border-radius:12px;
-    cursor:pointer;
-    font-weight:600;
-}
-
-.approve-btn{
-    background:var(--success);
-    color:white;
-}
-
-.revision-btn{
-    background:var(--warning);
-    color:black;
-}
-
-.delete-btn{
-    background:var(--danger);
-    color:white;
-}
-
-.toast{
-    position:fixed;
-    bottom:20px;
-    right:20px;
-    background:var(--success);
-    color:white;
-    padding:15px 22px;
-    border-radius:14px;
-    opacity:0;
-    transform:translateY(20px);
-    transition:.3s;
-    z-index:999;
-}
-
-.toast.show{
-    opacity:1;
-    transform:translateY(0);
-}
-
-::-webkit-scrollbar{
-    width:8px;
-    height:8px;
-}
-
-::-webkit-scrollbar-thumb{
-    background:#2c3650;
-    border-radius:999px;
-}
-
-</style>
-</head>
-
-<body>
-
-<div class="app">
-
-    <aside class="sidebar">
-
-        <div class="logo">
-            🚀 Marketing OS
-        </div>
-
-        <div class="stats">
-
-            <div class="stat">
-                <div class="stat-label">Всього задач</div>
-                <div class="stat-value" id="totalTasks">0</div>
-            </div>
-
-            <div class="stat">
-                <div class="stat-label">На погодженні</div>
-                <div class="stat-value" id="reviewTasks">0</div>
-            </div>
-
-            <div class="stat">
-                <div class="stat-label">Готово</div>
-                <div class="stat-value" id="doneTasks">0</div>
-            </div>
-
-        </div>
-
-        <div class="activity">
-
-            <h3>⚡ Активність</h3>
-
-            <div class="activity-list" id="activityList"></div>
-
-        </div>
-
-    </aside>
-
-    <main class="main">
-
-        <div class="topbar">
-
-            <div class="filters" id="filters"></div>
-
-        </div>
-
-        <div class="create-task">
-
-            <form id="taskForm">
-
-                <div class="form-grid">
-
-                    <div class="full">
-                        <input
-                            type="text"
-                            id="taskTitle"
-                            placeholder="Назва задачі"
-                            required
-                        />
-                    </div>
-
-                    <div class="full">
-                        <textarea
-                            id="taskDescription"
-                            placeholder="Опис / посилання / коментарі"
-                        ></textarea>
-                    </div>
-
-                    <select id="taskType"></select>
-
-                    <select id="taskDirection"></select>
-
-                    <select id="taskAssignee"></select>
-
-                    <select id="taskPriority">
-                        <option value="Середній">Середній</option>
-                        <option value="Високий">Високий</option>
-                    </select>
-
-                    <input type="date" id="taskDeadline"/>
-
-                    <div class="full">
-                        <button class="submit-btn" type="submit">
-                            ➕ Створити задачу
-                        </button>
-                    </div>
-
-                </div>
-
-            </form>
-
-        </div>
-
-        <div class="board">
-
-            <div class="column">
-
-                <div class="column-header">
-                    <div class="column-title">📝 Треба зробити</div>
-                    <div class="column-count" id="count-todo">0</div>
-                </div>
-
-                <div class="task-list" id="todo"></div>
-
-            </div>
-
-            <div class="column">
-
-                <div class="column-header">
-                    <div class="column-title">⚙️ В роботі</div>
-                    <div class="column-count" id="count-progress">0</div>
-                </div>
-
-                <div class="task-list" id="progress"></div>
-
-            </div>
-
-            <div class="column">
-
-                <div class="column-header">
-                    <div class="column-title">👀 На погодженні</div>
-                    <div class="column-count" id="count-review">0</div>
-                </div>
-
-                <div class="task-list" id="review"></div>
-
-            </div>
-
-            <div class="column">
-
-                <div class="column-header">
-                    <div class="column-title">🔁 Потрібні правки</div>
-                    <div class="column-count" id="count-revision">0</div>
-                </div>
-
-                <div class="task-list" id="revision"></div>
-
-            </div>
-
-            <div class="column">
-
-                <div class="column-header">
-                    <div class="column-title">✅ Готово</div>
-                    <div class="column-count" id="count-done">0</div>
-                </div>
-
-                <div class="task-list" id="done"></div>
-
-            </div>
-
-        </div>
-
-    </main>
-
-</div>
-
-<div class="toast" id="toast"></div>
-
 <script>
 
 const API_URL =
@@ -514,7 +7,6 @@ let tasks = [];
 let projects = [];
 let team = [];
 let activity = [];
-let currentFilter = null;
 
 const statuses = {
     todo:"Треба зробити",
@@ -526,7 +18,9 @@ const statuses = {
 
 async function loadData(){
 
-    const res = await fetch(API_URL);
+    const res = await fetch(
+        API_URL + "?t=" + Date.now()
+    );
 
     const data = await res.json();
 
@@ -541,68 +35,15 @@ async function loadData(){
 
 function render(){
 
-    renderFilters();
-    renderFormSelects();
     renderBoard();
     renderStats();
     renderActivity();
+    renderFilters();
+    renderSelects();
 
 }
 
-function renderFilters(){
-
-    const container =
-        document.getElementById("filters");
-
-    container.innerHTML = "";
-
-    const allBtn =
-        createFilterButton("Всі",null);
-
-    container.appendChild(allBtn);
-
-    projects.forEach(project=>{
-
-        const btn =
-            createFilterButton(
-                project.name,
-                project.name
-            );
-
-        container.appendChild(btn);
-
-    });
-
-}
-
-function createFilterButton(text,value){
-
-    const btn =
-        document.createElement("button");
-
-    btn.className =
-        "filter-btn";
-
-    if(currentFilter === value){
-        btn.classList.add("active");
-    }
-
-    btn.textContent = text;
-
-    btn.onclick = ()=>{
-
-        currentFilter = value;
-
-        renderBoard();
-        renderFilters();
-
-    };
-
-    return btn;
-
-}
-
-function renderFormSelects(){
+function renderSelects(){
 
     const direction =
         document.getElementById("taskDirection");
@@ -610,26 +51,11 @@ function renderFormSelects(){
     const assignee =
         document.getElementById("taskAssignee");
 
-    const type =
-        document.getElementById("taskType");
+    direction.innerHTML =
+        `<option value="">Напрямок</option>`;
 
-    direction.innerHTML = `
-        <option value="">Напрямок</option>
-    `;
-
-    assignee.innerHTML = `
-        <option value="">Виконавець</option>
-    `;
-
-    type.innerHTML = `
-        <option value="">Тип задачі</option>
-        <option value="🎬 Reels">🎬 Reels</option>
-        <option value="🖼️ Banner">🖼️ Banner</option>
-        <option value="📱 Stories">📱 Stories</option>
-        <option value="💻 Website">💻 Website</option>
-        <option value="🔍 SEO">🔍 SEO</option>
-        <option value="✍️ Content">✍️ Content</option>
-    `;
+    assignee.innerHTML =
+        `<option value="">Виконавець</option>`;
 
     projects.forEach(project=>{
 
@@ -653,55 +79,73 @@ function renderFormSelects(){
 
 }
 
+function renderFilters(){
+
+    const filters =
+        document.getElementById("filters");
+
+    filters.innerHTML = "";
+
+    projects.forEach(project=>{
+
+        filters.innerHTML += `
+            <button class="filter-btn">
+                ${project.name}
+            </button>
+        `;
+
+    });
+
+}
+
 function renderBoard(){
 
     clearColumns();
 
-    let filteredTasks = tasks;
+    tasks.forEach(task=>{
 
-    if(currentFilter){
-
-        filteredTasks =
-            tasks.filter(
-                t=>t["напрямок"] === currentFilter
-            );
-
-    }
-
-    filteredTasks.forEach(task=>{
-
-        const el = createTask(task);
+        const card =
+            createTaskCard(task);
 
         switch(task["статус"]){
 
             case "В роботі":
+
                 document
                     .getElementById("progress")
-                    .appendChild(el);
+                    .appendChild(card);
+
                 break;
 
             case "На погодженні":
+
                 document
                     .getElementById("review")
-                    .appendChild(el);
+                    .appendChild(card);
+
                 break;
 
             case "Потрібні правки":
+
                 document
                     .getElementById("revision")
-                    .appendChild(el);
+                    .appendChild(card);
+
                 break;
 
             case "Готово":
+
                 document
                     .getElementById("done")
-                    .appendChild(el);
+                    .appendChild(card);
+
                 break;
 
             default:
+
                 document
                     .getElementById("todo")
-                    .appendChild(el);
+                    .appendChild(card);
 
         }
 
@@ -711,7 +155,7 @@ function renderBoard(){
 
 }
 
-function createTask(task){
+function createTaskCard(task){
 
     const div =
         document.createElement("div");
@@ -727,20 +171,8 @@ function createTask(task){
 
     div.innerHTML = `
 
-        <div class="task-header">
-
-            <div>
-
-                <div class="task-type">
-                    ${task["тип"] || ""}
-                </div>
-
-                <div class="task-title">
-                    ${task["назва"]}
-                </div>
-
-            </div>
-
+        <div class="task-title">
+            ${task["назва"]}
         </div>
 
         <div class="direction">
@@ -762,36 +194,6 @@ function createTask(task){
             </div>
 
         </div>
-
-        ${
-            task["статус"] === "На погодженні"
-            ? `
-                <div class="task-actions">
-
-                    <button
-                        class="task-btn approve-btn"
-                        onclick="changeStatus(
-                            '${task.id}',
-                            'Готово'
-                        )"
-                    >
-                        ✅ Approve
-                    </button>
-
-                    <button
-                        class="task-btn revision-btn"
-                        onclick="changeStatus(
-                            '${task.id}',
-                            'Потрібні правки'
-                        )"
-                    >
-                        🔁 Правки
-                    </button>
-
-                </div>
-            `
-            : ""
-        }
 
     `;
 
@@ -880,7 +282,7 @@ function renderActivity(){
 
             container.innerHTML += `
                 <div class="activity-item">
-                    ⚡ ${item.action || ""}
+                    ⚡ ${item.action}
                 </div>
             `;
 
@@ -894,14 +296,14 @@ async function changeStatus(id,newStatus){
         method:"POST",
         body:JSON.stringify({
             action:"updateTaskStatus",
-            id,
-            newStatus
+            id:id,
+            newStatus:newStatus
         })
     });
 
-    showToast("Статус оновлено");
+    await loadData();
 
-    loadData();
+    showToast("Статус оновлено");
 
 }
 
@@ -911,57 +313,50 @@ document
 
     e.preventDefault();
 
-    const payload = {
-
-        action:"createTask",
-
-        "назва":
-            document
-            .getElementById("taskTitle")
-            .value,
-
-        "опис":
-            document
-            .getElementById("taskDescription")
-            .value,
-
-        "тип":
-            document
-            .getElementById("taskType")
-            .value,
-
-        "напрямок":
-            document
-            .getElementById("taskDirection")
-            .value,
-
-        "виконавець":
-            document
-            .getElementById("taskAssignee")
-            .value,
-
-        "пріоритет":
-            document
-            .getElementById("taskPriority")
-            .value,
-
-        "дедлайн":
-            document
-            .getElementById("taskDeadline")
-            .value
-
-    };
-
     await fetch(API_URL,{
         method:"POST",
-        body:JSON.stringify(payload)
-    });
+        body:JSON.stringify({
 
-    showToast("Задачу створено");
+            action:"createTask",
+
+            "назва":
+                document
+                .getElementById("taskTitle")
+                .value,
+
+            "опис":
+                document
+                .getElementById("taskDescription")
+                .value,
+
+            "напрямок":
+                document
+                .getElementById("taskDirection")
+                .value,
+
+            "виконавець":
+                document
+                .getElementById("taskAssignee")
+                .value,
+
+            "пріоритет":
+                document
+                .getElementById("taskPriority")
+                .value,
+
+            "дедлайн":
+                document
+                .getElementById("taskDeadline")
+                .value
+
+        })
+    });
 
     e.target.reset();
 
-    loadData();
+    await loadData();
+
+    showToast("Задачу створено");
 
 });
 
@@ -1018,11 +413,6 @@ function showToast(message){
 
 });
 
-setInterval(loadData,5000);
-
 loadData();
 
 </script>
-
-</body>
-</html>
