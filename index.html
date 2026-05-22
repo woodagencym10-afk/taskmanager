@@ -127,6 +127,7 @@
 </div>
 
 <script>
+    // Твоє посилання на Google Apps Script
     const API_URL = "https://script.google.com/macros/s/AKfycbyz_3lR1eI7Pnm8dLEAf6WbQeIaUlwHwmxMfoHZScmLinXUxagCu08eqMDUZGH19DIJ/exec"; 
 
     let allTasks = [];
@@ -144,10 +145,9 @@
             populateFilterSelect('filterProject', data.projects, 'Всі проекти');
             populateFilterSelect('filterAssignee', data.team, 'Всі працівники');
             
-            // Запускаємо фільтрацію (вона ж порахує статистику)
             applyFilters();
         } catch (error) {
-            console.error("Помилка:", error);
+            console.error("Помилка завантаження даних:", error);
         }
     }
 
@@ -163,7 +163,7 @@
         items.forEach(item => { select.innerHTML += `<option value="${item}">${item}</option>`; });
     }
 
-    // --- ОНОВЛЕНА ЛОГІКА ФІЛЬТРІВ ТА СТАТИСТИКИ ---
+    // ЛОГІКА ФІЛЬТРІВ ТА СТАТИСТИКИ
     function applyFilters() {
         const selectedAssignee = document.getElementById('filterAssignee').value;
         const selectedProject = document.getElementById('filterProject').value;
@@ -173,11 +173,9 @@
         const dlTo = document.getElementById('filterDeadlineTo').value;
 
         let filteredTasks = allTasks.filter(task => {
-            // 1. Фільтр по людині та проекту
             const matchAssignee = (selectedAssignee === 'all') || (task.assignee === selectedAssignee);
             const matchProject = (selectedProject === 'all') || (task.project === selectedProject);
 
-            // 2. Фільтр по даті створення (витягуємо з ID)
             const createDate = new Date(Number(task.id));
             createDate.setHours(0,0,0,0);
             
@@ -191,7 +189,6 @@
                 if (createDate > to) matchCreate = false;
             }
 
-            // 3. Фільтр по дедлайнах
             let matchDeadline = true;
             if (dlFrom || dlTo) {
                 if (task.deadline) {
@@ -206,16 +203,14 @@
                         if (deadlineDate > to) matchDeadline = false;
                     }
                 } else {
-                    matchDeadline = false; // Якщо шукаємо за датами, а дедлайну немає — приховуємо
+                    matchDeadline = false;
                 }
             }
 
             return matchAssignee && matchProject && matchCreate && matchDeadline;
         });
 
-        // Оновлюємо цифри статистики на основі відфільтрованих даних
         updateMetrics(filteredTasks);
-        // Малюємо картки
         renderTasks(filteredTasks);
     }
 
@@ -274,7 +269,28 @@
         });
     }
 
-    // Слухачі для всіх полів фільтрації
+    // Зміна статусу МИТТЄВО (Optimistic UI)
+    function changeStatus(taskId, newStatus) {
+        // 1. Оновлюємо статус у локальному масиві в пам'яті браузера
+        const taskIndex = allTasks.findIndex(t => t.id.toString() === taskId.toString());
+        if (taskIndex > -1) {
+            allTasks[taskIndex].status = newStatus;
+        }
+
+        // 2. Миттєво перемальовуємо дошку та оновлюємо дашборд статистики
+        applyFilters();
+
+        // 3. Відправляємо запит у Google Таблицю у фоновому режимі
+        fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: JSON.stringify({ action: "updateStatus", id: taskId, newStatus: newStatus })
+        }).catch(error => {
+            console.error("Помилка фонової синхронізації з таблицею:", error);
+        });
+    }
+
+    // Слухачі змін для фільтрів
     document.getElementById('filterAssignee').addEventListener('change', applyFilters);
     document.getElementById('filterProject').addEventListener('change', applyFilters);
     document.getElementById('filterCreateFrom').addEventListener('change', applyFilters);
@@ -282,19 +298,7 @@
     document.getElementById('filterDeadlineFrom').addEventListener('change', applyFilters);
     document.getElementById('filterDeadlineTo').addEventListener('change', applyFilters);
 
-    async function changeStatus(taskId, newStatus) {
-        try {
-            await fetch(API_URL, {
-                method: "POST",
-                headers: { "Content-Type": "text/plain;charset=utf-8" },
-                body: JSON.stringify({ action: "updateStatus", id: taskId, newStatus: newStatus })
-            });
-            await loadData(); 
-        } catch (error) {
-            alert("Помилка при зміні статусу.");
-        }
-    }
-
+    // Відправка форми (створення нової задачі)
     document.getElementById('taskForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const btn = document.getElementById('submitBtn');
@@ -316,15 +320,16 @@
                 body: JSON.stringify(newTask)
             });
             document.getElementById('taskForm').reset();
-            await loadData();
+            await loadData(); 
         } catch (error) {
-            alert("Помилка.");
+            alert("Помилка при збереженні нової задачі.");
         } finally {
             btn.textContent = "Додати на дошку";
             btn.disabled = false;
         }
     });
 
+    // Перше завантаження даних
     loadData();
 </script>
 
