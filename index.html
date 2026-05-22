@@ -2,101 +2,41 @@
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Таск-менеджер Маркетингу</title>
     <style>
-        /* Змінні для темної/світлої теми */
-        :root {
-            --bg-color: #ebecf0; --text-color: #333; --card-bg: white; --col-bg: #f4f5f7;
-            --border-color: #dfe1e6; --meta-color: #5e6c84; --btn-primary: #0052cc;
-        }
-        body.dark-mode {
-            --bg-color: #121212; --text-color: #e0e0e0; --card-bg: #1e1e1e; --col-bg: #2d2d2d;
-            --border-color: #444; --meta-color: #aaa; --btn-primary: #3f51b5;
-        }
-
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; background-color: var(--bg-color); color: var(--text-color); transition: 0.3s; }
-        
-        .header-bar { display: flex; justify-content: space-between; align-items: center; max-width: 900px; margin: 0 auto 15px auto; }
-        h2 { margin: 0; color: var(--text-color); }
-        .theme-toggle { background: var(--card-bg); border: 2px solid var(--border-color); padding: 5px 15px; border-radius: 20px; cursor: pointer; color: var(--text-color); font-weight: bold;}
-        
-        .form-container, .filter-container { background: var(--card-bg); padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.2); margin-bottom: 20px; max-width: 900px; margin-left: auto; margin-right: auto; border: 1px solid var(--border-color); }
-        input, select, textarea { width: 100%; padding: 10px; margin: 8px 0; border: 2px solid var(--border-color); border-radius: 4px; box-sizing: border-box; font-size: 14px; background: var(--card-bg); color: var(--text-color); }
-        .btn-main { background-color: var(--btn-primary); color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; font-size: 15px; }
-        
-        .filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; align-items: end; }
-        .filter-group label { font-size: 12px; font-weight: bold; color: var(--meta-color); margin-bottom: 2px; display: block; }
-        .sort-btn { background: var(--col-bg); border: 2px solid var(--border-color); padding: 8px; border-radius: 4px; cursor: pointer; color: var(--text-color); font-weight: bold; width: 100%; margin-top:8px;}
-
-        .board { display: flex; gap: 20px; overflow-x: auto; padding-bottom: 20px; align-items: flex-start; max-width: 900px; margin: 0 auto; }
-        .column { background-color: var(--col-bg); border-radius: 8px; min-width: 280px; width: 33%; padding: 10px; border: 1px solid var(--border-color); }
-        .column h3 { margin-top: 0; border-bottom: 2px solid var(--border-color); padding-bottom: 8px; }
-        
-        .task-list { list-style: none; padding: 0; margin: 0; min-height: 50px; }
-        .task-item { background: var(--card-bg); padding: 15px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.2); margin-bottom: 10px; border-left: 5px solid #ccc; position: relative; }
-        .task-item h4 { margin: 0 0 8px 0; font-size: 15px; }
-        
-        /* Кольори пріоритетів */
-        .priority-високий { border-left-color: #ff5630; }
-        .priority-середній { border-left-color: #ffab00; }
-        .priority-низький { border-left-color: #36b37e; }
-
-        .task-desc { font-size: 0.85em; color: var(--text-color); margin-bottom: 10px; padding: 8px; background: var(--col-bg); border-radius: 4px; white-space: pre-wrap; word-wrap: break-word;}
-        .task-desc a { color: #0052cc; }
-        .task-meta { font-size: 0.8em; color: var(--meta-color); margin-bottom: 12px; line-height: 1.5; }
-        
-        .actions { display: flex; gap: 5px; }
-        .btn-action { flex: 1; padding: 6px; border: none; border-radius: 3px; cursor: pointer; font-size: 11px; font-weight: bold; }
-        .btn-start { background-color: #ffab00; color: black; }
-        .btn-done { background-color: #36b37e; color: white; }
-        .btn-delete { flex: 0 0 auto; background: transparent; color: #ff5630; border: 1px solid #ff5630; padding: 6px 10px; }
-        .btn-delete:hover { background: #ff5630; color: white; }
-        
-        .badge { display: inline-block; padding: 2px 6px; border-radius: 3px; background: var(--border-color); font-size: 11px; font-weight: bold; margin-bottom: 5px;}
+        :root { --bg: #ebecf0; --text: #333; --card: white; --col: #f4f5f7; --border: #dfe1e6; }
+        body.dark-mode { --bg: #121212; --text: #e0e0e0; --card: #1e1e1e; --col: #2d2d2d; --border: #444; }
+        body { font-family: sans-serif; padding: 20px; background-color: var(--bg); color: var(--text); transition: 0.3s; }
+        .form-container, .stats-container, .filter-container, .board { max-width: 900px; margin: 0 auto 20px auto; }
+        input, select, textarea { width: 100%; padding: 10px; margin: 5px 0; border: 1px solid var(--border); border-radius: 4px; background: var(--card); color: var(--text); }
+        .btn { padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn-main { background: #0052cc; color: white; width: 100%; }
+        .board { display: flex; gap: 20px; overflow-x: auto; align-items: flex-start; }
+        .column { background: var(--col); border-radius: 8px; min-width: 280px; width: 33%; padding: 10px; }
+        .task-item { background: var(--card); padding: 15px; border-radius: 4px; margin-bottom: 10px; border-left: 5px solid #ccc; }
+        .task-desc { font-size: 0.85em; background: var(--bg); padding: 5px; margin: 5px 0; white-space: pre-wrap; }
+        .actions { display: flex; gap: 5px; margin-top: 10px; }
     </style>
 </head>
 <body>
 
-<div class="header-bar">
-    <h2>🎯 Таск-менеджер</h2>
-    <button class="theme-toggle" onclick="toggleTheme()">🌙 Темна тема</button>
-</div>
-
 <div class="form-container">
+    <h2>🎯 Створити задачу</h2>
     <form id="taskForm">
-        <input type="text" id="taskName" required placeholder="Що потрібно зробити?">
-        <textarea id="taskDesc" rows="2" placeholder="Додатковий опис або посилання (наприклад, лінк на Wix чи креативи)"></textarea>
-        
-        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px;">
-            <select id="projectSelect" required><option value="">Проект...</option></select>
-            <select id="assigneeSelect" required><option value="">Відповідальний...</option></select>
-            <select id="prioritySelect" required>
-                <option value="Середній">🟡 Середній пріоритет</option>
-                <option value="Високий">🔴 Високий пріоритет</option>
-                <option value="Низький">🟢 Низький пріоритет</option>
-            </select>
-            <input type="date" id="deadline" required>
+        <input type="text" id="taskName" required placeholder="Назва">
+        <textarea id="taskDesc" placeholder="Опис / Лінки"></textarea>
+        <div style="display: flex; gap: 5px;">
+            <select id="projectSelect"><option value="">Проект...</option></select>
+            <select id="assigneeSelect"><option value="">Виконавець...</option></select>
+            <input type="date" id="deadline">
         </div>
-        <button type="submit" id="submitBtn" class="btn-main" style="margin-top:10px;">Додати на дошку</button>
+        <button type="submit" class="btn btn-main">Додати</button>
     </form>
 </div>
 
-<div class="filter-container">
-    <div class="filter-grid">
-        <div class="filter-group">
-            <label>Відповідальний</label>
-            <select id="filterAssignee"><option value="all">Всі працівники</option></select>
-        </div>
-        <div class="filter-group">
-            <label>Проект</label>
-            <select id="filterProject"><option value="all">Всі проекти</option></select>
-        </div>
-        <div class="filter-group">
-            <label>Сортування карток</label>
-            <button id="sortBtn" class="sort-btn" onclick="toggleSort()">⏱ За новизною (Змінити)</button>
-        </div>
-    </div>
+<div class="stats-container" style="display:flex; gap:10px;">
+    <div style="flex:1; background:var(--card); padding:10px; text-align:center;">Всього: <b id="stat-total">0</b></div>
+    <div style="flex:1; background:var(--card); padding:10px; text-align:center;">Готово: <b id="stat-done">0</b></div>
 </div>
 
 <div class="board">
@@ -106,170 +46,69 @@
 </div>
 
 <script>
-    // ⚠️ ВСТАВ СВІЙ API URL СЮДИ:
-    const API_URL = "https://script.google.com/macros/s/AKfycbyz_3lR1eI7Pnm8dLEAf6WbQeIaUlwHwmxMfoHZScmLinXUxagCu08eqMDUZGH19DIJ/exec"; 
-
+    const API_URL = "ВАШ_URL_ТУТ"; // <--- ВСТАВТЕ СВІЙ ЛІНК
     let allTasks = [];
-    let sortByDeadline = false;
-
-    // --- ТЕМНА ТЕМА ---
-    function toggleTheme() {
-        document.body.classList.toggle('dark-mode');
-        const isDark = document.body.classList.contains('dark-mode');
-        document.querySelector('.theme-toggle').textContent = isDark ? "☀️ Світла тема" : "🌙 Темна тема";
-        localStorage.setItem('theme', isDark ? 'dark' : 'light');
-    }
-    if (localStorage.getItem('theme') === 'dark') toggleTheme();
 
     async function loadData() {
-        try {
-            const response = await fetch(API_URL);
-            const data = await response.json();
-            allTasks = data.tasks;
-            
-            populateSelect('projectSelect', data.projects);
-            populateSelect('assigneeSelect', data.team);
-            populateFilterSelect('filterProject', data.projects, 'Всі проекти');
-            populateFilterSelect('filterAssignee', data.team, 'Всі працівники');
-            
-            applyFilters();
-        } catch (error) { console.error("Помилка:", error); }
+        const res = await fetch(API_URL);
+        const data = await res.json();
+        allTasks = data.tasks;
+        render();
     }
 
-    function populateSelect(id, items) {
-        const el = document.getElementById(id);
-        el.innerHTML = '<option value="">Оберіть...</option>';
-        items.forEach(i => el.innerHTML += `<option value="${i}">${i}</option>`);
-    }
-    function populateFilterSelect(id, items, def) {
-        const el = document.getElementById(id);
-        el.innerHTML = `<option value="all">${def}</option>`;
-        items.forEach(i => el.innerHTML += `<option value="${i}">${i}</option>`);
-    }
-
-    function toggleSort() {
-        sortByDeadline = !sortByDeadline;
-        document.getElementById('sortBtn').textContent = sortByDeadline ? "🔥 За дедлайном (Змінити)" : "⏱ За новизною (Змінити)";
-        applyFilters();
-    }
-
-    // Зробити посилання в описі клікабельними
-    function linkify(text) {
-        if(!text) return "";
-        const urlRegex = /(https?:\/\/[^\s]+)/g;
-        return text.replace(urlRegex, function(url) {
-            return '<a href="' + url + '" target="_blank">🔗 Посилання</a>';
-        });
-    }
-
-    function applyFilters() {
-        const fAssignee = document.getElementById('filterAssignee').value;
-        const fProject = document.getElementById('filterProject').value;
-
-        let filtered = allTasks.filter(t => 
-            (fAssignee === 'all' || t.assignee === fAssignee) &&
-            (fProject === 'all' || t.project === fProject)
-        );
-
-        // Сортування
-        if (sortByDeadline) {
-            filtered.sort((a, b) => {
-                if(!a.deadline) return 1; if(!b.deadline) return -1;
-                return new Date(a.deadline) - new Date(b.deadline);
-            });
-        } else {
-            // За новизною (нові зверху)
-            filtered.sort((a, b) => b.id - a.id);
-        }
-
-        renderTasks(filtered);
-    }
-
-    function renderTasks(tasksToRender) {
-        document.getElementById('col-todo').innerHTML = '';
-        document.getElementById('col-progress').innerHTML = '';
-        document.getElementById('col-done').innerHTML = '';
-
-        tasksToRender.forEach(task => {
-            const dateDL = task.deadline ? new Date(task.deadline).toLocaleDateString('uk-UA') : 'Без дедлайну';
-            const prioClass = task.priority ? `priority-${task.priority.toLowerCase()}` : '';
-            const descHtml = task.description ? `<div class="task-desc">${linkify(task.description)}</div>` : '';
-
-            let card = `
-                <li class="task-item ${prioClass}" id="task-${task.id}">
-                    <span class="badge">${task.project}</span>
-                    <span class="badge" style="background:transparent; border:1px solid #ccc;">${task.priority || 'Середній'}</span>
-                    <h4>${task.name}</h4>
-                    ${descHtml}
-                    <div class="task-meta">
-                        👤 <b>${task.assignee}</b> | ⏰ ${dateDL}
-                    </div>
+    function render() {
+        ['col-todo', 'col-progress', 'col-done'].forEach(id => document.getElementById(id).innerHTML = '');
+        allTasks.forEach(t => {
+            const html = `
+                <li class="task-item">
+                    <h4>${t.name}</h4>
+                    <div class="task-desc">${t.description || ''}</div>
+                    <small>👤 ${t.assignee} | ⏰ ${t.deadline}</small>
                     <div class="actions">
-            `;
-
-            if (task.status === "Треба зробити" || !task.status) {
-                card += `<button class="btn-action btn-start" onclick="changeStatus('${task.id}', 'В роботі')">В роботу ▶</button>`;
-            } else if (task.status === "В роботі") {
-                card += `<button class="btn-action btn-done" onclick="changeStatus('${task.id}', 'Готово')">Готово ✅</button>`;
-            } else {
-                card += `<span style="color: #36b37e; font-size: 12px; font-weight: bold; flex:1;">Виконано 🎉</span>`;
-            }
-
-            card += `<button class="btn-delete" onclick="deleteTask('${task.id}')" title="Видалити">🗑️</button></div></li>`;
-
-            if (task.status === "В роботі") document.getElementById('col-progress').innerHTML += card;
-            else if (task.status === "Готово") document.getElementById('col-done').innerHTML += card;
-            else document.getElementById('col-todo').innerHTML += card;
+                        ${t.status !== 'Готово' ? `<button class="btn" onclick="changeStatus('${t.id}', 'В роботі')">В роботу</button>` : ''}
+                        ${t.status === 'В роботі' ? `<button class="btn" onclick="changeStatus('${t.id}', 'Готово')">✅</button>` : ''}
+                        <button class="btn" onclick="addComment('${t.id}')">💬</button>
+                        <button class="btn" onclick="deleteTask('${t.id}')">🗑️</button>
+                    </div>
+                </li>`;
+            if (t.status === 'В роботі') document.getElementById('col-progress').innerHTML += html;
+            else if (t.status === 'Готово') document.getElementById('col-done').innerHTML += html;
+            else document.getElementById('col-todo').innerHTML += html;
         });
+        document.getElementById('stat-total').textContent = allTasks.length;
+        document.getElementById('stat-done').textContent = allTasks.filter(t => t.status === 'Готово').length;
     }
 
-    // МИТТЄВА зміна статусу
-    function changeStatus(id, newStatus) {
-        const idx = allTasks.findIndex(t => t.id.toString() === id.toString());
-        if (idx > -1) allTasks[idx].status = newStatus;
-        applyFilters();
-        fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "updateStatus", id: id, newStatus: newStatus }) });
+    async function changeStatus(id, newStatus) {
+        allTasks.find(t => t.id == id).status = newStatus;
+        render();
+        fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "updateStatus", id, newStatus }) });
     }
 
-    // МИТТЄВЕ видалення
-    function deleteTask(id) {
-        if(!confirm("Точно видалити цю задачу?")) return;
-        
-        allTasks = allTasks.filter(t => t.id.toString() !== id.toString());
-        applyFilters();
-        
-        fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "deleteTask", id: id }) });
+    async function addComment(id) {
+        const author = prompt("Ваше ім'я:");
+        const text = prompt("Коментар:");
+        if (author && text) {
+            allTasks.find(t => t.id == id).description += `\n[${new Date().toLocaleString()}] ${author}: ${text}`;
+            render();
+            fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "addComment", id, author, text }) });
+        }
     }
 
-    // Створення
-    document.getElementById('taskForm').addEventListener('submit', async (e) => {
+    async function deleteTask(id) {
+        allTasks = allTasks.filter(t => t.id != id);
+        render();
+        fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "deleteTask", id }) });
+    }
+
+    document.getElementById('taskForm').onsubmit = async (e) => {
         e.preventDefault();
-        const btn = document.getElementById('submitBtn');
-        btn.textContent = "Додаємо..."; btn.disabled = true;
-
-        const newTask = {
-            action: "create",
-            name: document.getElementById('taskName').value,
-            description: document.getElementById('taskDesc').value,
-            project: document.getElementById('projectSelect').value,
-            assignee: document.getElementById('assigneeSelect').value,
-            priority: document.getElementById('prioritySelect').value,
-            deadline: document.getElementById('deadline').value
-        };
-
-        try {
-            await fetch(API_URL, { method: "POST", body: JSON.stringify(newTask) });
-            document.getElementById('taskForm').reset();
-            await loadData(); 
-        } catch (error) { alert("Помилка."); } 
-        finally { btn.textContent = "Додати на дошку"; btn.disabled = false; }
-    });
-
-    document.getElementById('filterAssignee').addEventListener('change', applyFilters);
-    document.getElementById('filterProject').addEventListener('change', applyFilters);
+        const newTask = { action: "create", name: document.getElementById('taskName').value, description: document.getElementById('taskDesc').value, project: document.getElementById('projectSelect').value, assignee: document.getElementById('assigneeSelect').value, deadline: document.getElementById('deadline').value };
+        await fetch(API_URL, { method: "POST", body: JSON.stringify(newTask) });
+        loadData();
+    };
 
     loadData();
 </script>
-
 </body>
 </html>
