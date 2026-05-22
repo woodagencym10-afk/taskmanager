@@ -242,6 +242,13 @@ select{
 
 }
 
+textarea{
+
+    min-height:120px;
+    resize:vertical;
+
+}
+
 .board{
 
     display:flex;
@@ -407,6 +414,19 @@ select{
 
 }
 
+.modal-box::-webkit-scrollbar{
+
+    width:8px;
+
+}
+
+.modal-box::-webkit-scrollbar-thumb{
+
+    background:#31405f;
+    border-radius:999px;
+
+}
+
 .modal-header{
 
     display:flex;
@@ -498,12 +518,6 @@ select{
     font-weight:700;
 
     margin-bottom:6px;
-
-}
-
-.hidden{
-
-    display:none;
 
 }
 
@@ -778,146 +792,6 @@ onchange="render()"
 
 </div>
 
-<!-- TASK MODAL -->
-
-<div class="modal" id="taskModal">
-
-<div class="modal-box">
-
-<div class="modal-header">
-
-<input
-type="text"
-id="editTitle"
-style="
-font-size:28px;
-font-weight:800;
-background:none;
-border:none;
-padding:0;
-"
-/>
-
-<button
-class="close-btn"
-onclick="closeTaskModal()"
->
-✕
-</button>
-
-</div>
-
-<textarea id="editDescription"></textarea>
-
-<div class="modal-grid">
-
-<select id="editAssignee"></select>
-
-<select id="editPriority">
-
-<option value="Середній">
-Середній
-</option>
-
-<option value="Високий">
-Високий
-</option>
-
-</select>
-
-<input type="date" id="editDeadline"/>
-
-<select id="editDirection"></select>
-
-</div>
-
-<div class="modal-actions">
-
-<button
-class="save-btn primary-btn"
-onclick="saveTask()"
->
-💾 Зберегти
-</button>
-
-<button
-class="save-btn success-btn"
-onclick="approveTask()"
->
-✅ Погодити
-</button>
-
-<button
-class="save-btn"
-style="background:#f59e0b;"
-onclick="revisionTask()"
->
-🔁 На правки
-</button>
-
-</div>
-
-<div
-style="
-margin-top:25px;
-padding:16px;
-background:#1b2437;
-border-radius:18px;
-"
->
-
-<div
-style="
-font-weight:700;
-margin-bottom:8px;
-"
->
-Approval History
-</div>
-
-<div id="approvalHistory">
-
-Поки немає погодження
-
-</div>
-
-</div>
-
-<div class="comments">
-
-<h3 style="margin-bottom:15px;">
-💬 Коментарі
-</h3>
-
-<div id="commentsList"></div>
-
-<input
-type="text"
-id="commentAuthor"
-placeholder="Ваше ім'я"
-style="margin-top:15px;"
-/>
-
-<textarea
-id="commentText"
-placeholder="Напишіть коментар"
-style="margin-top:15px;"
-></textarea>
-
-<button
-class="save-btn primary-btn"
-style="margin-top:14px;"
-onclick="addComment()"
->
-Додати коментар
-</button>
-
-</div>
-
-</div>
-
-</div>
-
 <!-- CREATE TASK MODAL -->
 
 <div class="modal" id="createTaskModal">
@@ -1041,6 +915,312 @@ class="save-btn success-btn"
 
 <script>
 
+const API_URL =
+"https://script.google.com/macros/s/AKfycbw3H8TvVhJoENmSts6Msrenivow2rZifFrYlOVcgtE7-SJ8cLEdx9sBGQQHY5YT8AKo/exec";
+
+let tasks = [];
+let comments = [];
+let projects = [];
+let team = [];
+
+const statuses = {
+
+    todo:"Треба зробити",
+    progress:"В роботі",
+    review:"На погодженні",
+    revision:"Потрібні правки",
+    done:"Готово"
+
+};
+
+async function loadData(){
+
+    const res = await fetch(
+        API_URL + "?t=" + Date.now()
+    );
+
+    const data = await res.json();
+
+    tasks = data.tasks || [];
+    comments = data.comments || [];
+    projects = data.projects || [];
+    team = data.team || [];
+
+    render();
+    renderAnalytics();
+    renderSelects();
+
+}
+
+function renderSelects(){
+
+    direction.innerHTML =
+        `<option value="">Напрямок</option>`;
+
+    assignee.innerHTML =
+        `<option value="">Виконавець</option>`;
+
+    filterDirection.innerHTML =
+        `<option value="">Всі напрямки</option>`;
+
+    filterAssignee.innerHTML =
+        `<option value="">Всі виконавці</option>`;
+
+    projects.forEach(project=>{
+
+        direction.innerHTML += `
+            <option value="${project.name}">
+                ${project.name}
+            </option>
+        `;
+
+        filterDirection.innerHTML += `
+            <option value="${project.name}">
+                ${project.name}
+            </option>
+        `;
+
+    });
+
+    team.forEach(person=>{
+
+        assignee.innerHTML += `
+            <option value="${person.name}">
+                ${person.name}
+            </option>
+        `;
+
+        filterAssignee.innerHTML += `
+            <option value="${person.name}">
+                ${person.name}
+            </option>
+        `;
+
+    });
+
+}
+
+function renderAnalytics(){
+
+    totalTasks.textContent =
+        tasks.length;
+
+    progressTasks.textContent =
+        tasks.filter(
+            t=>t["статус"] === "В роботі"
+        ).length;
+
+    reviewTasks.textContent =
+        tasks.filter(
+            t=>t["статус"] === "На погодженні"
+        ).length;
+
+    doneTasks.textContent =
+        tasks.filter(
+            t=>t["статус"] === "Готово"
+        ).length;
+
+    overdueTasks.textContent =
+        tasks.filter(isOverdue).length;
+
+}
+
+function isOverdue(task){
+
+    if(
+        !task["дедлайн"] ||
+        task["статус"] === "Готово"
+    ){
+        return false;
+    }
+
+    return new Date(task["дедлайн"])
+        < new Date();
+
+}
+
+function render(){
+
+    clearColumns();
+
+    let filteredTasks = [...tasks];
+
+    const search =
+        searchInput.value.toLowerCase();
+
+    const directionFilter =
+        filterDirection.value;
+
+    const assigneeFilter =
+        filterAssignee.value;
+
+    filteredTasks =
+        filteredTasks.filter(task=>{
+
+            const matchSearch =
+                !search ||
+                (task["назва"] || "")
+                .toLowerCase()
+                .includes(search);
+
+            const matchDirection =
+                !directionFilter ||
+                task["напрямок"] === directionFilter;
+
+            const matchAssignee =
+                !assigneeFilter ||
+                task["виконавець"] === assigneeFilter;
+
+            return (
+                matchSearch &&
+                matchDirection &&
+                matchAssignee
+            );
+
+        });
+
+    filteredTasks.forEach(task=>{
+
+        const div =
+            createTaskCard(task);
+
+        switch(task["статус"]){
+
+            case "В роботі":
+                progress.appendChild(div);
+                break;
+
+            case "На погодженні":
+                review.appendChild(div);
+                break;
+
+            case "Потрібні правки":
+                revision.appendChild(div);
+                break;
+
+            case "Готово":
+                done.appendChild(div);
+                break;
+
+            default:
+                todo.appendChild(div);
+
+        }
+
+    });
+
+    updateCounts();
+
+}
+
+function updateCounts(){
+
+    countTodo.textContent =
+        todo.children.length;
+
+    countProgress.textContent =
+        progress.children.length;
+
+    countReview.textContent =
+        review.children.length;
+
+    countRevision.textContent =
+        revision.children.length;
+
+    countDone.textContent =
+        done.children.length;
+
+}
+
+function createTaskCard(task){
+
+    const div =
+        document.createElement("div");
+
+    div.className =
+        `task
+        ${
+            task["пріоритет"] === "Високий"
+            ? "high"
+            : ""
+        }
+        ${
+            isOverdue(task)
+            ? "overdue"
+            : ""
+        }`;
+
+    div.dataset.id = task.id;
+
+    div.innerHTML = `
+
+        <div class="task-title">
+            ${task["назва"]}
+        </div>
+
+        <div class="task-direction">
+            📁 ${task["напрямок"] || "—"}
+        </div>
+
+        <div class="task-meta">
+
+            <div>
+                👤 ${task["виконавець"] || "—"}
+            </div>
+
+            <div>
+                ⏰ ${task["дедлайн"] || "—"}
+            </div>
+
+        </div>
+
+    `;
+
+    return div;
+
+}
+
+async function createTask(){
+
+    const newTask = {
+
+        id:Date.now().toString(),
+
+        "назва":title.value,
+        "опис":description.value,
+        "статус":"Треба зробити",
+        "пріоритет":priority.value,
+        "виконавець":assignee.value,
+        "дедлайн":deadline.value,
+        "напрямок":direction.value
+
+    };
+
+    tasks.unshift(newTask);
+
+    render();
+    renderAnalytics();
+
+    await fetch(API_URL,{
+        method:"POST",
+        body:JSON.stringify({
+
+            action:"createTask",
+
+            "назва":title.value,
+            "опис":description.value,
+            "напрямок":direction.value,
+            "виконавець":assignee.value,
+            "пріоритет":priority.value,
+            "дедлайн":deadline.value
+
+        })
+    });
+
+    closeCreateModal();
+
+}
+
 function openCreateModal(){
 
     createTaskModal
@@ -1073,13 +1253,76 @@ function closeDailyPlanModal(){
 
 }
 
-function closeTaskModal(){
+function clearColumns(){
 
-    taskModal
-        .classList
-        .remove("show");
+    todo.innerHTML = "";
+    progress.innerHTML = "";
+    review.innerHTML = "";
+    revision.innerHTML = "";
+    done.innerHTML = "";
 
 }
+
+[
+    "todo",
+    "progress",
+    "review",
+    "revision",
+    "done"
+].forEach(id=>{
+
+    new Sortable(
+        document.getElementById(id),
+        {
+
+            group:"tasks",
+
+            animation:150,
+
+            onEnd: async(evt)=>{
+
+                const taskId =
+                    evt.item.dataset.id;
+
+                const newStatus =
+                    statuses[evt.to.id];
+
+                const task =
+                    tasks.find(
+                        t=>t.id == taskId
+                    );
+
+                if(task){
+
+                    task["статус"] =
+                        newStatus;
+
+                }
+
+                render();
+                renderAnalytics();
+
+                await fetch(API_URL,{
+                    method:"POST",
+                    body:JSON.stringify({
+
+                        action:"updateTaskStatus",
+
+                        id:taskId,
+
+                        newStatus:newStatus
+
+                    })
+                });
+
+            }
+
+        }
+    );
+
+});
+
+loadData();
 
 </script>
 
