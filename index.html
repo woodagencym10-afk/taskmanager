@@ -5,7 +5,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-<title>Marketing OS V6</title>
+<title>Marketing OS V7</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 
@@ -43,6 +43,7 @@ body{
     background:var(--bg);
     color:var(--text);
     font-family:Inter,sans-serif;
+
     overflow:hidden;
 
 }
@@ -57,6 +58,7 @@ body{
 .sidebar{
 
     width:250px;
+
     background:var(--sidebar);
 
     border-right:1px solid var(--border);
@@ -87,6 +89,7 @@ body{
 .nav-item{
 
     padding:14px 16px;
+
     border-radius:16px;
 
     cursor:pointer;
@@ -104,6 +107,7 @@ body{
 .main{
 
     flex:1;
+
     overflow:auto;
 
     padding:28px;
@@ -113,12 +117,13 @@ body{
 .topbar{
 
     display:flex;
+
     justify-content:space-between;
     align-items:center;
 
-    margin-bottom:24px;
-
     gap:20px;
+
+    margin-bottom:24px;
 
 }
 
@@ -192,6 +197,7 @@ body{
 .stat-title{
 
     color:var(--muted);
+
     font-size:13px;
 
     margin-bottom:10px;
@@ -208,6 +214,7 @@ body{
 .filters{
 
     display:flex;
+
     gap:14px;
 
     margin-bottom:24px;
@@ -257,7 +264,7 @@ textarea{
 
     overflow:auto;
 
-    padding-bottom:20px;
+    padding-bottom:30px;
 
 }
 
@@ -358,7 +365,7 @@ textarea{
 
     font-size:13px;
 
-    margin-bottom:15px;
+    margin-bottom:14px;
 
 }
 
@@ -378,6 +385,7 @@ textarea{
 .modal{
 
     position:fixed;
+
     inset:0;
 
     background:rgba(0,0,0,.7);
@@ -471,6 +479,7 @@ textarea{
 .modal-actions{
 
     display:flex;
+
     gap:12px;
 
     margin-top:20px;
@@ -518,6 +527,58 @@ textarea{
     font-weight:700;
 
     margin-bottom:6px;
+
+}
+
+.plan-task{
+
+    display:flex;
+
+    align-items:flex-start;
+
+    gap:16px;
+
+    margin-bottom:14px;
+
+    padding:18px;
+
+    background:#1b2437;
+
+    border-radius:18px;
+
+}
+
+.plan-task input{
+
+    width:18px;
+    height:18px;
+
+    margin-top:4px;
+
+    flex-shrink:0;
+
+}
+
+.plan-task-content{
+
+    flex:1;
+
+}
+
+.plan-task-title{
+
+    font-size:18px;
+    font-weight:700;
+
+    margin-bottom:8px;
+
+}
+
+.plan-task-meta{
+
+    font-size:13px;
+
+    color:#8b97ad;
 
 }
 
@@ -789,9 +850,6 @@ onchange="render()"
 </div>
 
 </div>
-
-</div>
-
 <!-- TASK MODAL -->
 
 <div class="modal" id="taskModal">
@@ -856,7 +914,7 @@ onclick="saveTask()"
 
 <button
 class="save-btn success-btn"
-onclick="approveTask()"
+onclick="confirmApprove()"
 >
 ✅ Погодити
 </button>
@@ -1044,6 +1102,59 @@ onclick="confirmDailyPlan()"
 
 </div>
 
+<!-- APPROVE CONFIRM -->
+
+<div class="modal" id="approveModal">
+
+<div
+class="modal-box"
+style="
+max-width:500px;
+"
+>
+
+<div
+style="
+font-size:26px;
+font-weight:800;
+margin-bottom:14px;
+"
+>
+Підтвердити погодження?
+</div>
+
+<div
+style="
+color:#8b97ad;
+margin-bottom:24px;
+line-height:1.5;
+"
+>
+Після погодження задача перейде в статус "Готово"
+</div>
+
+<div class="modal-actions">
+
+<button
+class="save-btn success-btn"
+onclick="approveTask()"
+>
+✅ Так, погодити
+</button>
+
+<button
+class="save-btn"
+style="background:#26324a;"
+onclick="closeApproveModal()"
+>
+Скасувати
+</button>
+
+</div>
+
+</div>
+
+</div>
 <script>
 
 const API_URL =
@@ -1075,7 +1186,37 @@ async function loadData(){
 
     const data = await res.json();
 
-    tasks = data.tasks || [];
+    const today =
+        new Date();
+
+    const yesterday =
+        new Date();
+
+    yesterday.setDate(
+        yesterday.getDate() - 1
+    );
+
+    tasks = (data.tasks || []).filter(task=>{
+
+        if(task["статус"] !== "Готово"){
+            return true;
+        }
+
+        if(!task["updatedAt"]){
+            return false;
+        }
+
+        const updated =
+            new Date(task["updatedAt"]);
+
+        return (
+            updated.toDateString() === today.toDateString()
+            ||
+            updated.toDateString() === yesterday.toDateString()
+        );
+
+    });
+
     comments = data.comments || [];
     projects = data.projects || [];
     team = data.team || [];
@@ -1099,6 +1240,9 @@ function renderSelects(){
 
     filterAssignee.innerHTML =
         `<option value="">Всі виконавці</option>`;
+
+    editDirection.innerHTML = "";
+    editAssignee.innerHTML = "";
 
     projects.forEach(project=>{
 
@@ -1296,8 +1440,6 @@ function createTaskCard(task){
 
     div.dataset.id = task.id;
 
-    div.onclick = ()=>openTask(task.id);
-
     div.innerHTML = `
 
         <div class="task-title">
@@ -1321,6 +1463,11 @@ function createTaskCard(task){
         </div>
 
     `;
+
+    div.addEventListener(
+        "click",
+        ()=>openTask(task.id)
+    );
 
     return div;
 
@@ -1387,6 +1534,14 @@ function openTask(id){
     });
 
     renderComments();
+
+    approvalHistory.innerHTML = task.approvedAt
+    ? `
+        ✅ Погоджено<br>
+        👤 ${task.approvedBy || "—"}<br>
+        🕒 ${task.approvedAt}
+    `
+    : `Поки немає погодження`;
 
     taskModal
         .classList
@@ -1514,25 +1669,41 @@ async function saveTask(){
 
 }
 
+function confirmApprove(){
+
+    approveModal
+        .classList
+        .add("show");
+
+}
+
+function closeApproveModal(){
+
+    approveModal
+        .classList
+        .remove("show");
+
+}
+
 async function approveTask(){
+
+    const approvedBy =
+        prompt("Хто погодив задачу?");
 
     await fetch(API_URL,{
         method:"POST",
         body:JSON.stringify({
 
-            action:"updateTaskStatus",
+            action:"approveTask",
 
             id:currentTaskId,
-            newStatus:"Готово"
+
+            approvedBy
 
         })
     });
 
-    approvalHistory.innerHTML = `
-        ✅ Погоджено<br>
-        🕒 ${new Date().toLocaleString()}
-    `;
-
+    closeApproveModal();
     closeTaskModal();
 
     loadData();
@@ -1548,6 +1719,7 @@ async function revisionTask(){
             action:"updateTaskStatus",
 
             id:currentTaskId,
+
             newStatus:"Потрібні правки"
 
         })
@@ -1563,47 +1735,33 @@ function renderDailyPlan(){
 
     dailyPlanTasks.innerHTML = "";
 
-    tasks.forEach(task=>{
+    tasks
+    .filter(
+        t=>t["статус"] !== "Готово"
+    )
+    .forEach(task=>{
 
         dailyPlanTasks.innerHTML += `
 
-            <label
-            style="
-                display:flex;
-                align-items:center;
-                gap:12px;
-                margin-bottom:14px;
-                padding:14px;
-                background:#1b2437;
-                border-radius:14px;
-                cursor:pointer;
-            "
-            >
+            <label class="plan-task">
 
                 <input
                     type="checkbox"
-                    value="${task.id}"
                     onchange="toggleDailyTask('${task.id}')"
                 />
 
-                <div>
+                <div class="plan-task-content">
 
-                    <div
-                    style="
-                        font-weight:700;
-                        margin-bottom:4px;
-                    "
-                    >
+                    <div class="plan-task-title">
                         ${task["назва"]}
                     </div>
 
-                    <div
-                    style="
-                        font-size:13px;
-                        color:#8b97ad;
-                    "
-                    >
-                        ${task["виконавець"] || "—"}
+                    <div class="task-direction">
+                        📁 ${task["напрямок"] || "—"}
+                    </div>
+
+                    <div class="plan-task-meta">
+                        👤 ${task["виконавець"] || "—"}
                     </div>
 
                 </div>
@@ -1704,6 +1862,8 @@ function closeTaskModal(){
 
             onEnd: async(evt)=>{
 
+                evt.item.onclick = null;
+
                 const taskId =
                     evt.item.dataset.id;
 
@@ -1723,7 +1883,9 @@ function closeTaskModal(){
                     })
                 });
 
-                loadData();
+                setTimeout(()=>{
+                    loadData();
+                },200);
 
             }
 
