@@ -25,7 +25,6 @@
     --danger:#ff5c5c;
     --success:#22c55e;
     --warning:#ffb547;
-    --radius:22px;
 }
 
 *{
@@ -70,7 +69,6 @@ body{
     padding:14px 16px;
     border-radius:14px;
     cursor:pointer;
-    transition:.2s;
     color:#dce3ef;
 }
 
@@ -93,7 +91,7 @@ body{
 .create-box{
     background:var(--card);
     border:1px solid var(--border);
-    border-radius:30px;
+    border-radius:28px;
     padding:25px;
     margin-bottom:30px;
 }
@@ -121,17 +119,17 @@ select{
 }
 
 textarea{
-    min-height:110px;
     resize:vertical;
+    min-height:110px;
 }
 
 .submit-btn{
     background:var(--primary);
     color:white;
-    padding:16px;
-    border-radius:16px;
-    font-weight:700;
     border:none;
+    border-radius:16px;
+    padding:16px;
+    font-weight:700;
     cursor:pointer;
 }
 
@@ -155,7 +153,6 @@ textarea{
 .column-header{
     display:flex;
     justify-content:space-between;
-    align-items:center;
     margin-bottom:20px;
 }
 
@@ -166,9 +163,8 @@ textarea{
 
 .column-count{
     background:#202b42;
-    color:#b6c0d4;
-    border-radius:999px;
     padding:5px 12px;
+    border-radius:999px;
     font-size:12px;
 }
 
@@ -182,8 +178,8 @@ textarea{
     border-radius:22px;
     padding:18px;
     margin-bottom:15px;
-    transition:.2s;
     cursor:pointer;
+    transition:.2s;
 }
 
 .task:hover{
@@ -196,17 +192,14 @@ textarea{
 }
 
 .task-title{
-    font-size:19px;
+    font-size:18px;
     font-weight:700;
-    line-height:1.35;
     margin-bottom:14px;
 }
 
 .task-direction{
     display:inline-flex;
-    align-items:center;
-    gap:8px;
-    background:#222f48;
+    background:#24314a;
     padding:8px 12px;
     border-radius:999px;
     font-size:13px;
@@ -256,6 +249,76 @@ textarea{
     font-weight:700;
 }
 
+.modal{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.7);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:999;
+}
+
+.modal.show{
+    display:flex;
+}
+
+.modal-box{
+    width:900px;
+    max-width:95%;
+    background:#131b2d;
+    border:1px solid var(--border);
+    border-radius:28px;
+    padding:30px;
+}
+
+.modal-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:25px;
+}
+
+.close-btn{
+    background:#25314a;
+    border:none;
+    color:white;
+    width:40px;
+    height:40px;
+    border-radius:12px;
+    cursor:pointer;
+}
+
+.comments{
+    margin-top:30px;
+}
+
+.comment{
+    background:#1b2438;
+    border-radius:16px;
+    padding:14px;
+    margin-bottom:12px;
+}
+
+.comment-author{
+    font-weight:700;
+    margin-bottom:8px;
+}
+
+.comment-form{
+    margin-top:20px;
+}
+
+.save-btn{
+    background:var(--success);
+    color:white;
+    border:none;
+    padding:14px 18px;
+    border-radius:14px;
+    cursor:pointer;
+    margin-top:15px;
+}
+
 @media(max-width:900px){
 
     .sidebar{
@@ -277,36 +340,25 @@ textarea{
 
 <aside class="sidebar">
 
-    <div class="logo">
-        🚀 Marketing OS
-    </div>
+<div class="logo">
+🚀 Marketing OS
+</div>
 
-    <div class="nav">
+<div class="nav">
 
-        <div class="nav-item">
-            🏠 Dashboard
-        </div>
+<div class="nav-item">🏠 Dashboard</div>
+<div class="nav-item">📁 Interior Space</div>
+<div class="nav-item">🌿 Ecoforma</div>
+<div class="nav-item">🪵 Wood Agency</div>
 
-        <div class="nav-item">
-            📁 Interior Space
-        </div>
-
-        <div class="nav-item">
-            🌿 Ecoforma
-        </div>
-
-        <div class="nav-item">
-            🪵 Wood Agency
-        </div>
-
-    </div>
+</div>
 
 </aside>
 
 <div class="main">
 
 <div class="page-title">
-    Marketing Dashboard
+Marketing Dashboard
 </div>
 
 <div class="create-box">
@@ -316,19 +368,11 @@ textarea{
 <div class="form-grid">
 
 <div class="full">
-<input
-    type="text"
-    id="title"
-    placeholder="Назва задачі"
-    required
-/>
+<input type="text" id="title" placeholder="Назва задачі" required/>
 </div>
 
 <div class="full">
-<textarea
-    id="description"
-    placeholder="Опис задачі"
-></textarea>
+<textarea id="description" placeholder="Опис задачі"></textarea>
 </div>
 
 <select id="direction"></select>
@@ -336,20 +380,15 @@ textarea{
 <select id="assignee"></select>
 
 <select id="priority">
-    <option value="Середній">
-        Середній
-    </option>
-
-    <option value="Високий">
-        Високий
-    </option>
+<option value="Середній">Середній</option>
+<option value="Високий">Високий</option>
 </select>
 
 <input type="date" id="deadline"/>
 
 <div class="full">
-<button class="submit-btn" type="submit">
-    ➕ Створити задачу
+<button class="submit-btn">
+➕ Створити задачу
 </button>
 </div>
 
@@ -362,77 +401,96 @@ textarea{
 <div class="board">
 
 <div class="column">
-
 <div class="column-header">
-<div class="column-title">
-📝 Треба зробити
+<div class="column-title">📝 Треба зробити</div>
+<div class="column-count" id="count-todo">0</div>
 </div>
-<div class="column-count" id="count-todo">
-0
-</div>
-</div>
-
 <div class="task-list" id="todo"></div>
-
 </div>
 
 <div class="column">
-
 <div class="column-header">
-<div class="column-title">
-⚙️ В роботі
+<div class="column-title">⚙️ В роботі</div>
+<div class="column-count" id="count-progress">0</div>
 </div>
-<div class="column-count" id="count-progress">
-0
-</div>
-</div>
-
 <div class="task-list" id="progress"></div>
-
 </div>
 
 <div class="column">
-
 <div class="column-header">
-<div class="column-title">
-👀 На погодженні
+<div class="column-title">👀 На погодженні</div>
+<div class="column-count" id="count-review">0</div>
 </div>
-<div class="column-count" id="count-review">
-0
-</div>
-</div>
-
 <div class="task-list" id="review"></div>
-
 </div>
 
 <div class="column">
-
 <div class="column-header">
-<div class="column-title">
-🔁 Потрібні правки
+<div class="column-title">🔁 Потрібні правки</div>
+<div class="column-count" id="count-revision">0</div>
 </div>
-<div class="column-count" id="count-revision">
-0
-</div>
-</div>
-
 <div class="task-list" id="revision"></div>
-
 </div>
 
 <div class="column">
-
 <div class="column-header">
-<div class="column-title">
-✅ Готово
+<div class="column-title">✅ Готово</div>
+<div class="column-count" id="count-done">0</div>
 </div>
-<div class="column-count" id="count-done">
-0
-</div>
+<div class="task-list" id="done"></div>
 </div>
 
-<div class="task-list" id="done"></div>
+</div>
+
+</div>
+
+</div>
+
+<div class="modal" id="taskModal">
+
+<div class="modal-box">
+
+<div class="modal-header">
+
+<h2 id="modalTitle">
+Задача
+</h2>
+
+<button class="close-btn" onclick="closeModal()">
+✕
+</button>
+
+</div>
+
+<textarea id="modalDescription"></textarea>
+
+<div class="comments">
+
+<h3 style="margin-bottom:15px;">
+💬 Коментарі
+</h3>
+
+<div id="commentsList"></div>
+
+<div class="comment-form">
+
+<input
+    type="text"
+    id="commentAuthor"
+    placeholder="Ваше ім'я"
+/>
+
+<textarea
+    id="commentText"
+    placeholder="Напишіть коментар"
+></textarea>
+
+<button
+    class="save-btn"
+    onclick="addComment()"
+>
+Додати коментар
+</button>
 
 </div>
 
@@ -448,6 +506,8 @@ const API_URL =
 "https://script.google.com/macros/s/AKfycbw3H8TvVhJoENmSts6Msrenivow2rZifFrYlOVcgtE7-SJ8cLEdx9sBGQQHY5YT8AKo/exec";
 
 let tasks = [];
+let comments = [];
+let currentTaskId = null;
 
 const statuses = {
     todo:"Треба зробити",
@@ -466,20 +526,14 @@ async function loadData(){
     const data = await res.json();
 
     tasks = data.tasks || [];
+    comments = data.comments || [];
 
     render();
-
     renderSelects(data);
 
 }
 
 function renderSelects(data){
-
-    const direction =
-        document.getElementById("direction");
-
-    const assignee =
-        document.getElementById("assignee");
 
     direction.innerHTML =
         `<option value="">Напрямок</option>`;
@@ -526,6 +580,8 @@ function render(){
             }`;
 
         div.dataset.id = task.id;
+
+        div.onclick = ()=>openTask(task.id);
 
         div.innerHTML = `
 
@@ -603,6 +659,96 @@ function render(){
 
 }
 
+function openTask(id){
+
+    currentTaskId = id;
+
+    const task =
+        tasks.find(t=>t.id == id);
+
+    if(!task) return;
+
+    modalTitle.textContent =
+        task["назва"];
+
+    modalDescription.value =
+        task["опис"] || "";
+
+    renderComments();
+
+    taskModal.classList.add("show");
+
+}
+
+function closeModal(){
+
+    taskModal.classList.remove("show");
+
+}
+
+function renderComments(){
+
+    commentsList.innerHTML = "";
+
+    const taskComments =
+        comments.filter(
+            c=>c.taskId == currentTaskId
+        );
+
+    taskComments.forEach(comment=>{
+
+        commentsList.innerHTML += `
+
+            <div class="comment">
+
+                <div class="comment-author">
+                    ${comment.author}
+                </div>
+
+                <div>
+                    ${comment.text}
+                </div>
+
+            </div>
+
+        `;
+
+    });
+
+}
+
+async function addComment(){
+
+    const author =
+        commentAuthor.value;
+
+    const text =
+        commentText.value;
+
+    if(!author || !text) return;
+
+    await fetch(API_URL,{
+        method:"POST",
+        body:JSON.stringify({
+
+            action:"addComment",
+
+            taskId:currentTaskId,
+
+            author,
+            text
+
+        })
+    });
+
+    commentText.value = "";
+
+    await loadData();
+
+    renderComments();
+
+}
+
 function clearColumns(){
 
     [
@@ -623,30 +769,31 @@ function clearColumns(){
 
 function updateCounts(){
 
+    countTodo();
+
+}
+
+function countTodo(){
+
     document.getElementById("count-todo")
         .textContent =
-        document.getElementById("todo")
-        .children.length;
+        todo.children.length;
 
     document.getElementById("count-progress")
         .textContent =
-        document.getElementById("progress")
-        .children.length;
+        progress.children.length;
 
     document.getElementById("count-review")
         .textContent =
-        document.getElementById("review")
-        .children.length;
+        review.children.length;
 
     document.getElementById("count-revision")
         .textContent =
-        document.getElementById("revision")
-        .children.length;
+        revision.children.length;
 
     document.getElementById("count-done")
         .textContent =
-        document.getElementById("done")
-        .children.length;
+        done.children.length;
 
 }
 
@@ -678,34 +825,22 @@ document
             action:"createTask",
 
             "назва":
-                document
-                .getElementById("title")
-                .value,
+                title.value,
 
             "опис":
-                document
-                .getElementById("description")
-                .value,
+                description.value,
 
             "напрямок":
-                document
-                .getElementById("direction")
-                .value,
+                direction.value,
 
             "виконавець":
-                document
-                .getElementById("assignee")
-                .value,
+                assignee.value,
 
             "пріоритет":
-                document
-                .getElementById("priority")
-                .value,
+                priority.value,
 
             "дедлайн":
-                document
-                .getElementById("deadline")
-                .value
+                deadline.value
 
         })
     });
