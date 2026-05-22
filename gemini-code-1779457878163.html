@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ecoforma Task Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-6 font-sans">
+
+    <div class="max-w-6xl mx-auto">
+        <header class="flex justify-between items-center mb-8">
+            <h1 class="text-2xl font-bold text-gray-800">Ecoforma | Marketing</h1>
+            <button onclick="alert('Тут буде форма додавання')" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition">
+                + Додати задачу
+            </button>
+        </header>
+
+        <!-- Канбан дошка -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Колонка 1 -->
+            <div class="bg-gray-200 p-4 rounded-xl">
+                <h2 class="font-bold text-gray-700 mb-4 uppercase text-sm">До виконання</h2>
+                <div id="todo" class="space-y-3">
+                    <div class="bg-white p-4 rounded-lg shadow-sm cursor-pointer hover:shadow-md">
+                        <p class="font-medium text-gray-800">Підготувати контент-план</p>
+                        <span class="text-xs text-indigo-600 bg-indigo-50 px-2 py-1 rounded">Katia</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Колонка 2 -->
+            <div class="bg-blue-100 p-4 rounded-xl">
+                <h2 class="font-bold text-blue-700 mb-4 uppercase text-sm">В роботі</h2>
+                <div id="in-progress" class="space-y-3">
+                    <div class="bg-white p-4 rounded-lg shadow-sm cursor-pointer hover:shadow-md">
+                        <p class="font-medium text-gray-800">Запуск реклами в TikTok</p>
+                        <span class="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded">Nazar</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Колонка 3 -->
+            <div class="bg-green-100 p-4 rounded-xl">
+                <h2 class="font-bold text-green-700 mb-4 uppercase text-sm">Виконано</h2>
+                <div id="done" class="space-y-3">
+                    <div class="bg-white p-4 rounded-lg shadow-sm cursor-pointer hover:shadow-md">
+                        <p class="font-medium text-gray-800">Фотосесія</p>
+                        <span class="text-xs text-green-600 bg-green-50 px-2 py-1 rounded">Oleksandr</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
