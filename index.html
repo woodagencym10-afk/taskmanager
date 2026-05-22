@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-<meta charset="UTF-8" />
+
+<meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-<title>Marketing OS</title>
+<title>Marketing OS V6</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
+
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
@@ -14,6 +16,7 @@
 <style>
 
 :root{
+
     --bg:#0b1020;
     --sidebar:#111827;
     --card:#182133;
@@ -21,10 +24,12 @@
     --border:#283247;
     --text:#f3f5f9;
     --muted:#8b97ad;
+
     --primary:#5b8cff;
-    --danger:#ff5c5c;
     --success:#22c55e;
     --warning:#f59e0b;
+    --danger:#ff5c5c;
+
 }
 
 *{
@@ -34,325 +39,481 @@
 }
 
 body{
+
     background:var(--bg);
     color:var(--text);
     font-family:Inter,sans-serif;
     overflow:hidden;
+
 }
 
 .app{
+
     display:flex;
     height:100vh;
+
 }
 
 .sidebar{
-    width:260px;
+
+    width:250px;
     background:var(--sidebar);
+
     border-right:1px solid var(--border);
-    padding:30px 20px;
+
+    padding:28px 18px;
+
     flex-shrink:0;
+
 }
 
 .logo{
+
     font-size:28px;
     font-weight:800;
+
     margin-bottom:40px;
+
 }
 
 .nav{
+
     display:flex;
     flex-direction:column;
     gap:10px;
+
 }
 
 .nav-item{
+
     padding:14px 16px;
-    border-radius:14px;
+    border-radius:16px;
+
     cursor:pointer;
+
     transition:.2s;
+
 }
 
 .nav-item:hover{
-    background:#1b2437;
+
+    background:#1c2539;
+
 }
 
 .main{
+
     flex:1;
     overflow:auto;
-    padding:30px;
+
+    padding:28px;
+
 }
 
 .topbar{
+
     display:flex;
     justify-content:space-between;
     align-items:center;
-    margin-bottom:25px;
+
+    margin-bottom:24px;
+
     gap:20px;
+
 }
 
 .page-title{
+
     font-size:34px;
     font-weight:800;
+
 }
 
-.search{
-    width:320px;
+.top-actions{
+
+    display:flex;
+    gap:12px;
+
+}
+
+.action-btn{
+
+    border:none;
+
+    padding:14px 18px;
+
+    border-radius:16px;
+
+    cursor:pointer;
+
+    color:white;
+
+    font-weight:700;
+
+}
+
+.primary-btn{
+
+    background:var(--primary);
+
+}
+
+.success-btn{
+
+    background:var(--success);
+
 }
 
 .analytics{
+
     display:grid;
-    grid-template-columns:repeat(5,1fr);
+
+    grid-template-columns:
+        repeat(5,1fr);
+
     gap:16px;
-    margin-bottom:25px;
+
+    margin-bottom:24px;
+
 }
 
 .stat-card{
+
     background:var(--card);
+
     border:1px solid var(--border);
+
     border-radius:24px;
+
     padding:22px;
+
 }
 
 .stat-title{
+
     color:var(--muted);
     font-size:13px;
+
     margin-bottom:10px;
+
 }
 
 .stat-value{
+
     font-size:34px;
     font-weight:800;
+
 }
 
 .filters{
+
     display:flex;
     gap:14px;
-    margin-bottom:25px;
+
+    margin-bottom:24px;
+
     flex-wrap:wrap;
+
 }
 
 .filter{
+
     width:220px;
-}
 
-.create-box{
-    background:var(--card);
-    border:1px solid var(--border);
-    border-radius:28px;
-    padding:25px;
-    margin-bottom:30px;
-}
-
-.form-grid{
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:14px;
-}
-
-.full{
-    grid-column:1/-1;
 }
 
 input,
 textarea,
 select{
+
     width:100%;
+
     background:#101726;
+
     border:1px solid var(--border);
+
     border-radius:16px;
+
     padding:16px;
+
     color:white;
+
     outline:none;
-}
 
-textarea{
-    min-height:100px;
-    resize:vertical;
-}
-
-.submit-btn{
-    background:var(--primary);
-    border:none;
-    color:white;
-    padding:16px;
-    border-radius:16px;
-    font-weight:700;
-    cursor:pointer;
 }
 
 .board{
+
     display:flex;
+
     gap:20px;
+
     overflow:auto;
+
     padding-bottom:20px;
+
 }
 
 .column{
+
     width:340px;
     min-width:340px;
+
     background:#121a2b;
+
     border:1px solid var(--border);
+
     border-radius:28px;
+
     padding:18px;
+
 }
 
 .column-header{
+
     display:flex;
+
     justify-content:space-between;
     align-items:center;
-    margin-bottom:20px;
+
+    margin-bottom:18px;
+
 }
 
 .column-count{
+
     background:#24314a;
+
     padding:6px 10px;
+
     border-radius:999px;
+
     font-size:12px;
+
 }
 
 .task{
+
     background:var(--card);
-    border-radius:20px;
+
+    border-radius:22px;
+
     padding:18px;
-    margin-bottom:15px;
+
+    margin-bottom:14px;
+
     cursor:pointer;
+
     transition:.2s;
+
     border:1px solid transparent;
+
 }
 
 .task:hover{
+
     background:var(--card-hover);
+
     transform:translateY(-2px);
+
 }
 
 .task.high{
+
     border-left:5px solid var(--danger);
+
 }
 
 .task.overdue{
+
     border:1px solid var(--warning);
+
 }
 
 .task-title{
+
     font-size:18px;
     font-weight:700;
+
     margin-bottom:12px;
+
 }
 
 .task-direction{
+
     display:inline-flex;
+
     background:#24314a;
+
     padding:8px 12px;
+
     border-radius:999px;
+
     font-size:13px;
+
     margin-bottom:15px;
+
 }
 
 .task-meta{
+
     display:flex;
     flex-direction:column;
+
     gap:8px;
+
     color:#9dacbf;
+
     font-size:13px;
+
 }
 
 .modal{
+
     position:fixed;
     inset:0;
+
     background:rgba(0,0,0,.7);
+
     display:none;
+
     align-items:center;
     justify-content:center;
+
     z-index:999;
+
 }
 
 .modal.show{
+
     display:flex;
+
 }
 
 .modal-box{
+
     width:900px;
     max-width:95%;
+
     max-height:90vh;
+
     overflow-y:auto;
+
     background:#131b2d;
+
     border-radius:28px;
+
     padding:30px;
-}
 
-.modal-box::-webkit-scrollbar{
-    width:8px;
-}
-
-.modal-box::-webkit-scrollbar-thumb{
-    background:#31405f;
-    border-radius:999px;
 }
 
 .modal-header{
+
     display:flex;
+
     justify-content:space-between;
     align-items:center;
+
     margin-bottom:20px;
+
 }
 
 .close-btn{
-    width:40px;
-    height:40px;
-    border:none;
-    border-radius:12px;
-    background:#26324a;
-    color:white;
-    cursor:pointer;
-}
 
-.save-btn{
-    background:var(--success);
+    width:42px;
+    height:42px;
+
     border:none;
-    color:white;
-    padding:14px 18px;
+
     border-radius:14px;
+
+    background:#26324a;
+
+    color:white;
+
     cursor:pointer;
-}
 
-.revision-btn{
-    background:var(--warning);
-}
-
-.modal-actions{
-    display:flex;
-    gap:12px;
-    margin-top:20px;
-    flex-wrap:wrap;
-}
-
-.comments{
-    margin-top:30px;
-}
-
-.comment{
-    background:#1a2336;
-    border-radius:16px;
-    padding:14px;
-    margin-bottom:10px;
-}
-
-.comment-author{
-    font-weight:700;
-    margin-bottom:6px;
 }
 
 .modal-grid{
+
     display:grid;
-    grid-template-columns:1fr 1fr;
+
+    grid-template-columns:
+        1fr 1fr;
+
     gap:14px;
+
     margin-top:20px;
+
+}
+
+.modal-actions{
+
+    display:flex;
+    gap:12px;
+
+    margin-top:20px;
+
+    flex-wrap:wrap;
+
+}
+
+.save-btn{
+
+    border:none;
+
+    color:white;
+
+    padding:14px 18px;
+
+    border-radius:14px;
+
+    cursor:pointer;
+
+    font-weight:700;
+
+}
+
+.comments{
+
+    margin-top:30px;
+
+}
+
+.comment{
+
+    background:#1a2336;
+
+    border-radius:16px;
+
+    padding:14px;
+
+    margin-bottom:10px;
+
+}
+
+.comment-author{
+
+    font-weight:700;
+
+    margin-bottom:6px;
+
+}
+
+.hidden{
+
+    display:none;
+
 }
 
 @media(max-width:1200px){
 
     .analytics{
-        grid-template-columns:repeat(2,1fr);
+
+        grid-template-columns:
+            repeat(2,1fr);
+
     }
 
 }
@@ -363,15 +524,18 @@ textarea{
         display:none;
     }
 
-    .form-grid,
-    .modal-grid,
-    .analytics{
+    .analytics,
+    .modal-grid{
+
         grid-template-columns:1fr;
+
     }
 
     .topbar{
+
         flex-direction:column;
         align-items:flex-start;
+
     }
 
 }
@@ -415,13 +579,23 @@ textarea{
 Marketing Dashboard
 </div>
 
-<input
-class="search"
-type="text"
-id="searchInput"
-placeholder="Пошук задач..."
-oninput="render()"
-/>
+<div class="top-actions">
+
+<button
+class="action-btn primary-btn"
+onclick="openCreateModal()"
+>
+➕ Нова задача
+</button>
+
+<button
+class="action-btn success-btn"
+onclick="openDailyPlanModal()"
+>
+📋 План на день
+</button>
+
+</div>
 
 </div>
 
@@ -476,6 +650,14 @@ oninput="render()"
 
 <div class="filters">
 
+<input
+class="filter"
+type="text"
+id="searchInput"
+placeholder="Пошук задач..."
+oninput="render()"
+/>
+
 <select
 class="filter"
 id="filterDirection"
@@ -496,131 +678,107 @@ onchange="render()"
 </option>
 </select>
 
-<select
-class="filter"
-id="filterPriority"
-onchange="render()"
->
-<option value="">
-Всі пріоритети
-</option>
-
-<option value="Високий">
-Високий
-</option>
-
-<option value="Середній">
-Середній
-</option>
-
-</select>
-
-</div>
-
-<div class="create-box">
-
-<form id="taskForm">
-
-<div class="form-grid">
-
-<div class="full">
-<input
-type="text"
-id="title"
-placeholder="Назва задачі"
-required
-/>
-</div>
-
-<div class="full">
-<textarea
-id="description"
-placeholder="Опис"
-></textarea>
-</div>
-
-<select id="direction"></select>
-
-<select id="assignee"></select>
-
-<select id="priority">
-
-<option value="Середній">
-Середній
-</option>
-
-<option value="Високий">
-Високий
-</option>
-
-</select>
-
-<input type="date" id="deadline"/>
-
-<div class="full">
-
-<button
-class="submit-btn"
-type="submit"
->
-➕ Створити задачу
-</button>
-
-</div>
-
-</div>
-
-</form>
-
 </div>
 
 <div class="board">
 
 <div class="column">
+
 <div class="column-header">
-<h3>📝 Треба зробити</h3>
-<div class="column-count" id="countTodo">0</div>
+
+<h3>
+📝 Треба зробити
+</h3>
+
+<div class="column-count" id="countTodo">
+0
 </div>
+
+</div>
+
 <div id="todo"></div>
+
 </div>
 
 <div class="column">
+
 <div class="column-header">
-<h3>⚙️ В роботі</h3>
-<div class="column-count" id="countProgress">0</div>
+
+<h3>
+⚙️ В роботі
+</h3>
+
+<div class="column-count" id="countProgress">
+0
 </div>
+
+</div>
+
 <div id="progress"></div>
+
 </div>
 
 <div class="column">
+
 <div class="column-header">
-<h3>👀 На погодженні</h3>
-<div class="column-count" id="countReview">0</div>
+
+<h3>
+👀 На погодженні
+</h3>
+
+<div class="column-count" id="countReview">
+0
 </div>
+
+</div>
+
 <div id="review"></div>
+
 </div>
 
 <div class="column">
+
 <div class="column-header">
-<h3>🔁 Потрібні правки</h3>
-<div class="column-count" id="countRevision">0</div>
+
+<h3>
+🔁 Потрібні правки
+</h3>
+
+<div class="column-count" id="countRevision">
+0
 </div>
+
+</div>
+
 <div id="revision"></div>
+
 </div>
 
 <div class="column">
+
 <div class="column-header">
-<h3>✅ Готово</h3>
-<div class="column-count" id="countDone">0</div>
+
+<h3>
+✅ Готово
+</h3>
+
+<div class="column-count" id="countDone">
+0
 </div>
+
+</div>
+
 <div id="done"></div>
-</div>
 
 </div>
 
 </div>
 
 </div>
+
+</div>
+
+<!-- TASK MODAL -->
 
 <div class="modal" id="taskModal">
 
@@ -642,7 +800,7 @@ padding:0;
 
 <button
 class="close-btn"
-onclick="closeModal()"
+onclick="closeTaskModal()"
 >
 ✕
 </button>
@@ -676,28 +834,52 @@ onclick="closeModal()"
 <div class="modal-actions">
 
 <button
-class="save-btn"
-type="button"
+class="save-btn primary-btn"
 onclick="saveTask()"
 >
 💾 Зберегти
 </button>
 
 <button
-class="save-btn"
-type="button"
+class="save-btn success-btn"
 onclick="approveTask()"
 >
 ✅ Погодити
 </button>
 
 <button
-class="save-btn revision-btn"
-type="button"
+class="save-btn"
+style="background:#f59e0b;"
 onclick="revisionTask()"
 >
 🔁 На правки
 </button>
+
+</div>
+
+<div
+style="
+margin-top:25px;
+padding:16px;
+background:#1b2437;
+border-radius:18px;
+"
+>
+
+<div
+style="
+font-weight:700;
+margin-bottom:8px;
+"
+>
+Approval History
+</div>
+
+<div id="approvalHistory">
+
+Поки немає погодження
+
+</div>
 
 </div>
 
@@ -723,8 +905,8 @@ style="margin-top:15px;"
 ></textarea>
 
 <button
-class="save-btn"
-type="button"
+class="save-btn primary-btn"
+style="margin-top:14px;"
 onclick="addComment()"
 >
 Додати коментар
@@ -736,703 +918,168 @@ onclick="addComment()"
 
 </div>
 
+<!-- CREATE TASK MODAL -->
+
+<div class="modal" id="createTaskModal">
+
+<div class="modal-box">
+
+<div class="modal-header">
+
+<h2>
+➕ Нова задача
+</h2>
+
+<button
+class="close-btn"
+onclick="closeCreateModal()"
+>
+✕
+</button>
+
+</div>
+
+<div class="modal-grid">
+
+<div style="grid-column:1/-1;">
+
+<input
+type="text"
+id="title"
+placeholder="Назва задачі"
+/>
+
+</div>
+
+<div style="grid-column:1/-1;">
+
+<textarea
+id="description"
+placeholder="Опис"
+></textarea>
+
+</div>
+
+<select id="direction"></select>
+
+<select id="assignee"></select>
+
+<select id="priority">
+
+<option value="Середній">
+Середній
+</option>
+
+<option value="Високий">
+Високий
+</option>
+
+</select>
+
+<input type="date" id="deadline"/>
+
+</div>
+
+<button
+class="save-btn primary-btn"
+style="margin-top:20px;"
+onclick="createTask()"
+>
+Створити задачу
+</button>
+
+</div>
+
+</div>
+
+<!-- DAILY PLAN MODAL -->
+
+<div class="modal" id="dailyPlanModal">
+
+<div class="modal-box">
+
+<div class="modal-header">
+
+<h2>
+📋 План на день
+</h2>
+
+<button
+class="close-btn"
+onclick="closeDailyPlanModal()"
+>
+✕
+</button>
+
+</div>
+
+<div id="dailyPlanTasks">
+
+Поки пусто
+
+</div>
+
+<div class="modal-actions">
+
+<button
+class="save-btn primary-btn"
+>
+➕ Додати задачу
+</button>
+
+<button
+class="save-btn success-btn"
+>
+✅ Підтвердити план
+</button>
+
+</div>
+
+</div>
+
+</div>
+
 <script>
 
-const API_URL =
-"https://script.google.com/macros/s/AKfycbw3H8TvVhJoENmSts6Msrenivow2rZifFrYlOVcgtE7-SJ8cLEdx9sBGQQHY5YT8AKo/exec";
+function openCreateModal(){
 
-let tasks = [];
-let comments = [];
-let projects = [];
-let team = [];
-
-let currentTaskId = null;
-
-const statuses = {
-    todo:"Треба зробити",
-    progress:"В роботі",
-    review:"На погодженні",
-    revision:"Потрібні правки",
-    done:"Готово"
-};
-
-async function loadData(){
-
-    const res = await fetch(
-        API_URL + "?t=" + Date.now()
-    );
-
-    const data = await res.json();
-
-    tasks = data.tasks || [];
-    comments = data.comments || [];
-    projects = data.projects || [];
-    team = data.team || [];
-
-    render();
-    renderSelects();
-    renderFilters();
-    renderAnalytics();
+    createTaskModal
+        .classList
+        .add("show");
 
 }
 
-function renderAnalytics(){
+function closeCreateModal(){
 
-    totalTasks.textContent =
-        tasks.length;
-
-    progressTasks.textContent =
-        tasks.filter(
-            t=>t["статус"] === "В роботі"
-        ).length;
-
-    reviewTasks.textContent =
-        tasks.filter(
-            t=>t["статус"] === "На погодженні"
-        ).length;
-
-    doneTasks.textContent =
-        tasks.filter(
-            t=>t["статус"] === "Готово"
-        ).length;
-
-    overdueTasks.textContent =
-        tasks.filter(isOverdue).length;
+    createTaskModal
+        .classList
+        .remove("show");
 
 }
 
-function isOverdue(task){
+function openDailyPlanModal(){
 
-    if(
-        !task["дедлайн"] ||
-        task["статус"] === "Готово"
-    ){
-        return false;
-    }
-
-    return new Date(task["дедлайн"])
-        < new Date();
+    dailyPlanModal
+        .classList
+        .add("show");
 
 }
 
-function renderFilters(){
+function closeDailyPlanModal(){
 
-    filterDirection.innerHTML =
-        `<option value="">Всі напрямки</option>`;
-
-    filterAssignee.innerHTML =
-        `<option value="">Всі виконавці</option>`;
-
-    projects.forEach(project=>{
-
-        filterDirection.innerHTML += `
-            <option value="${project.name}">
-                ${project.name}
-            </option>
-        `;
-
-    });
-
-    team.forEach(person=>{
-
-        filterAssignee.innerHTML += `
-            <option value="${person.name}">
-                ${person.name}
-            </option>
-        `;
-
-    });
+    dailyPlanModal
+        .classList
+        .remove("show");
 
 }
 
-function renderSelects(){
+function closeTaskModal(){
 
-    direction.innerHTML =
-        `<option value="">Напрямок</option>`;
-
-    assignee.innerHTML =
-        `<option value="">Виконавець</option>`;
-
-    projects.forEach(project=>{
-
-        direction.innerHTML += `
-            <option value="${project.name}">
-                ${project.name}
-            </option>
-        `;
-
-    });
-
-    team.forEach(person=>{
-
-        assignee.innerHTML += `
-            <option value="${person.name}">
-                ${person.name}
-            </option>
-        `;
-
-    });
+    taskModal
+        .classList
+        .remove("show");
 
 }
-
-function render(){
-
-    clearColumns();
-
-    let filteredTasks = [...tasks];
-
-    const search =
-        searchInput.value.toLowerCase();
-
-    const directionFilter =
-        filterDirection.value;
-
-    const assigneeFilter =
-        filterAssignee.value;
-
-    const priorityFilter =
-        filterPriority.value;
-
-    filteredTasks = filteredTasks.filter(task=>{
-
-        const matchSearch =
-            !search ||
-            (task["назва"] || "")
-            .toLowerCase()
-            .includes(search);
-
-        const matchDirection =
-            !directionFilter ||
-            task["напрямок"] === directionFilter;
-
-        const matchAssignee =
-            !assigneeFilter ||
-            task["виконавець"] === assigneeFilter;
-
-        const matchPriority =
-            !priorityFilter ||
-            task["пріоритет"] === priorityFilter;
-
-        return (
-            matchSearch &&
-            matchDirection &&
-            matchAssignee &&
-            matchPriority
-        );
-
-    });
-
-    filteredTasks.forEach(task=>{
-
-        const div =
-            createTaskCard(task);
-
-        switch(task["статус"]){
-
-            case "В роботі":
-                progress.appendChild(div);
-                break;
-
-            case "На погодженні":
-                review.appendChild(div);
-                break;
-
-            case "Потрібні правки":
-                revision.appendChild(div);
-                break;
-
-            case "Готово":
-                done.appendChild(div);
-                break;
-
-            default:
-                todo.appendChild(div);
-
-        }
-
-    });
-
-    updateCounts();
-
-}
-
-function updateCounts(){
-
-    countTodo.textContent =
-        todo.children.length;
-
-    countProgress.textContent =
-        progress.children.length;
-
-    countReview.textContent =
-        review.children.length;
-
-    countRevision.textContent =
-        revision.children.length;
-
-    countDone.textContent =
-        done.children.length;
-
-}
-
-function createTaskCard(task){
-
-    const div =
-        document.createElement("div");
-
-    div.className =
-        `task
-        ${
-            task["пріоритет"] === "Високий"
-            ? "high"
-            : ""
-        }
-        ${
-            isOverdue(task)
-            ? "overdue"
-            : ""
-        }`;
-
-    div.dataset.id = task.id;
-
-    div.onclick = ()=>openTask(task.id);
-
-    div.innerHTML = `
-
-        <div class="task-title">
-            ${task["назва"]}
-        </div>
-
-        <div class="task-direction">
-            📁 ${task["напрямок"] || "—"}
-        </div>
-
-        <div class="task-meta">
-
-            <div>
-                👤 ${task["виконавець"] || "—"}
-            </div>
-
-            <div>
-                ⏰ ${task["дедлайн"] || "—"}
-            </div>
-
-            ${
-                isOverdue(task)
-                ? `
-                    <div style="color:#f59e0b;">
-                        ⚠️ Прострочено
-                    </div>
-                `
-                : ""
-            }
-
-        </div>
-
-    `;
-
-    return div;
-
-}
-
-function openTask(id){
-
-    currentTaskId = id;
-
-    const task =
-        tasks.find(t=>t.id == id);
-
-    if(!task) return;
-
-    editTitle.value =
-        task["назва"] || "";
-
-    editDescription.value =
-        task["опис"] || "";
-
-    editPriority.value =
-        task["пріоритет"] || "Середній";
-
-    editDeadline.value =
-        task["дедлайн"] || "";
-
-    renderEditSelects(task);
-    renderComments();
-
-    taskModal.classList.add("show");
-
-}
-
-function renderEditSelects(task){
-
-    editDirection.innerHTML = "";
-    editAssignee.innerHTML = "";
-
-    projects.forEach(project=>{
-
-        editDirection.innerHTML += `
-            <option
-                value="${project.name}"
-                ${
-                    task["напрямок"] === project.name
-                    ? "selected"
-                    : ""
-                }
-            >
-                ${project.name}
-            </option>
-        `;
-
-    });
-
-    team.forEach(person=>{
-
-        editAssignee.innerHTML += `
-            <option
-                value="${person.name}"
-                ${
-                    task["виконавець"] === person.name
-                    ? "selected"
-                    : ""
-                }
-            >
-                ${person.name}
-            </option>
-        `;
-
-    });
-
-}
-
-async function saveTask(){
-
-    const task =
-        tasks.find(t=>t.id == currentTaskId);
-
-    if(task){
-
-        task["назва"] =
-            editTitle.value;
-
-        task["опис"] =
-            editDescription.value;
-
-        task["пріоритет"] =
-            editPriority.value;
-
-        task["виконавець"] =
-            editAssignee.value;
-
-        task["дедлайн"] =
-            editDeadline.value;
-
-        task["напрямок"] =
-            editDirection.value;
-
-    }
-
-    render();
-
-    await fetch(API_URL,{
-        method:"POST",
-        body:JSON.stringify({
-
-            action:"updateTask",
-
-            id:currentTaskId,
-
-            "назва":editTitle.value,
-            "опис":editDescription.value,
-            "пріоритет":editPriority.value,
-            "виконавець":editAssignee.value,
-            "дедлайн":editDeadline.value,
-            "напрямок":editDirection.value
-
-        })
-    });
-
-}
-
-async function approveTask(){
-
-    const task =
-        tasks.find(
-            t=>t.id == currentTaskId
-        );
-
-    if(!task) return;
-
-    task["статус"] = "Готово";
-
-    render();
-
-    await fetch(API_URL,{
-        method:"POST",
-        body:JSON.stringify({
-
-            action:"updateTaskStatus",
-
-            id:currentTaskId,
-
-            newStatus:"Готово"
-
-        })
-    });
-
-    closeModal();
-
-}
-
-async function revisionTask(){
-
-    const task =
-        tasks.find(
-            t=>t.id == currentTaskId
-        );
-
-    if(!task) return;
-
-    task["статус"] =
-        "Потрібні правки";
-
-    render();
-
-    await fetch(API_URL,{
-        method:"POST",
-        body:JSON.stringify({
-
-            action:"updateTaskStatus",
-
-            id:currentTaskId,
-
-            newStatus:"Потрібні правки"
-
-        })
-    });
-
-    closeModal();
-
-}
-
-function renderComments(){
-
-    commentsList.innerHTML = "";
-
-    const taskComments =
-        comments.filter(
-            c=>c.taskId == currentTaskId
-        );
-
-    taskComments.forEach(comment=>{
-
-        commentsList.innerHTML += `
-
-            <div class="comment">
-
-                <div class="comment-author">
-                    ${comment.author}
-                </div>
-
-                <div>
-                    ${comment.text}
-                </div>
-
-            </div>
-
-        `;
-
-    });
-
-}
-
-async function addComment(){
-
-    const author =
-        commentAuthor.value;
-
-    const text =
-        commentText.value;
-
-    if(!author || !text){
-        return;
-    }
-
-    const localComment = {
-
-        taskId:currentTaskId,
-
-        author:author,
-
-        text:text
-
-    };
-
-    comments.push(localComment);
-
-    commentsList.innerHTML += `
-
-        <div class="comment">
-
-            <div class="comment-author">
-                ${author}
-            </div>
-
-            <div>
-                ${text}
-            </div>
-
-        </div>
-
-    `;
-
-    commentText.value = "";
-
-    await fetch(API_URL,{
-        method:"POST",
-        body:JSON.stringify({
-
-            action:"addComment",
-
-            taskId:currentTaskId,
-
-            author:author,
-
-            text:text
-
-        })
-    });
-
-}
-
-function closeModal(){
-
-    taskModal.classList.remove("show");
-
-}
-
-function clearColumns(){
-
-    todo.innerHTML = "";
-    progress.innerHTML = "";
-    review.innerHTML = "";
-    revision.innerHTML = "";
-    done.innerHTML = "";
-
-}
-
-async function updateStatus(id,newStatus){
-
-    const task =
-        tasks.find(t=>t.id == id);
-
-    if(task){
-
-        task["статус"] =
-            newStatus;
-
-        render();
-
-    }
-
-    await fetch(API_URL,{
-        method:"POST",
-        body:JSON.stringify({
-
-            action:"updateTaskStatus",
-
-            id:id,
-
-            newStatus:newStatus
-
-        })
-    });
-
-}
-
-document
-.getElementById("taskForm")
-.addEventListener("submit",async(e)=>{
-
-    e.preventDefault();
-
-    const newTask = {
-
-        id:Date.now().toString(),
-
-        "назва":title.value,
-        "опис":description.value,
-        "статус":"Треба зробити",
-        "пріоритет":priority.value,
-        "виконавець":assignee.value,
-        "дедлайн":deadline.value,
-        "напрямок":direction.value
-
-    };
-
-    tasks.unshift(newTask);
-
-    render();
-    renderAnalytics();
-
-    await fetch(API_URL,{
-        method:"POST",
-        body:JSON.stringify({
-
-            action:"createTask",
-
-            "назва":title.value,
-            "опис":description.value,
-            "напрямок":direction.value,
-            "виконавець":assignee.value,
-            "пріоритет":priority.value,
-            "дедлайн":deadline.value
-
-        })
-    });
-
-    e.target.reset();
-
-});
-
-[
-    "todo",
-    "progress",
-    "review",
-    "revision",
-    "done"
-].forEach(id=>{
-
-    new Sortable(
-        document.getElementById(id),
-        {
-
-            group:"tasks",
-
-            animation:150,
-
-            onEnd: async(evt)=>{
-
-                const taskId =
-                    evt.item.dataset.id;
-
-                const newStatus =
-                    statuses[evt.to.id];
-
-                await updateStatus(
-                    taskId,
-                    newStatus
-                );
-
-                renderAnalytics();
-
-            }
-
-        }
-    );
-
-});
-
-loadData();
 
 </script>
 
