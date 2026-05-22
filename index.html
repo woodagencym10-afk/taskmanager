@@ -7,68 +7,80 @@
         :root { --bg: #ebecf0; --text: #333; --card: white; --col: #f4f5f7; --border: #dfe1e6; }
         body.dark-mode { --bg: #121212; --text: #e0e0e0; --card: #1e1e1e; --col: #2d2d2d; --border: #444; }
         body { font-family: sans-serif; padding: 20px; background-color: var(--bg); color: var(--text); transition: 0.3s; }
-        .form-container, .stats-container, .filter-container, .board { max-width: 900px; margin: 0 auto 20px auto; }
+        .container { max-width: 900px; margin: 0 auto; }
         input, select, textarea { width: 100%; padding: 10px; margin: 5px 0; border: 1px solid var(--border); border-radius: 4px; background: var(--card); color: var(--text); }
         .btn { padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
         .btn-main { background: #0052cc; color: white; width: 100%; }
-        .board { display: flex; gap: 20px; overflow-x: auto; align-items: flex-start; }
-        .column { background: var(--col); border-radius: 8px; min-width: 280px; width: 33%; padding: 10px; }
+        .board { display: flex; gap: 20px; overflow-x: auto; align-items: flex-start; margin-top: 20px; }
+        .column { background: var(--col); border-radius: 8px; min-width: 280px; width: 33%; padding: 10px; border: 1px solid var(--border); }
         .task-item { background: var(--card); padding: 15px; border-radius: 4px; margin-bottom: 10px; border-left: 5px solid #ccc; }
         .task-desc { font-size: 0.85em; background: var(--bg); padding: 5px; margin: 5px 0; white-space: pre-wrap; }
         .actions { display: flex; gap: 5px; margin-top: 10px; }
+        .btn-delete { background: transparent; color: #ff5630; border: 1px solid #ff5630; }
     </style>
 </head>
 <body>
+<div class="container">
+    <div style="display:flex; justify-content:space-between;"><h2>🎯 Таск-менеджер</h2><button class="btn" onclick="toggleTheme()">🌙/☀️</button></div>
+    
+    <div style="background:var(--card); padding:20px; border-radius:8px;">
+        <form id="taskForm">
+            <input type="text" id="taskName" required placeholder="Назва задачі">
+            <textarea id="taskDesc" placeholder="Опис / Коментарі / Лінки"></textarea>
+            <div style="display:flex; gap:5px;">
+                <select id="projectSelect"><option value="">Проект...</option></select>
+                <select id="assigneeSelect"><option value="">Виконавець...</option></select>
+                <select id="prioritySelect"><option value="Середній">Середній</option><option value="Високий">Високий</option></select>
+                <input type="date" id="deadline">
+            </div>
+            <button type="submit" class="btn btn-main">Додати задачу</button>
+        </form>
+    </div>
 
-<div class="form-container">
-    <h2>🎯 Створити задачу</h2>
-    <form id="taskForm">
-        <input type="text" id="taskName" required placeholder="Назва">
-        <textarea id="taskDesc" placeholder="Опис / Лінки"></textarea>
-        <div style="display: flex; gap: 5px;">
-            <select id="projectSelect"><option value="">Проект...</option></select>
-            <select id="assigneeSelect"><option value="">Виконавець...</option></select>
-            <input type="date" id="deadline">
-        </div>
-        <button type="submit" class="btn btn-main">Додати</button>
-    </form>
-</div>
+    <div style="display:flex; gap:10px; margin:20px 0;">
+        <div style="flex:1; background:var(--card); padding:10px; text-align:center;">Всього: <b id="stat-total">0</b></div>
+        <div style="flex:1; background:var(--card); padding:10px; text-align:center;">Готово: <b id="stat-done">0</b></div>
+    </div>
 
-<div class="stats-container" style="display:flex; gap:10px;">
-    <div style="flex:1; background:var(--card); padding:10px; text-align:center;">Всього: <b id="stat-total">0</b></div>
-    <div style="flex:1; background:var(--card); padding:10px; text-align:center;">Готово: <b id="stat-done">0</b></div>
-</div>
-
-<div class="board">
-    <div class="column"><h3>📝 Треба зробити</h3><ul id="col-todo" class="task-list"></ul></div>
-    <div class="column"><h3>⚙️ В роботі</h3><ul id="col-progress" class="task-list"></ul></div>
-    <div class="column"><h3>✅ Готово</h3><ul id="col-done" class="task-list"></ul></div>
+    <div class="board">
+        <div class="column"><h3>📝 Треба зробити</h3><ul id="col-todo" style="list-style:none; padding:0;"></ul></div>
+        <div class="column"><h3>⚙️ В роботі</h3><ul id="col-progress" style="list-style:none; padding:0;"></ul></div>
+        <div class="column"><h3>✅ Готово</h3><ul id="col-done" style="list-style:none; padding:0;"></ul></div>
+    </div>
 </div>
 
 <script>
-    const API_URL = "ВАШ_URL_ТУТ"; // <--- ВСТАВТЕ СВІЙ ЛІНК
+    const API_URL = "https://script.google.com/macros/s/AKfycbyz_3lR1eI7Pnm8dLEAf6WbQeIaUlwHwmxMfoHZScmLinXUxagCu08eqMDUZGH19DIJ/exec"; 
     let allTasks = [];
 
     async function loadData() {
         const res = await fetch(API_URL);
         const data = await res.json();
         allTasks = data.tasks;
+        populateSelect('projectSelect', data.projects);
+        populateSelect('assigneeSelect', data.team);
         render();
+    }
+
+    function populateSelect(id, items) {
+        const el = document.getElementById(id);
+        el.innerHTML = '<option value="">Оберіть...</option>';
+        items.forEach(i => el.innerHTML += `<option value="${i}">${i}</option>`);
     }
 
     function render() {
         ['col-todo', 'col-progress', 'col-done'].forEach(id => document.getElementById(id).innerHTML = '');
         allTasks.forEach(t => {
             const html = `
-                <li class="task-item">
+                <li class="task-item" style="border-left-color: ${t.priority=='Високий'?'#ff5630':'#ccc'}">
                     <h4>${t.name}</h4>
                     <div class="task-desc">${t.description || ''}</div>
-                    <small>👤 ${t.assignee} | ⏰ ${t.deadline}</small>
+                    <small>👤 ${t.assignee || '—'} | ⏰ ${t.deadline || '—'}</small>
                     <div class="actions">
                         ${t.status !== 'Готово' ? `<button class="btn" onclick="changeStatus('${t.id}', 'В роботі')">В роботу</button>` : ''}
                         ${t.status === 'В роботі' ? `<button class="btn" onclick="changeStatus('${t.id}', 'Готово')">✅</button>` : ''}
                         <button class="btn" onclick="addComment('${t.id}')">💬</button>
-                        <button class="btn" onclick="deleteTask('${t.id}')">🗑️</button>
+                        <button class="btn btn-delete" onclick="deleteTask('${t.id}')">🗑️</button>
                     </div>
                 </li>`;
             if (t.status === 'В роботі') document.getElementById('col-progress').innerHTML += html;
@@ -79,13 +91,13 @@
         document.getElementById('stat-done').textContent = allTasks.filter(t => t.status === 'Готово').length;
     }
 
-    async function changeStatus(id, newStatus) {
+    function changeStatus(id, newStatus) {
         allTasks.find(t => t.id == id).status = newStatus;
         render();
         fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "updateStatus", id, newStatus }) });
     }
 
-    async function addComment(id) {
+    function addComment(id) {
         const author = prompt("Ваше ім'я:");
         const text = prompt("Коментар:");
         if (author && text) {
@@ -95,15 +107,21 @@
         }
     }
 
-    async function deleteTask(id) {
-        allTasks = allTasks.filter(t => t.id != id);
-        render();
-        fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "deleteTask", id }) });
+    function deleteTask(id) {
+        if(confirm("Видалити?")) {
+            allTasks = allTasks.filter(t => t.id != id);
+            render();
+            fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "deleteTask", id }) });
+        }
+    }
+
+    function toggleTheme() {
+        document.body.classList.toggle('dark-mode');
     }
 
     document.getElementById('taskForm').onsubmit = async (e) => {
         e.preventDefault();
-        const newTask = { action: "create", name: document.getElementById('taskName').value, description: document.getElementById('taskDesc').value, project: document.getElementById('projectSelect').value, assignee: document.getElementById('assigneeSelect').value, deadline: document.getElementById('deadline').value };
+        const newTask = { action: "create", name: document.getElementById('taskName').value, description: document.getElementById('taskDesc').value, project: document.getElementById('projectSelect').value, assignee: document.getElementById('assigneeSelect').value, priority: document.getElementById('prioritySelect').value, deadline: document.getElementById('deadline').value };
         await fetch(API_URL, { method: "POST", body: JSON.stringify(newTask) });
         loadData();
     };
