@@ -1,7 +1,631 @@
-<!-- ========================= -->
-<!-- FILTERS BLOCK -->
-<!-- ЗАМІНИ СВІЙ FILTERS BLOCK -->
-<!-- ========================= -->
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>Marketing OS V8.5</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+
+<style>
+
+:root{
+
+    --bg:#0b1020;
+    --sidebar:#111827;
+    --card:#182133;
+    --card-hover:#1f2b42;
+    --border:#283247;
+    --text:#f3f5f9;
+    --muted:#8b97ad;
+
+    --primary:#5b8cff;
+    --success:#22c55e;
+    --warning:#f59e0b;
+    --danger:#ff5c5c;
+
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+
+    background:var(--bg);
+    color:var(--text);
+
+    font-family:Inter,sans-serif;
+
+    overflow:hidden;
+
+}
+
+.app{
+
+    display:flex;
+    height:100vh;
+
+}
+
+.sidebar{
+
+    width:250px;
+
+    background:var(--sidebar);
+
+    border-right:1px solid var(--border);
+
+    padding:28px 18px;
+
+    flex-shrink:0;
+
+}
+
+.logo{
+
+    font-size:28px;
+    font-weight:800;
+
+    margin-bottom:40px;
+
+}
+
+.nav{
+
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+
+}
+
+.nav-item{
+
+    padding:14px 16px;
+
+    border-radius:16px;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+}
+
+.nav-item:hover{
+
+    background:#1c2539;
+
+}
+
+.main{
+
+    flex:1;
+
+    overflow:auto;
+
+    padding:28px;
+
+}
+
+.topbar{
+
+    display:flex;
+
+    justify-content:space-between;
+    align-items:flex-start;
+
+    gap:20px;
+
+    margin-bottom:24px;
+
+}
+
+.left-top{
+
+    flex:1;
+
+}
+
+.page-title{
+
+    font-size:36px;
+    font-weight:800;
+
+    margin-bottom:20px;
+
+}
+
+.filters{
+
+    display:flex;
+
+    gap:12px;
+
+    flex-wrap:wrap;
+
+}
+
+.filter{
+
+    min-width:180px;
+
+}
+
+input,
+textarea,
+select{
+
+    width:100%;
+
+    background:#101726;
+
+    border:1px solid var(--border);
+
+    border-radius:16px;
+
+    padding:14px 16px;
+
+    color:white;
+
+    outline:none;
+
+}
+
+textarea{
+
+    min-height:120px;
+    resize:vertical;
+
+}
+
+.top-actions{
+
+    display:flex;
+    gap:12px;
+
+}
+
+.action-btn{
+
+    border:none;
+
+    padding:14px 18px;
+
+    border-radius:16px;
+
+    cursor:pointer;
+
+    color:white;
+
+    font-weight:700;
+
+}
+
+.primary-btn{
+
+    background:var(--primary);
+
+}
+
+.success-btn{
+
+    background:var(--success);
+
+}
+
+.analytics{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(5,1fr);
+
+    gap:16px;
+
+    margin-bottom:24px;
+
+}
+
+.stat-card{
+
+    background:var(--card);
+
+    border:1px solid var(--border);
+
+    border-radius:24px;
+
+    padding:22px;
+
+}
+
+.stat-title{
+
+    color:var(--muted);
+
+    font-size:13px;
+
+    margin-bottom:10px;
+
+}
+
+.stat-value{
+
+    font-size:34px;
+    font-weight:800;
+
+}
+
+.board{
+
+    display:flex;
+
+    gap:20px;
+
+    overflow:auto;
+
+    padding-bottom:40px;
+
+}
+
+.column{
+
+    width:340px;
+    min-width:340px;
+
+    background:#121a2b;
+
+    border:1px solid var(--border);
+
+    border-radius:28px;
+
+    padding:18px;
+
+}
+
+.column-header{
+
+    display:flex;
+
+    justify-content:space-between;
+    align-items:center;
+
+    margin-bottom:18px;
+
+}
+
+.column-count{
+
+    background:#24314a;
+
+    padding:6px 10px;
+
+    border-radius:999px;
+
+    font-size:12px;
+
+}
+
+.task{
+
+    background:var(--card);
+
+    border-radius:22px;
+
+    padding:18px;
+
+    margin-bottom:14px;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+    border:1px solid transparent;
+
+}
+
+.task:hover{
+
+    background:var(--card-hover);
+
+    transform:translateY(-2px);
+
+}
+
+.task.high{
+
+    border-left:5px solid var(--danger);
+
+}
+
+.task.overdue{
+
+    border:1px solid var(--warning);
+
+}
+
+.task-title{
+
+    font-size:18px;
+    font-weight:700;
+
+    margin-bottom:12px;
+
+}
+
+.task-direction{
+
+    display:inline-flex;
+
+    background:#24314a;
+
+    padding:8px 12px;
+
+    border-radius:999px;
+
+    font-size:13px;
+
+    margin-bottom:14px;
+
+}
+
+.task-meta{
+
+    display:flex;
+    flex-direction:column;
+
+    gap:8px;
+
+    color:#9dacbf;
+
+    font-size:13px;
+
+}
+
+.modal{
+
+    position:fixed;
+
+    inset:0;
+
+    background:rgba(0,0,0,.7);
+
+    display:none;
+
+    align-items:center;
+    justify-content:center;
+
+    z-index:999;
+
+}
+
+.modal.show{
+
+    display:flex;
+
+}
+
+.modal-box{
+
+    width:900px;
+    max-width:95%;
+
+    max-height:90vh;
+
+    overflow-y:auto;
+
+    background:#131b2d;
+
+    border-radius:28px;
+
+    padding:30px;
+
+}
+
+.modal-grid{
+
+    display:grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap:14px;
+
+    margin-top:20px;
+
+}
+
+.modal-actions{
+
+    display:flex;
+
+    gap:12px;
+
+    margin-top:20px;
+
+    flex-wrap:wrap;
+
+}
+
+.save-btn{
+
+    border:none;
+
+    color:white;
+
+    padding:14px 18px;
+
+    border-radius:14px;
+
+    cursor:pointer;
+
+    font-weight:700;
+
+}
+
+.comments{
+
+    margin-top:30px;
+
+}
+
+.comment{
+
+    background:#1a2336;
+
+    border-radius:16px;
+
+    padding:14px;
+
+    margin-bottom:10px;
+
+}
+
+.comment-author{
+
+    font-weight:700;
+
+    margin-bottom:6px;
+
+}
+
+.plan-task{
+
+    display:flex;
+
+    align-items:flex-start;
+
+    gap:16px;
+
+    margin-bottom:14px;
+
+    padding:18px;
+
+    background:#1b2437;
+
+    border-radius:18px;
+
+}
+
+.plan-task input{
+
+    width:18px;
+    height:18px;
+
+    margin-top:4px;
+
+    flex-shrink:0;
+
+}
+
+.plan-task-content{
+
+    flex:1;
+
+}
+
+.plan-task-title{
+
+    font-size:18px;
+    font-weight:700;
+
+    margin-bottom:8px;
+
+}
+
+.plan-task-meta{
+
+    font-size:13px;
+
+    color:#8b97ad;
+
+}
+
+.quick-filter{
+
+    background:#182133;
+
+}
+
+@media(max-width:1200px){
+
+    .analytics{
+
+        grid-template-columns:
+            repeat(2,1fr);
+
+    }
+
+}
+
+@media(max-width:900px){
+
+    .sidebar{
+        display:none;
+    }
+
+    .analytics,
+    .modal-grid{
+
+        grid-template-columns:1fr;
+
+    }
+
+    .topbar{
+
+        flex-direction:column;
+
+    }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<aside class="sidebar">
+
+<div class="logo">
+🚀 Marketing OS
+</div>
+
+<div class="nav">
+
+<div class="nav-item">
+📋 Tasks
+</div>
+
+<div class="nav-item">
+📊 Analytics
+</div>
+
+<div class="nav-item">
+📚 Knowledge Base
+</div>
+
+</div>
+
+</aside>
+
+<div class="main">
+
+<div class="topbar">
+
+<div class="left-top">
+
+<div class="page-title">
+Marketing Dashboard
+</div>
 
 <div class="filters">
 
@@ -48,40 +672,28 @@ onchange="render()"
 />
 
 <button
-class="action-btn"
-style="
-background:#182133;
-"
+class="action-btn quick-filter"
 onclick="setTodayFilter()"
 >
 Сьогодні
 </button>
 
 <button
-class="action-btn"
-style="
-background:#182133;
-"
+class="action-btn quick-filter"
 onclick="setWeekFilter()"
 >
 7 днів
 </button>
 
 <button
-class="action-btn"
-style="
-background:#182133;
-"
+class="action-btn quick-filter"
 onclick="setMonthFilter()"
 >
 30 днів
 </button>
 
 <button
-class="action-btn"
-style="
-background:#182133;
-"
+class="action-btn quick-filter"
 onclick="clearDateFilter()"
 >
 Весь актив
@@ -89,271 +701,1038 @@ onclick="clearDateFilter()"
 
 </div>
 
-<script>
+</div>
+
+<div class="top-actions">
+
+<button
+class="action-btn primary-btn"
+onclick="openCreateModal()"
+>
+➕ Нова задача
+</button>
 
-/* ========================= */
-/* DATE FILTERS */
-/* ========================= */
+<button
+class="action-btn success-btn"
+onclick="openDailyPlanModal()"
+>
+📋 План на день
+</button>
 
-function formatDate(date){
+</div>
 
-    return date
-        .toISOString()
-        .split("T")[0];
+</div>
+<div class="analytics">
 
-}
+<div class="stat-card">
+<div class="stat-title">
+Всього задач
+</div>
+<div class="stat-value" id="totalTasks">
+0
+</div>
+</div>
 
-function setTodayFilter(){
+<div class="stat-card">
+<div class="stat-title">
+В роботі
+</div>
+<div class="stat-value" id="progressTasks">
+0
+</div>
+</div>
 
-    const today =
-        new Date();
+<div class="stat-card">
+<div class="stat-title">
+На погодженні
+</div>
+<div class="stat-value" id="reviewTasks">
+0
+</div>
+</div>
 
-    dateFrom.value =
-        formatDate(today);
+<div class="stat-card">
+<div class="stat-title">
+Прострочені
+</div>
+<div class="stat-value" id="overdueTasks">
+0
+</div>
+</div>
 
-    dateTo.value =
-        formatDate(today);
+<div class="stat-card">
+<div class="stat-title">
+Готово
+</div>
+<div class="stat-value" id="doneTasks">
+0
+</div>
+</div>
 
-    render();
+</div>
 
-}
+<div class="board">
 
-function setWeekFilter(){
+<div class="column">
 
-    const today =
-        new Date();
+<div class="column-header">
 
-    const weekAgo =
-        new Date();
+<h3>
+📝 Треба зробити
+</h3>
 
-    weekAgo.setDate(
-        today.getDate() - 7
-    );
+<div class="column-count" id="countTodo">
+0
+</div>
 
-    dateFrom.value =
-        formatDate(weekAgo);
+</div>
 
-    dateTo.value =
-        formatDate(today);
+<div id="todo"></div>
 
-    render();
+</div>
 
-}
+<div class="column">
 
-function setMonthFilter(){
+<div class="column-header">
 
-    const today =
-        new Date();
+<h3>
+⚙️ В роботі
+</h3>
 
-    const monthAgo =
-        new Date();
+<div class="column-count" id="countProgress">
+0
+</div>
 
-    monthAgo.setDate(
-        today.getDate() - 30
-    );
+</div>
 
-    dateFrom.value =
-        formatDate(monthAgo);
+<div id="progress"></div>
 
-    dateTo.value =
-        formatDate(today);
+</div>
 
-    render();
+<div class="column">
 
-}
+<div class="column-header">
 
-function clearDateFilter(){
+<h3>
+👀 На погодженні
+</h3>
 
-    dateFrom.value = "";
-    dateTo.value = "";
+<div class="column-count" id="countReview">
+0
+</div>
 
-    render();
+</div>
 
-}
+<div id="review"></div>
 
-/* ========================= */
-/* RENDER SELECTS */
-/* ========================= */
+</div>
 
-function renderSelects(){
+<div class="column">
 
-    direction.innerHTML =
-        `<option value="">Напрямок</option>`;
+<div class="column-header">
 
-    assignee.innerHTML =
-        `<option value="">Виконавець</option>`;
+<h3>
+🔁 Потрібні правки
+</h3>
 
-    filterDirection.innerHTML =
-        `<option value="">Всі напрямки</option>`;
+<div class="column-count" id="countRevision">
+0
+</div>
 
-    filterAssignee.innerHTML =
-        `<option value="">Всі виконавці</option>`;
+</div>
 
-    editDirection.innerHTML = "";
-    editAssignee.innerHTML = "";
+<div id="revision"></div>
 
-    projects.forEach(project=>{
+</div>
 
-        direction.innerHTML += `
-            <option value="${project.name}">
-                ${project.name}
-            </option>
-        `;
+<div class="column">
 
-        filterDirection.innerHTML += `
-            <option value="${project.name}">
-                ${project.name}
-            </option>
-        `;
+<div class="column-header">
 
-    });
+<h3>
+✅ Готово
+</h3>
 
-    team.forEach(person=>{
+<div class="column-count" id="countDone">
+0
+</div>
 
-        assignee.innerHTML += `
-            <option value="${person.name}">
-                ${person.name}
-            </option>
-        `;
+</div>
 
-        filterAssignee.innerHTML += `
-            <option value="${person.name}">
-                ${person.name}
-            </option>
-        `;
+<div id="done"></div>
 
-    });
+</div>
 
-}
+</div>
 
-/* ========================= */
-/* RENDER */
-/* ========================= */
+</div>
 
-function render(){
+</div>
+<!-- TASK MODAL -->
 
-    clearColumns();
+<div class="modal" id="taskModal">
 
-    let filteredTasks =
-        [...tasks];
+<div class="modal-box">
 
-    const search =
-        searchInput.value
-        .toLowerCase();
+<div class="modal-header">
 
-    const directionFilter =
-        filterDirection.value;
+<input
+type="text"
+id="editTitle"
+style="
+font-size:28px;
+font-weight:800;
+background:none;
+border:none;
+padding:0;
+"
+/>
 
-    const assigneeFilter =
-        filterAssignee.value;
+<button
+class="save-btn"
+style="
+background:#26324a;
+"
+onclick="closeTaskModal()"
+>
+✕
+</button>
 
-    const from =
-        dateFrom.value;
+</div>
 
-    const to =
-        dateTo.value;
+<textarea
+id="editDescription"
+placeholder="Опис задачі"
+></textarea>
 
-    filteredTasks =
-        filteredTasks.filter(task=>{
+<div class="modal-grid">
 
-            const matchSearch =
-                !search ||
-                (
-                    task["назва"] || ""
-                )
-                .toLowerCase()
-                .includes(search);
+<select id="editAssignee"></select>
 
-            const matchDirection =
-                !directionFilter ||
-                task["напрямок"] === directionFilter;
+<select id="editPriority">
 
-            const matchAssignee =
-                !assigneeFilter ||
-                task["виконавець"] === assigneeFilter;
+<option value="Середній">
+Середній
+</option>
 
-            let matchDate = true;
+<option value="Високий">
+Високий
+</option>
 
-            if(from || to){
+</select>
 
-                const taskDate =
-                    task["updatedAt"]
-                    ||
-                    task["створено"];
+<input type="date" id="editDeadline"/>
 
-                if(taskDate){
+<select id="editDirection"></select>
 
-                    const date =
-                        new Date(taskDate);
+</div>
 
-                    if(from){
+<div class="modal-actions">
 
-                        matchDate =
-                            matchDate &&
-                            date >= new Date(from);
+<button
+class="save-btn primary-btn"
+onclick="saveTask()"
+>
+💾 Зберегти
+</button>
 
-                    }
+<button
+class="save-btn"
+style="
+background:#26324a;
+"
+onclick="moveTaskBack()"
+>
+⬅️ Назад
+</button>
 
-                    if(to){
+<button
+class="save-btn"
+style="
+background:#5b8cff;
+"
+onclick="moveTaskForward()"
+>
+➡️ Вперед
+</button>
 
-                        const end =
-                            new Date(to);
+<button
+class="save-btn success-btn"
+onclick="confirmApprove()"
+>
+✅ Погодити
+</button>
 
-                        end.setHours(
-                            23,59,59
-                        );
+<button
+class="save-btn"
+style="
+background:#f59e0b;
+"
+onclick="openRevisionPrompt()"
+>
+🔁 На правки
+</button>
 
-                        matchDate =
-                            matchDate &&
-                            date <= end;
+</div>
 
-                    }
+<div
+style="
+margin-top:25px;
+padding:16px;
+background:#1b2437;
+border-radius:18px;
+"
+>
 
-                }
+<div
+style="
+font-weight:700;
+margin-bottom:8px;
+"
+>
+Approval History
+</div>
 
-            }
+<div id="approvalHistory">
 
-            return (
-                matchSearch &&
-                matchDirection &&
-                matchAssignee &&
-                matchDate
-            );
+Поки немає погодження
 
-        });
+</div>
 
-    filteredTasks.forEach(task=>{
+</div>
 
-        const div =
-            createTaskCard(task);
+<div class="comments">
 
-        switch(task["статус"]){
+<h3 style="margin-bottom:15px;">
+💬 Коментарі
+</h3>
 
-            case "В роботі":
-                progress.appendChild(div);
-                break;
+<div id="commentsList"></div>
 
-            case "На погодженні":
-                review.appendChild(div);
-                break;
+<input
+type="text"
+id="commentAuthor"
+placeholder="Ваше ім'я"
+style="margin-top:15px;"
+/>
 
-            case "Потрібні правки":
-                revision.appendChild(div);
-                break;
+<textarea
+id="commentText"
+placeholder="Напишіть коментар"
+style="margin-top:15px;"
+></textarea>
 
-            case "Готово":
-                done.appendChild(div);
-                break;
+<button
+class="save-btn primary-btn"
+style="margin-top:14px;"
+onclick="addComment()"
+>
+Додати коментар
+</button>
 
-            default:
-                todo.appendChild(div);
+</div>
 
-        }
+</div>
 
-    });
+</div>
 
-    updateCounts();
+<!-- CREATE TASK MODAL -->
 
-}
+<div class="modal" id="createTaskModal">
 
-</script>
+<div class="modal-box">
+
+<div class="modal-header">
+
+<h2>
+➕ Нова задача
+</h2>
+
+<button
+class="save-btn"
+style="
+background:#26324a;
+"
+onclick="closeCreateModal()"
+>
+✕
+</button>
+
+</div>
+
+<div class="modal-grid">
+
+<div style="grid-column:1/-1;">
+
+<input
+type="text"
+id="title"
+placeholder="Назва задачі"
+/>
+
+</div>
+
+<div style="grid-column:1/-1;">
+
+<textarea
+id="description"
+placeholder="Опис"
+></textarea>
+
+</div>
+
+<select id="direction"></select>
+
+<select id="assignee"></select>
+
+<select id="priority">
+
+<option value="Середній">
+Середній
+</option>
+
+<option value="Високий">
+Високий
+</option>
+
+</select>
+
+<input type="date" id="deadline"/>
+
+</div>
+
+<button
+class="save-btn primary-btn"
+style="margin-top:20px;"
+onclick="createTask()"
+>
+Створити задачу
+</button>
+
+</div>
+
+</div>
+
+<!-- DAILY PLAN MODAL -->
+
+<div class="modal" id="dailyPlanModal">
+
+<div class="modal-box">
+
+<div class="modal-header">
+
+<h2>
+📋 План на день
+</h2>
+
+<button
+class="save-btn"
+style="
+background:#26324a;
+"
+onclick="closeDailyPlanModal()"
+>
+✕
+</button>
+
+</div>
+
+<div
+style="
+display:flex;
+gap:12px;
+margin-bottom:20px;
+"
+>
+
+<input
+type="text"
+id="quickTaskInput"
+placeholder="Швидка задача..."
+/>
+
+<button
+class="save-btn primary-btn"
+onclick="addQuickTask()"
+>
+➕ Додати
+</button>
+
+</div>
+
+<div id="quickTasks"></div>
+
+<hr
+style="
+border:none;
+border-top:1px solid #283247;
+margin:20px 0;
+"
+/>
+
+<div id="dailyPlanTasks"></div>
+
+<div class="modal-actions">
+
+<button
+class="save-btn success-btn"
+onclick="confirmDailyPlan()"
+>
+✅ Підтвердити план
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- APPROVE MODAL -->
+
+<div class="modal" id="approveModal">
+
+<div
+class="modal-box"
+style="
+max-width:500px;
+"
+>
+
+<div
+style="
+font-size:26px;
+font-weight:800;
+margin-bottom:14px;
+"
+>
+Підтвердити погодження?
+</div>
+
+<div
+style="
+color:#8b97ad;
+margin-bottom:24px;
+line-height:1.5;
+"
+>
+Після погодження задача перейде в статус "Готово"
+</div>
+
+<input
+type="text"
+id="approvedBy"
+placeholder="Хто погодив задачу?"
+/>
+
+<div class="modal-actions">
+
+<button
+class="save-btn success-btn"
+onclick="approveTask()"
+>
+✅ Погодити
+</button>
+
+<button
+class="save-btn"
+style="
+background:#26324a;
+"
+onclick="closeApproveModal()"
+>
+Скасувати
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- REVISION MODAL -->
+
+<div class="modal" id="revisionModal">
+
+<div
+class="modal-box"
+style="
+max-width:600px;
+"
+>
+
+<div
+style="
+font-size:24px;
+font-weight:800;
+margin-bottom:14px;
+"
+>
+Що потрібно виправити?
+</div>
+
+<textarea
+id="revisionComment"
+placeholder="Опишіть що потрібно змінити..."
+></textarea>
+
+<div class="modal-actions">
+
+<button
+class="save-btn"
+style="
+background:#f59e0b;
+"
+onclick="submitRevision()"
+>
+🔁 Відправити на правки
+</button>
+
+<button
+class="save-btn"
+style="
+background:#26324a;
+"
+onclick="closeRevisionModal()"
+>
+Скасувати
+</button>
+
+</div>
+
+</div>
+
+</div>
+<!-- TASK MODAL -->
+
+<div class="modal" id="taskModal">
+
+<div class="modal-box">
+
+<div class="modal-header">
+
+<input
+type="text"
+id="editTitle"
+style="
+font-size:28px;
+font-weight:800;
+background:none;
+border:none;
+padding:0;
+"
+/>
+
+<button
+class="save-btn"
+style="
+background:#26324a;
+"
+onclick="closeTaskModal()"
+>
+✕
+</button>
+
+</div>
+
+<textarea
+id="editDescription"
+placeholder="Опис задачі"
+></textarea>
+
+<div class="modal-grid">
+
+<select id="editAssignee"></select>
+
+<select id="editPriority">
+
+<option value="Середній">
+Середній
+</option>
+
+<option value="Високий">
+Високий
+</option>
+
+</select>
+
+<input type="date" id="editDeadline"/>
+
+<select id="editDirection"></select>
+
+</div>
+
+<div class="modal-actions">
+
+<button
+class="save-btn primary-btn"
+onclick="saveTask()"
+>
+💾 Зберегти
+</button>
+
+<button
+class="save-btn"
+style="
+background:#26324a;
+"
+onclick="moveTaskBack()"
+>
+⬅️ Назад
+</button>
+
+<button
+class="save-btn"
+style="
+background:#5b8cff;
+"
+onclick="moveTaskForward()"
+>
+➡️ Вперед
+</button>
+
+<button
+class="save-btn success-btn"
+onclick="confirmApprove()"
+>
+✅ Погодити
+</button>
+
+<button
+class="save-btn"
+style="
+background:#f59e0b;
+"
+onclick="openRevisionPrompt()"
+>
+🔁 На правки
+</button>
+
+</div>
+
+<div
+style="
+margin-top:25px;
+padding:16px;
+background:#1b2437;
+border-radius:18px;
+"
+>
+
+<div
+style="
+font-weight:700;
+margin-bottom:8px;
+"
+>
+Approval History
+</div>
+
+<div id="approvalHistory">
+
+Поки немає погодження
+
+</div>
+
+</div>
+
+<div class="comments">
+
+<h3 style="margin-bottom:15px;">
+💬 Коментарі
+</h3>
+
+<div id="commentsList"></div>
+
+<input
+type="text"
+id="commentAuthor"
+placeholder="Ваше ім'я"
+style="margin-top:15px;"
+/>
+
+<textarea
+id="commentText"
+placeholder="Напишіть коментар"
+style="margin-top:15px;"
+></textarea>
+
+<button
+class="save-btn primary-btn"
+style="margin-top:14px;"
+onclick="addComment()"
+>
+Додати коментар
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- CREATE TASK MODAL -->
+
+<div class="modal" id="createTaskModal">
+
+<div class="modal-box">
+
+<div class="modal-header">
+
+<h2>
+➕ Нова задача
+</h2>
+
+<button
+class="save-btn"
+style="
+background:#26324a;
+"
+onclick="closeCreateModal()"
+>
+✕
+</button>
+
+</div>
+
+<div class="modal-grid">
+
+<div style="grid-column:1/-1;">
+
+<input
+type="text"
+id="title"
+placeholder="Назва задачі"
+/>
+
+</div>
+
+<div style="grid-column:1/-1;">
+
+<textarea
+id="description"
+placeholder="Опис"
+></textarea>
+
+</div>
+
+<select id="direction"></select>
+
+<select id="assignee"></select>
+
+<select id="priority">
+
+<option value="Середній">
+Середній
+</option>
+
+<option value="Високий">
+Високий
+</option>
+
+</select>
+
+<input type="date" id="deadline"/>
+
+</div>
+
+<button
+class="save-btn primary-btn"
+style="margin-top:20px;"
+onclick="createTask()"
+>
+Створити задачу
+</button>
+
+</div>
+
+</div>
+
+<!-- DAILY PLAN MODAL -->
+
+<div class="modal" id="dailyPlanModal">
+
+<div class="modal-box">
+
+<div class="modal-header">
+
+<h2>
+📋 План на день
+</h2>
+
+<button
+class="save-btn"
+style="
+background:#26324a;
+"
+onclick="closeDailyPlanModal()"
+>
+✕
+</button>
+
+</div>
+
+<div
+style="
+display:flex;
+gap:12px;
+margin-bottom:20px;
+"
+>
+
+<input
+type="text"
+id="quickTaskInput"
+placeholder="Швидка задача..."
+/>
+
+<button
+class="save-btn primary-btn"
+onclick="addQuickTask()"
+>
+➕ Додати
+</button>
+
+</div>
+
+<div id="quickTasks"></div>
+
+<hr
+style="
+border:none;
+border-top:1px solid #283247;
+margin:20px 0;
+"
+/>
+
+<div id="dailyPlanTasks"></div>
+
+<div class="modal-actions">
+
+<button
+class="save-btn success-btn"
+onclick="confirmDailyPlan()"
+>
+✅ Підтвердити план
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- APPROVE MODAL -->
+
+<div class="modal" id="approveModal">
+
+<div
+class="modal-box"
+style="
+max-width:500px;
+"
+>
+
+<div
+style="
+font-size:26px;
+font-weight:800;
+margin-bottom:14px;
+"
+>
+Підтвердити погодження?
+</div>
+
+<div
+style="
+color:#8b97ad;
+margin-bottom:24px;
+line-height:1.5;
+"
+>
+Після погодження задача перейде в статус "Готово"
+</div>
+
+<input
+type="text"
+id="approvedBy"
+placeholder="Хто погодив задачу?"
+/>
+
+<div class="modal-actions">
+
+<button
+class="save-btn success-btn"
+onclick="approveTask()"
+>
+✅ Погодити
+</button>
+
+<button
+class="save-btn"
+style="
+background:#26324a;
+"
+onclick="closeApproveModal()"
+>
+Скасувати
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- REVISION MODAL -->
+
+<div class="modal" id="revisionModal">
+
+<div
+class="modal-box"
+style="
+max-width:600px;
+"
+>
+
+<div
+style="
+font-size:24px;
+font-weight:800;
+margin-bottom:14px;
+"
+>
+Що потрібно виправити?
+</div>
+
+<textarea
+id="revisionComment"
+placeholder="Опишіть що потрібно змінити..."
+></textarea>
+
+<div class="modal-actions">
+
+<button
+class="save-btn"
+style="
+background:#f59e0b;
+"
+onclick="submitRevision()"
+>
+🔁 Відправити на правки
+</button>
+
+<button
+class="save-btn"
+style="
+background:#26324a;
+"
+onclick="closeRevisionModal()"
+>
+Скасувати
+</button>
+
+</div>
+
+</div>
+
+</div>
