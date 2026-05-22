@@ -1550,6 +1550,361 @@ newStatus
 }
 
 initSortable();
+  let currentTaskId = null;
+
+let comments = [];
+let projects = [];
+let team = [];
+
+let dailyPlan = [];
+let quickTasks = [];
+
+/* ========================= */
+/* MODALS */
+/* ========================= */
+
+function openCreateModal(){
+
+createTaskModal
+.classList
+.add("show");
+
+}
+
+function closeCreateModal(){
+
+createTaskModal
+.classList
+.remove("show");
+
+}
+
+function openDailyPlanModal(){
+
+dailyPlanModal
+.classList
+.add("show");
+
+renderDailyPlan();
+
+}
+
+function closeDailyPlanModal(){
+
+dailyPlanModal
+.classList
+.remove("show");
+
+}
+
+function closeTaskModal(){
+
+taskModal
+.classList
+.remove("show");
+
+}
+
+/* ========================= */
+/* SELECTS */
+/* ========================= */
+
+function renderSelects(){
+
+direction.innerHTML =
+`<option value="">Напрямок</option>`;
+
+assignee.innerHTML =
+`<option value="">Виконавець</option>`;
+
+filterDirection.innerHTML =
+`<option value="">Всі напрямки</option>`;
+
+filterAssignee.innerHTML =
+`<option value="">Всі виконавці</option>`;
+
+editDirection.innerHTML = "";
+editAssignee.innerHTML = "";
+
+projects.forEach(project=>{
+
+direction.innerHTML += `
+<option value="${project.name}">
+${project.name}
+</option>
+`;
+
+filterDirection.innerHTML += `
+<option value="${project.name}">
+${project.name}
+</option>
+`;
+
+editDirection.innerHTML += `
+<option value="${project.name}">
+${project.name}
+</option>
+`;
+
+});
+
+team.forEach(person=>{
+
+assignee.innerHTML += `
+<option value="${person.name}">
+${person.name}
+</option>
+`;
+
+filterAssignee.innerHTML += `
+<option value="${person.name}">
+${person.name}
+</option>
+`;
+
+editAssignee.innerHTML += `
+<option value="${person.name}">
+${person.name}
+</option>
+`;
+
+});
+
+}
+
+/* ========================= */
+/* TASK OPEN */
+/* ========================= */
+
+function openTask(id){
+
+currentTaskId = id;
+
+const task =
+tasks.find(
+t=>t.id == id
+);
+
+if(!task) return;
+
+editTitle.value =
+task["назва"] || "";
+
+editDescription.value =
+task["опис"] || "";
+
+editPriority.value =
+task["пріоритет"] || "Середній";
+
+editDeadline.value =
+task["дедлайн"] || "";
+
+editDirection.value =
+task["напрямок"] || "";
+
+editAssignee.value =
+task["виконавець"] || "";
+
+taskModal
+.classList
+.add("show");
+
+renderComments();
+
+}
+
+/* ========================= */
+/* COMMENTS */
+/* ========================= */
+
+function renderComments(){
+
+commentsList.innerHTML = "";
+
+comments
+.filter(
+c=>c.taskId == currentTaskId
+)
+.forEach(comment=>{
+
+commentsList.innerHTML += `
+
+<div class="comment">
+
+<div class="comment-author">
+${comment.author}
+</div>
+
+<div>
+${comment.text}
+</div>
+
+</div>
+
+`;
+
+});
+
+}
+
+async function addComment(){
+
+if(
+!commentAuthor.value ||
+!commentText.value
+){
+return;
+}
+
+await fetch(API_URL,{
+method:"POST",
+body:JSON.stringify({
+
+action:"addComment",
+
+taskId:currentTaskId,
+
+author:commentAuthor.value,
+
+text:commentText.value
+
+})
+});
+
+commentText.value = "";
+
+loadData();
+
+}
+
+/* ========================= */
+/* DAILY PLAN */
+/* ========================= */
+
+function renderDailyPlan(){
+
+dailyPlanTasks.innerHTML = "";
+
+tasks
+.filter(
+t=>t["статус"] !== "Готово"
+)
+.forEach(task=>{
+
+dailyPlanTasks.innerHTML += `
+
+<label class="plan-task">
+
+<input
+type="checkbox"
+onchange="toggleDailyTask('${task.id}')"
+/>
+
+<div class="plan-task-content">
+
+<div class="plan-task-title">
+${task["назва"]}
+</div>
+
+<div class="task-direction">
+📁 ${task["напрямок"] || "—"}
+</div>
+
+<div class="plan-task-meta">
+👤 ${task["виконавець"] || "—"}
+</div>
+
+</div>
+
+</label>
+
+`;
+
+});
+
+}
+
+function toggleDailyTask(id){
+
+if(dailyPlan.includes(id)){
+
+dailyPlan =
+dailyPlan.filter(
+taskId => taskId !== id
+);
+
+}else{
+
+dailyPlan.push(id);
+
+}
+
+}
+
+function addQuickTask(){
+
+if(!quickTaskInput.value){
+return;
+}
+
+quickTasks.push(
+quickTaskInput.value
+);
+
+renderQuickTasks();
+
+quickTaskInput.value = "";
+
+}
+
+function renderQuickTasks(){
+
+quickTasks.innerHTML = "";
+
+}
+
+/* ========================= */
+/* LOAD DATA FIX */
+/* ========================= */
+
+const originalLoadData =
+loadData;
+
+loadData = async function(){
+
+try{
+
+const response =
+await fetch(
+API_URL + "?t=" + Date.now()
+);
+
+const data =
+await response.json();
+
+tasks =
+data.tasks || [];
+
+comments =
+data.comments || [];
+
+projects =
+data.projects || [];
+
+team =
+data.team || [];
+
+renderSelects();
+
+render();
+
+}catch(error){
+
+console.error(error);
+
+}
+
+}
 loadData();
 
 </script>
