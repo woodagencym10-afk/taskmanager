@@ -1,3 +1,456 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Marketing OS</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+
+<style>
+
+:root{
+    --bg:#0b1020;
+    --sidebar:#111827;
+    --card:#182133;
+    --card-hover:#1f2b42;
+    --border:#283247;
+    --text:#f3f5f9;
+    --muted:#8b97ad;
+    --primary:#5b8cff;
+    --danger:#ff5c5c;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:Inter,sans-serif;
+    overflow:hidden;
+}
+
+.app{
+    display:flex;
+    height:100vh;
+}
+
+.sidebar{
+    width:260px;
+    background:var(--sidebar);
+    border-right:1px solid var(--border);
+    padding:30px 20px;
+}
+
+.logo{
+    font-size:28px;
+    font-weight:800;
+    margin-bottom:40px;
+}
+
+.nav{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+}
+
+.nav-item{
+    padding:14px 16px;
+    border-radius:14px;
+    cursor:pointer;
+}
+
+.nav-item:hover{
+    background:#1b2437;
+}
+
+.main{
+    flex:1;
+    overflow:auto;
+    padding:30px;
+}
+
+.page-title{
+    font-size:34px;
+    font-weight:800;
+    margin-bottom:25px;
+}
+
+.create-box{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:28px;
+    padding:25px;
+    margin-bottom:30px;
+}
+
+.form-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:14px;
+}
+
+.full{
+    grid-column:1/-1;
+}
+
+input,
+textarea,
+select{
+    width:100%;
+    background:#101726;
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:16px;
+    color:white;
+    outline:none;
+}
+
+textarea{
+    min-height:100px;
+    resize:vertical;
+}
+
+.submit-btn{
+    background:var(--primary);
+    border:none;
+    color:white;
+    padding:16px;
+    border-radius:16px;
+    font-weight:700;
+    cursor:pointer;
+}
+
+.board{
+    display:flex;
+    gap:20px;
+    overflow:auto;
+}
+
+.column{
+    width:340px;
+    min-width:340px;
+    background:#121a2b;
+    border:1px solid var(--border);
+    border-radius:28px;
+    padding:18px;
+}
+
+.column-header{
+    margin-bottom:20px;
+}
+
+.task{
+    background:var(--card);
+    border-radius:20px;
+    padding:18px;
+    margin-bottom:15px;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.task:hover{
+    background:var(--card-hover);
+    transform:translateY(-2px);
+}
+
+.task.high{
+    border-left:5px solid var(--danger);
+}
+
+.task-title{
+    font-size:18px;
+    font-weight:700;
+    margin-bottom:12px;
+}
+
+.task-direction{
+    display:inline-flex;
+    background:#24314a;
+    padding:8px 12px;
+    border-radius:999px;
+    font-size:13px;
+    margin-bottom:15px;
+}
+
+.task-meta{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    color:#9dacbf;
+    font-size:13px;
+}
+
+.modal{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.7);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:999;
+}
+
+.modal.show{
+    display:flex;
+}
+
+.modal-box{
+    width:900px;
+    max-width:95%;
+    background:#131b2d;
+    border-radius:28px;
+    padding:30px;
+}
+
+.modal-header{
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:20px;
+}
+
+.close-btn{
+    width:40px;
+    height:40px;
+    border:none;
+    border-radius:12px;
+    background:#26324a;
+    color:white;
+    cursor:pointer;
+}
+
+.save-btn{
+    background:#22c55e;
+    border:none;
+    color:white;
+    padding:14px 18px;
+    border-radius:14px;
+    cursor:pointer;
+    margin-top:15px;
+}
+
+.comments{
+    margin-top:30px;
+}
+
+.comment{
+    background:#1a2336;
+    border-radius:16px;
+    padding:14px;
+    margin-bottom:10px;
+}
+
+.comment-author{
+    font-weight:700;
+    margin-bottom:6px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<aside class="sidebar">
+
+<div class="logo">
+🚀 Marketing OS
+</div>
+
+<div class="nav">
+<div class="nav-item">📁 Interior Space</div>
+<div class="nav-item">🌿 Ecoforma</div>
+<div class="nav-item">🪵 Wood Agency</div>
+</div>
+
+</aside>
+
+<div class="main">
+
+<div class="page-title">
+Marketing Dashboard
+</div>
+
+<div class="create-box">
+
+<form id="taskForm">
+
+<div class="form-grid">
+
+<div class="full">
+<input type="text" id="title" placeholder="Назва задачі" required>
+</div>
+
+<div class="full">
+<textarea id="description" placeholder="Опис"></textarea>
+</div>
+
+<select id="direction"></select>
+
+<select id="assignee"></select>
+
+<select id="priority">
+<option value="Середній">Середній</option>
+<option value="Високий">Високий</option>
+</select>
+
+<input type="date" id="deadline">
+
+<div class="full">
+<button class="submit-btn" type="submit">
+➕ Створити задачу
+</button>
+</div>
+
+</div>
+
+</form>
+
+</div>
+
+<div class="board">
+
+<div class="column">
+<div class="column-header">
+<h3>📝 Треба зробити</h3>
+</div>
+<div id="todo"></div>
+</div>
+
+<div class="column">
+<div class="column-header">
+<h3>⚙️ В роботі</h3>
+</div>
+<div id="progress"></div>
+</div>
+
+<div class="column">
+<div class="column-header">
+<h3>👀 На погодженні</h3>
+</div>
+<div id="review"></div>
+</div>
+
+<div class="column">
+<div class="column-header">
+<h3>🔁 Потрібні правки</h3>
+</div>
+<div id="revision"></div>
+</div>
+
+<div class="column">
+<div class="column-header">
+<h3>✅ Готово</h3>
+</div>
+<div id="done"></div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="modal" id="taskModal">
+
+<div class="modal-box">
+
+<div class="modal-header">
+
+<input
+type="text"
+id="editTitle"
+style="
+font-size:28px;
+font-weight:800;
+background:none;
+border:none;
+padding:0;
+"
+>
+
+<button class="close-btn" onclick="closeModal()">
+✕
+</button>
+
+</div>
+
+<textarea id="editDescription"></textarea>
+
+<div
+style="
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:14px;
+margin-top:20px;
+"
+>
+
+<select id="editAssignee"></select>
+
+<select id="editPriority">
+<option value="Середній">Середній</option>
+<option value="Високий">Високий</option>
+</select>
+
+<input type="date" id="editDeadline">
+
+<select id="editDirection"></select>
+
+</div>
+
+<button
+class="save-btn"
+type="button"
+onclick="saveTask()"
+>
+💾 Зберегти
+</button>
+
+<div class="comments">
+
+<h3 style="margin-bottom:15px;">
+💬 Коментарі
+</h3>
+
+<div id="commentsList"></div>
+
+<input
+type="text"
+id="commentAuthor"
+placeholder="Ваше ім'я"
+style="margin-top:15px;"
+>
+
+<textarea
+id="commentText"
+placeholder="Напишіть коментар"
+style="margin-top:15px;"
+></textarea>
+
+<button
+class="save-btn"
+type="button"
+onclick="addComment()"
+>
+Додати коментар
+</button>
+
+</div>
+
+</div>
+
+</div>
+
 <script>
 
 const API_URL =
@@ -73,7 +526,42 @@ function render(){
     tasks.forEach(task=>{
 
         const div =
-            createTaskCard(task);
+            document.createElement("div");
+
+        div.className =
+            `task ${
+                task["пріоритет"] === "Високий"
+                ? "high"
+                : ""
+            }`;
+
+        div.dataset.id = task.id;
+
+        div.onclick = ()=>openTask(task.id);
+
+        div.innerHTML = `
+
+            <div class="task-title">
+                ${task["назва"]}
+            </div>
+
+            <div class="task-direction">
+                📁 ${task["напрямок"] || "—"}
+            </div>
+
+            <div class="task-meta">
+
+                <div>
+                    👤 ${task["виконавець"] || "—"}
+                </div>
+
+                <div>
+                    ⏰ ${task["дедлайн"] || "—"}
+                </div>
+
+            </div>
+
+        `;
 
         switch(task["статус"]){
 
@@ -99,50 +587,6 @@ function render(){
         }
 
     });
-
-}
-
-function createTaskCard(task){
-
-    const div =
-        document.createElement("div");
-
-    div.className =
-        `task ${
-            task["пріоритет"] === "Високий"
-            ? "high"
-            : ""
-        }`;
-
-    div.dataset.id = task.id;
-
-    div.onclick = ()=>openTask(task.id);
-
-    div.innerHTML = `
-
-        <div class="task-title">
-            ${task["назва"]}
-        </div>
-
-        <div class="task-direction">
-            📁 ${task["напрямок"] || "—"}
-        </div>
-
-        <div class="task-meta">
-
-            <div>
-                👤 ${task["виконавець"] || "—"}
-            </div>
-
-            <div>
-                ⏰ ${task["дедлайн"] || "—"}
-            </div>
-
-        </div>
-
-    `;
-
-    return div;
 
 }
 
@@ -220,25 +664,27 @@ async function saveTask(){
     const task =
         tasks.find(t=>t.id == currentTaskId);
 
-    if(!task) return;
+    if(task){
 
-    task["назва"] =
-        editTitle.value;
+        task["назва"] =
+            editTitle.value;
 
-    task["опис"] =
-        editDescription.value;
+        task["опис"] =
+            editDescription.value;
 
-    task["пріоритет"] =
-        editPriority.value;
+        task["пріоритет"] =
+            editPriority.value;
 
-    task["виконавець"] =
-        editAssignee.value;
+        task["виконавець"] =
+            editAssignee.value;
 
-    task["дедлайн"] =
-        editDeadline.value;
+        task["дедлайн"] =
+            editDeadline.value;
 
-    task["напрямок"] =
-        editDirection.value;
+        task["напрямок"] =
+            editDirection.value;
+
+    }
 
     render();
 
@@ -250,23 +696,12 @@ async function saveTask(){
 
             id:currentTaskId,
 
-            "назва":
-                editTitle.value,
-
-            "опис":
-                editDescription.value,
-
-            "пріоритет":
-                editPriority.value,
-
-            "виконавець":
-                editAssignee.value,
-
-            "дедлайн":
-                editDeadline.value,
-
-            "напрямок":
-                editDirection.value
+            "назва":editTitle.value,
+            "опис":editDescription.value,
+            "пріоритет":editPriority.value,
+            "виконавець":editAssignee.value,
+            "дедлайн":editDeadline.value,
+            "напрямок":editDirection.value
 
         })
     });
@@ -400,26 +835,13 @@ document
 
         id:Date.now().toString(),
 
-        "назва":
-            title.value,
-
-        "опис":
-            description.value,
-
-        "статус":
-            "Треба зробити",
-
-        "пріоритет":
-            priority.value,
-
-        "виконавець":
-            assignee.value,
-
-        "дедлайн":
-            deadline.value,
-
-        "напрямок":
-            direction.value
+        "назва":title.value,
+        "опис":description.value,
+        "статус":"Треба зробити",
+        "пріоритет":priority.value,
+        "виконавець":assignee.value,
+        "дедлайн":deadline.value,
+        "напрямок":direction.value
 
     };
 
@@ -433,23 +855,12 @@ document
 
             action:"createTask",
 
-            "назва":
-                title.value,
-
-            "опис":
-                description.value,
-
-            "напрямок":
-                direction.value,
-
-            "виконавець":
-                assignee.value,
-
-            "пріоритет":
-                priority.value,
-
-            "дедлайн":
-                deadline.value
+            "назва":title.value,
+            "опис":description.value,
+            "напрямок":direction.value,
+            "виконавець":assignee.value,
+            "пріоритет":priority.value,
+            "дедлайн":deadline.value
 
         })
     });
@@ -497,3 +908,6 @@ document
 loadData();
 
 </script>
+
+</body>
+</html>
