@@ -1,88 +1,383 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Marketing OS V8</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+
 <style>
 body{
-    margin:0;
-    font-family:Arial,sans-serif;
-    background:#0b1020;
-    color:white;
+margin:0;
+font-family:Inter,sans-serif;
+background:#0b1020;
+color:white;
+overflow:hidden;
 }
-.container{
-    padding:40px;
+
+.app{
+display:flex;
+height:100vh;
 }
-.card{
-    background:#182133;
-    padding:24px;
-    border-radius:20px;
-    margin-bottom:20px;
+
+.sidebar{
+width:240px;
+background:#111827;
+padding:24px;
+border-right:1px solid #283247;
 }
+
+.logo{
+font-size:32px;
+font-weight:800;
+margin-bottom:40px;
+}
+
+.nav-item{
+padding:14px;
+border-radius:14px;
+margin-bottom:10px;
+background:#182133;
+cursor:pointer;
+}
+
+.main{
+flex:1;
+padding:24px;
+overflow:auto;
+}
+
+.topbar{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:24px;
+}
+
+.title{
+font-size:38px;
+font-weight:800;
+}
+
+.actions{
+display:flex;
+gap:12px;
+}
+
 button{
-    padding:12px 18px;
-    border:none;
-    border-radius:12px;
-    cursor:pointer;
-    background:#5b8cff;
-    color:white;
-    font-weight:bold;
+border:none;
+border-radius:14px;
+padding:14px 18px;
+font-weight:700;
+cursor:pointer;
+color:white;
 }
-.small{
-    color:#8b97ad;
+
+.primary{
+background:#5b8cff;
 }
+
+.success{
+background:#22c55e;
+}
+
+.analytics{
+display:grid;
+grid-template-columns:repeat(5,1fr);
+gap:16px;
+margin-bottom:24px;
+}
+
+.stat{
+background:#182133;
+padding:24px;
+border-radius:22px;
+}
+
+.stat-label{
+font-size:13px;
+color:#8b97ad;
+margin-bottom:10px;
+}
+
+.stat-value{
+font-size:34px;
+font-weight:800;
+}
+
+.filters{
+display:flex;
+gap:12px;
+margin-bottom:24px;
+flex-wrap:wrap;
+}
+
+input,
+textarea,
+select{
+background:#121a2b;
+border:1px solid #283247;
+color:white;
+padding:14px;
+border-radius:14px;
+width:100%;
+box-sizing:border-box;
+}
+
+.filter{
+width:220px;
+}
+
+.board{
+display:flex;
+gap:20px;
+overflow:auto;
+padding-bottom:40px;
+}
+
+.column{
+min-width:340px;
+background:#121a2b;
+border:1px solid #283247;
+border-radius:24px;
+padding:18px;
+}
+
+.column-header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:18px;
+}
+
+.count{
+background:#24314a;
+padding:6px 10px;
+border-radius:999px;
+font-size:12px;
+}
+
+.task{
+background:#182133;
+padding:18px;
+border-radius:18px;
+margin-bottom:14px;
+cursor:pointer;
+transition:.2s;
+}
+
+.task:hover{
+transform:translateY(-2px);
+background:#1f2b42;
+}
+
+.task-title{
+font-size:18px;
+font-weight:700;
+margin-bottom:10px;
+}
+
+.task-badge{
+display:inline-flex;
+padding:6px 10px;
+background:#24314a;
+border-radius:999px;
+font-size:12px;
+margin-bottom:10px;
+}
+
+.task-meta{
+font-size:13px;
+color:#8b97ad;
+display:flex;
+flex-direction:column;
+gap:6px;
+}
+
+.modal{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.7);
+display:none;
+align-items:center;
+justify-content:center;
+z-index:999;
+}
+
+.modal.show{
+display:flex;
+}
+
+.modal-box{
+width:900px;
+max-width:95%;
+max-height:90vh;
+overflow:auto;
+background:#131b2d;
+padding:28px;
+border-radius:28px;
+}
+
+.modal-grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:14px;
+margin-top:20px;
+}
+
+.modal-actions{
+display:flex;
+gap:12px;
+margin-top:20px;
+flex-wrap:wrap;
+}
+
+.comments{
+margin-top:30px;
+}
+
+.comment{
+background:#1a2336;
+padding:14px;
+border-radius:14px;
+margin-bottom:10px;
+}
+
+.plan-task{
+display:flex;
+gap:16px;
+padding:16px;
+border-radius:18px;
+background:#1b2437;
+margin-bottom:12px;
+align-items:flex-start;
+}
+
+@media(max-width:1100px){
+.analytics{
+grid-template-columns:repeat(2,1fr);
+}
+}
+
 </style>
 </head>
 <body>
 
-<div class="container">
+<div class="app">
 
-<div class="card">
-<h1>🚀 Marketing OS V8</h1>
-<p class="small">
-Файл створений для вставки у GitHub Pages.
-</p>
-</div>
+<div class="sidebar">
+<div class="logo">🚀 Marketing OS</div>
 
-<div class="card">
-<h2>Що вже закладено у V8</h2>
-
-<ul>
-<li>Kanban workflow</li>
-<li>Drag & Drop architecture</li>
-<li>Daily plan logic</li>
-<li>Approval flow</li>
-<li>Comments system</li>
-<li>Knowledge Base ready</li>
-<li>Google Sheets integration ready</li>
-<li>Apps Script API support</li>
-</ul>
-
-<button onclick="alert('V8 structure loaded')">
-Перевірити UI
-</button>
+<div class="nav-item">📋 Tasks</div>
+<div class="nav-item">📊 Analytics</div>
+<div class="nav-item">📚 Knowledge Base</div>
 
 </div>
 
-<div class="card">
-<h2>Наступний етап</h2>
+<div class="main">
 
-<p>
-Підключити:
-</p>
+<div class="topbar">
+<div class="title">Marketing Dashboard</div>
 
-<ul>
-<li>Apps Script V8 backend</li>
-<li>Archive loading</li>
-<li>Telegram notifications</li>
-<li>Daily Plans sheet</li>
-<li>Knowledge Base tab</li>
-</ul>
+<div class="actions">
+<button class="primary" onclick="openCreateModal()">➕ Нова задача</button>
+<button class="success" onclick="openDailyPlanModal()">📋 План на день</button>
+</div>
+</div>
 
+<div class="analytics">
+<div class="stat">
+<div class="stat-label">Всього задач</div>
+<div class="stat-value" id="totalTasks">0</div>
+</div>
+
+<div class="stat">
+<div class="stat-label">В роботі</div>
+<div class="stat-value" id="progressTasks">0</div>
+</div>
+
+<div class="stat">
+<div class="stat-label">На погодженні</div>
+<div class="stat-value" id="reviewTasks">0</div>
+</div>
+
+<div class="stat">
+<div class="stat-label">Прострочені</div>
+<div class="stat-value" id="overdueTasks">0</div>
+</div>
+
+<div class="stat">
+<div class="stat-label">Готово</div>
+<div class="stat-value" id="doneTasks">0</div>
+</div>
+</div>
+
+<div class="filters">
+<input class="filter" id="searchInput" placeholder="Пошук задач..." oninput="render()" />
+
+<select class="filter" id="filterPeriod" onchange="render()">
+<option value="7">7 днів</option>
+<option value="1">Сьогодні</option>
+<option value="30">30 днів</option>
+<option value="active">Весь актив</option>
+</select>
+</div>
+
+<div class="board">
+
+<div class="column">
+<div class="column-header">
+<h3>📝 Треба зробити</h3>
+<div class="count" id="countTodo">0</div>
+</div>
+<div id="todo"></div>
+</div>
+
+<div class="column">
+<div class="column-header">
+<h3>⚙️ В роботі</h3>
+<div class="count" id="countProgress">0</div>
+</div>
+<div id="progress"></div>
+</div>
+
+<div class="column">
+<div class="column-header">
+<h3>👀 На погодженні</h3>
+<div class="count" id="countReview">0</div>
+</div>
+<div id="review"></div>
+</div>
+
+<div class="column">
+<div class="column-header">
+<h3>🔁 Потрібні правки</h3>
+<div class="count" id="countRevision">0</div>
+</div>
+<div id="revision"></div>
+</div>
+
+<div class="column">
+<div class="column-header">
+<h3>✅ Готово</h3>
+<div class="count" id="countDone">0</div>
+</div>
+<div id="done"></div>
 </div>
 
 </div>
+
+</div>
+</div>
+
+<script>
+console.log('V8 APP READY');
+</script>
 
 </body>
 </html>
+```
