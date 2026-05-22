@@ -792,7 +792,147 @@ onchange="render()"
 
 </div>
 
-<!-- CREATE TASK MODAL -->
+<!-- TASK MODAL -->
+
+<div class="modal" id="taskModal">
+
+<div class="modal-box">
+
+<div class="modal-header">
+
+<input
+type="text"
+id="editTitle"
+style="
+font-size:28px;
+font-weight:800;
+background:none;
+border:none;
+padding:0;
+"
+/>
+
+<button
+class="close-btn"
+onclick="closeTaskModal()"
+>
+✕
+</button>
+
+</div>
+
+<textarea id="editDescription"></textarea>
+
+<div class="modal-grid">
+
+<select id="editAssignee"></select>
+
+<select id="editPriority">
+
+<option value="Середній">
+Середній
+</option>
+
+<option value="Високий">
+Високий
+</option>
+
+</select>
+
+<input type="date" id="editDeadline"/>
+
+<select id="editDirection"></select>
+
+</div>
+
+<div class="modal-actions">
+
+<button
+class="save-btn primary-btn"
+onclick="saveTask()"
+>
+💾 Зберегти
+</button>
+
+<button
+class="save-btn success-btn"
+onclick="approveTask()"
+>
+✅ Погодити
+</button>
+
+<button
+class="save-btn"
+style="background:#f59e0b;"
+onclick="revisionTask()"
+>
+🔁 На правки
+</button>
+
+</div>
+
+<div
+style="
+margin-top:25px;
+padding:16px;
+background:#1b2437;
+border-radius:18px;
+"
+>
+
+<div
+style="
+font-weight:700;
+margin-bottom:8px;
+"
+>
+Approval History
+</div>
+
+<div id="approvalHistory">
+
+Поки немає погодження
+
+</div>
+
+</div>
+
+<div class="comments">
+
+<h3 style="margin-bottom:15px;">
+💬 Коментарі
+</h3>
+
+<div id="commentsList"></div>
+
+<input
+type="text"
+id="commentAuthor"
+placeholder="Ваше ім'я"
+style="margin-top:15px;"
+/>
+
+<textarea
+id="commentText"
+placeholder="Напишіть коментар"
+style="margin-top:15px;"
+></textarea>
+
+<button
+class="save-btn primary-btn"
+style="margin-top:14px;"
+onclick="addComment()"
+>
+Додати коментар
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- CREATE MODAL -->
 
 <div class="modal" id="createTaskModal">
 
@@ -866,7 +1006,7 @@ onclick="createTask()"
 
 </div>
 
-<!-- DAILY PLAN MODAL -->
+<!-- DAILY PLAN -->
 
 <div class="modal" id="dailyPlanModal">
 
@@ -887,22 +1027,13 @@ onclick="closeDailyPlanModal()"
 
 </div>
 
-<div id="dailyPlanTasks">
-
-Поки пусто
-
-</div>
+<div id="dailyPlanTasks"></div>
 
 <div class="modal-actions">
 
 <button
-class="save-btn primary-btn"
->
-➕ Додати задачу
-</button>
-
-<button
 class="save-btn success-btn"
+onclick="confirmDailyPlan()"
 >
 ✅ Підтвердити план
 </button>
@@ -922,6 +1053,9 @@ let tasks = [];
 let comments = [];
 let projects = [];
 let team = [];
+
+let currentTaskId = null;
+let dailyPlan = [];
 
 const statuses = {
 
@@ -1132,6 +1266,16 @@ function updateCounts(){
 
 }
 
+function clearColumns(){
+
+    todo.innerHTML = "";
+    progress.innerHTML = "";
+    review.innerHTML = "";
+    revision.innerHTML = "";
+    done.innerHTML = "";
+
+}
+
 function createTaskCard(task){
 
     const div =
@@ -1151,6 +1295,8 @@ function createTaskCard(task){
         }`;
 
     div.dataset.id = task.id;
+
+    div.onclick = ()=>openTask(task.id);
 
     div.innerHTML = `
 
@@ -1180,26 +1326,145 @@ function createTaskCard(task){
 
 }
 
+function openTask(id){
+
+    currentTaskId = id;
+
+    const task =
+        tasks.find(
+            t=>t.id == id
+        );
+
+    if(!task) return;
+
+    editTitle.value =
+        task["назва"] || "";
+
+    editDescription.value =
+        task["опис"] || "";
+
+    editPriority.value =
+        task["пріоритет"] || "Середній";
+
+    editDeadline.value =
+        task["дедлайн"] || "";
+
+    editDirection.innerHTML = "";
+    editAssignee.innerHTML = "";
+
+    projects.forEach(project=>{
+
+        editDirection.innerHTML += `
+            <option
+                value="${project.name}"
+                ${
+                    task["напрямок"] === project.name
+                    ? "selected"
+                    : ""
+                }
+            >
+                ${project.name}
+            </option>
+        `;
+
+    });
+
+    team.forEach(person=>{
+
+        editAssignee.innerHTML += `
+            <option
+                value="${person.name}"
+                ${
+                    task["виконавець"] === person.name
+                    ? "selected"
+                    : ""
+                }
+            >
+                ${person.name}
+            </option>
+        `;
+
+    });
+
+    renderComments();
+
+    taskModal
+        .classList
+        .add("show");
+
+}
+
+function renderComments(){
+
+    commentsList.innerHTML = "";
+
+    const taskComments =
+        comments.filter(
+            c=>c.taskId == currentTaskId
+        );
+
+    taskComments.forEach(comment=>{
+
+        commentsList.innerHTML += `
+
+            <div class="comment">
+
+                <div class="comment-author">
+                    ${comment.author}
+                </div>
+
+                <div>
+                    ${comment.text}
+                </div>
+
+            </div>
+
+        `;
+
+    });
+
+}
+
+async function addComment(){
+
+    const author =
+        commentAuthor.value;
+
+    const text =
+        commentText.value;
+
+    if(!author || !text){
+        return;
+    }
+
+    comments.push({
+
+        taskId:currentTaskId,
+        author,
+        text
+
+    });
+
+    renderComments();
+
+    commentText.value = "";
+
+    await fetch(API_URL,{
+        method:"POST",
+        body:JSON.stringify({
+
+            action:"addComment",
+
+            taskId:currentTaskId,
+            author,
+            text
+
+        })
+    });
+
+}
+
 async function createTask(){
-
-    const newTask = {
-
-        id:Date.now().toString(),
-
-        "назва":title.value,
-        "опис":description.value,
-        "статус":"Треба зробити",
-        "пріоритет":priority.value,
-        "виконавець":assignee.value,
-        "дедлайн":deadline.value,
-        "напрямок":direction.value
-
-    };
-
-    tasks.unshift(newTask);
-
-    render();
-    renderAnalytics();
 
     await fetch(API_URL,{
         method:"POST",
@@ -1218,6 +1483,164 @@ async function createTask(){
     });
 
     closeCreateModal();
+
+    loadData();
+
+}
+
+async function saveTask(){
+
+    await fetch(API_URL,{
+        method:"POST",
+        body:JSON.stringify({
+
+            action:"updateTask",
+
+            id:currentTaskId,
+
+            "назва":editTitle.value,
+            "опис":editDescription.value,
+            "пріоритет":editPriority.value,
+            "виконавець":editAssignee.value,
+            "дедлайн":editDeadline.value,
+            "напрямок":editDirection.value
+
+        })
+    });
+
+    closeTaskModal();
+
+    loadData();
+
+}
+
+async function approveTask(){
+
+    await fetch(API_URL,{
+        method:"POST",
+        body:JSON.stringify({
+
+            action:"updateTaskStatus",
+
+            id:currentTaskId,
+            newStatus:"Готово"
+
+        })
+    });
+
+    approvalHistory.innerHTML = `
+        ✅ Погоджено<br>
+        🕒 ${new Date().toLocaleString()}
+    `;
+
+    closeTaskModal();
+
+    loadData();
+
+}
+
+async function revisionTask(){
+
+    await fetch(API_URL,{
+        method:"POST",
+        body:JSON.stringify({
+
+            action:"updateTaskStatus",
+
+            id:currentTaskId,
+            newStatus:"Потрібні правки"
+
+        })
+    });
+
+    closeTaskModal();
+
+    loadData();
+
+}
+
+function renderDailyPlan(){
+
+    dailyPlanTasks.innerHTML = "";
+
+    tasks.forEach(task=>{
+
+        dailyPlanTasks.innerHTML += `
+
+            <label
+            style="
+                display:flex;
+                align-items:center;
+                gap:12px;
+                margin-bottom:14px;
+                padding:14px;
+                background:#1b2437;
+                border-radius:14px;
+                cursor:pointer;
+            "
+            >
+
+                <input
+                    type="checkbox"
+                    value="${task.id}"
+                    onchange="toggleDailyTask('${task.id}')"
+                />
+
+                <div>
+
+                    <div
+                    style="
+                        font-weight:700;
+                        margin-bottom:4px;
+                    "
+                    >
+                        ${task["назва"]}
+                    </div>
+
+                    <div
+                    style="
+                        font-size:13px;
+                        color:#8b97ad;
+                    "
+                    >
+                        ${task["виконавець"] || "—"}
+                    </div>
+
+                </div>
+
+            </label>
+
+        `;
+
+    });
+
+}
+
+function toggleDailyTask(id){
+
+    if(dailyPlan.includes(id)){
+
+        dailyPlan =
+            dailyPlan.filter(
+                taskId => taskId !== id
+            );
+
+    }else{
+
+        dailyPlan.push(id);
+
+    }
+
+}
+
+function confirmDailyPlan(){
+
+    alert(
+        `План сформовано:
+${dailyPlan.length} задач`
+    );
+
+    closeDailyPlanModal();
 
 }
 
@@ -1243,6 +1666,8 @@ function openDailyPlanModal(){
         .classList
         .add("show");
 
+    renderDailyPlan();
+
 }
 
 function closeDailyPlanModal(){
@@ -1253,13 +1678,11 @@ function closeDailyPlanModal(){
 
 }
 
-function clearColumns(){
+function closeTaskModal(){
 
-    todo.innerHTML = "";
-    progress.innerHTML = "";
-    review.innerHTML = "";
-    revision.innerHTML = "";
-    done.innerHTML = "";
+    taskModal
+        .classList
+        .remove("show");
 
 }
 
@@ -1287,21 +1710,6 @@ function clearColumns(){
                 const newStatus =
                     statuses[evt.to.id];
 
-                const task =
-                    tasks.find(
-                        t=>t.id == taskId
-                    );
-
-                if(task){
-
-                    task["статус"] =
-                        newStatus;
-
-                }
-
-                render();
-                renderAnalytics();
-
                 await fetch(API_URL,{
                     method:"POST",
                     body:JSON.stringify({
@@ -1314,6 +1722,8 @@ function clearColumns(){
 
                     })
                 });
+
+                loadData();
 
             }
 
