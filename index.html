@@ -1,12 +1,159 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Marketing OS</title>
+
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+
+<style>
+
+body{
+    margin:0;
+    background:#0f1117;
+    color:white;
+    font-family:Arial;
+}
+
+.top{
+    padding:20px;
+    border-bottom:1px solid #222;
+}
+
+.board{
+    display:flex;
+    gap:20px;
+    padding:20px;
+    overflow:auto;
+}
+
+.column{
+    min-width:320px;
+    background:#171d29;
+    border-radius:20px;
+    padding:15px;
+}
+
+.column h2{
+    margin-top:0;
+}
+
+.task-list{
+    min-height:100px;
+}
+
+.task{
+    background:#222b3d;
+    border-radius:14px;
+    padding:15px;
+    margin-bottom:15px;
+}
+
+.task.high{
+    border-left:5px solid red;
+}
+
+input,
+textarea,
+select{
+    width:100%;
+    margin-bottom:10px;
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    background:#222b3d;
+    color:white;
+}
+
+button{
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    background:#4f8cff;
+    color:white;
+    font-weight:bold;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="top">
+
+<h1>🚀 Marketing OS</h1>
+
+<form id="taskForm">
+
+<input
+    type="text"
+    id="title"
+    placeholder="Назва задачі"
+    required
+/>
+
+<textarea
+    id="description"
+    placeholder="Опис"
+></textarea>
+
+<select id="direction"></select>
+
+<select id="assignee"></select>
+
+<select id="priority">
+    <option value="Середній">Середній</option>
+    <option value="Високий">Високий</option>
+</select>
+
+<input type="date" id="deadline"/>
+
+<button type="submit">
+    Створити задачу
+</button>
+
+</form>
+
+</div>
+
+<div class="board">
+
+<div class="column">
+<h2>📝 Треба зробити</h2>
+<div class="task-list" id="todo"></div>
+</div>
+
+<div class="column">
+<h2>⚙️ В роботі</h2>
+<div class="task-list" id="progress"></div>
+</div>
+
+<div class="column">
+<h2>👀 На погодженні</h2>
+<div class="task-list" id="review"></div>
+</div>
+
+<div class="column">
+<h2>🔁 Потрібні правки</h2>
+<div class="task-list" id="revision"></div>
+</div>
+
+<div class="column">
+<h2>✅ Готово</h2>
+<div class="task-list" id="done"></div>
+</div>
+
+</div>
+
 <script>
 
 const API_URL =
 "https://script.google.com/macros/s/AKfycbw3H8TvVhJoENmSts6Msrenivow2rZifFrYlOVcgtE7-SJ8cLEdx9sBGQQHY5YT8AKo/exec";
 
 let tasks = [];
-let projects = [];
-let team = [];
-let activity = [];
 
 const statuses = {
     todo:"Треба зробити",
@@ -25,31 +172,20 @@ async function loadData(){
     const data = await res.json();
 
     tasks = data.tasks || [];
-    projects = data.projects || [];
-    team = data.team || [];
-    activity = data.activity || [];
 
     render();
 
-}
-
-function render(){
-
-    renderBoard();
-    renderStats();
-    renderActivity();
-    renderFilters();
-    renderSelects();
+    renderSelects(data);
 
 }
 
-function renderSelects(){
+function renderSelects(data){
 
     const direction =
-        document.getElementById("taskDirection");
+        document.getElementById("direction");
 
     const assignee =
-        document.getElementById("taskAssignee");
+        document.getElementById("assignee");
 
     direction.innerHTML =
         `<option value="">Напрямок</option>`;
@@ -57,7 +193,7 @@ function renderSelects(){
     assignee.innerHTML =
         `<option value="">Виконавець</option>`;
 
-    projects.forEach(project=>{
+    data.projects.forEach(project=>{
 
         direction.innerHTML += `
             <option value="${project.name}">
@@ -67,7 +203,7 @@ function renderSelects(){
 
     });
 
-    team.forEach(person=>{
+    data.team.forEach(person=>{
 
         assignee.innerHTML += `
             <option value="${person.name}">
@@ -79,125 +215,64 @@ function renderSelects(){
 
 }
 
-function renderFilters(){
-
-    const filters =
-        document.getElementById("filters");
-
-    filters.innerHTML = "";
-
-    projects.forEach(project=>{
-
-        filters.innerHTML += `
-            <button class="filter-btn">
-                ${project.name}
-            </button>
-        `;
-
-    });
-
-}
-
-function renderBoard(){
+function render(){
 
     clearColumns();
 
     tasks.forEach(task=>{
 
-        const card =
-            createTaskCard(task);
+        const div =
+            document.createElement("div");
 
-        switch(task["статус"]){
+        div.className =
+            `task ${
+                task["пріоритет"] === "Високий"
+                ? "high"
+                : ""
+            }`;
 
-            case "В роботі":
+        div.dataset.id = task.id;
 
-                document
-                    .getElementById("progress")
-                    .appendChild(card);
+        div.innerHTML = `
+            <h3>${task["назва"]}</h3>
 
-                break;
-
-            case "На погодженні":
-
-                document
-                    .getElementById("review")
-                    .appendChild(card);
-
-                break;
-
-            case "Потрібні правки":
-
-                document
-                    .getElementById("revision")
-                    .appendChild(card);
-
-                break;
-
-            case "Готово":
-
-                document
-                    .getElementById("done")
-                    .appendChild(card);
-
-                break;
-
-            default:
-
-                document
-                    .getElementById("todo")
-                    .appendChild(card);
-
-        }
-
-    });
-
-    updateCounts();
-
-}
-
-function createTaskCard(task){
-
-    const div =
-        document.createElement("div");
-
-    div.className =
-        `task ${
-            task["пріоритет"] === "Високий"
-            ? "high"
-            : ""
-        }`;
-
-    div.dataset.id = task.id;
-
-    div.innerHTML = `
-
-        <div class="task-title">
-            ${task["назва"]}
-        </div>
-
-        <div class="direction">
-            📁 ${task["напрямок"] || "—"}
-        </div>
-
-        <div class="task-meta">
+            <div>
+                📁 ${task["напрямок"] || "—"}
+            </div>
 
             <div>
                 👤 ${task["виконавець"] || "—"}
             </div>
 
             <div>
-                🔥 ${task["пріоритет"] || "—"}
-            </div>
-
-            <div>
                 ⏰ ${task["дедлайн"] || "—"}
             </div>
+        `;
 
-        </div>
+        switch(task["статус"]){
 
-    `;
+            case "В роботі":
+                progress.appendChild(div);
+                break;
 
-    return div;
+            case "На погодженні":
+                review.appendChild(div);
+                break;
+
+            case "Потрібні правки":
+                revision.appendChild(div);
+                break;
+
+            case "Готово":
+                done.appendChild(div);
+                break;
+
+            default:
+                todo.appendChild(div);
+
+        }
+
+    });
 
 }
 
@@ -219,78 +294,7 @@ function clearColumns(){
 
 }
 
-function updateCounts(){
-
-    document.getElementById("count-todo")
-        .textContent =
-        document.getElementById("todo")
-        .children.length;
-
-    document.getElementById("count-progress")
-        .textContent =
-        document.getElementById("progress")
-        .children.length;
-
-    document.getElementById("count-review")
-        .textContent =
-        document.getElementById("review")
-        .children.length;
-
-    document.getElementById("count-revision")
-        .textContent =
-        document.getElementById("revision")
-        .children.length;
-
-    document.getElementById("count-done")
-        .textContent =
-        document.getElementById("done")
-        .children.length;
-
-}
-
-function renderStats(){
-
-    document.getElementById("totalTasks")
-        .textContent =
-        tasks.length;
-
-    document.getElementById("reviewTasks")
-        .textContent =
-        tasks.filter(
-            t=>t["статус"] === "На погодженні"
-        ).length;
-
-    document.getElementById("doneTasks")
-        .textContent =
-        tasks.filter(
-            t=>t["статус"] === "Готово"
-        ).length;
-
-}
-
-function renderActivity(){
-
-    const container =
-        document.getElementById("activityList");
-
-    container.innerHTML = "";
-
-    activity
-        .slice(-10)
-        .reverse()
-        .forEach(item=>{
-
-            container.innerHTML += `
-                <div class="activity-item">
-                    ⚡ ${item.action}
-                </div>
-            `;
-
-        });
-
-}
-
-async function changeStatus(id,newStatus){
+async function updateStatus(id,newStatus){
 
     await fetch(API_URL,{
         method:"POST",
@@ -301,9 +305,7 @@ async function changeStatus(id,newStatus){
         })
     });
 
-    await loadData();
-
-    showToast("Статус оновлено");
+    loadData();
 
 }
 
@@ -321,32 +323,32 @@ document
 
             "назва":
                 document
-                .getElementById("taskTitle")
+                .getElementById("title")
                 .value,
 
             "опис":
                 document
-                .getElementById("taskDescription")
+                .getElementById("description")
                 .value,
 
             "напрямок":
                 document
-                .getElementById("taskDirection")
+                .getElementById("direction")
                 .value,
 
             "виконавець":
                 document
-                .getElementById("taskAssignee")
+                .getElementById("assignee")
                 .value,
 
             "пріоритет":
                 document
-                .getElementById("taskPriority")
+                .getElementById("priority")
                 .value,
 
             "дедлайн":
                 document
-                .getElementById("taskDeadline")
+                .getElementById("deadline")
                 .value
 
         })
@@ -354,28 +356,9 @@ document
 
     e.target.reset();
 
-    await loadData();
-
-    showToast("Задачу створено");
+    loadData();
 
 });
-
-function showToast(message){
-
-    const toast =
-        document.getElementById("toast");
-
-    toast.textContent = message;
-
-    toast.classList.add("show");
-
-    setTimeout(()=>{
-
-        toast.classList.remove("show");
-
-    },2500);
-
-}
 
 [
     "todo",
@@ -391,7 +374,7 @@ function showToast(message){
 
             group:"tasks",
 
-            animation:180,
+            animation:150,
 
             onEnd: async(evt)=>{
 
@@ -401,7 +384,7 @@ function showToast(message){
                 const newStatus =
                     statuses[evt.to.id];
 
-                await changeStatus(
+                await updateStatus(
                     taskId,
                     newStatus
                 );
@@ -416,3 +399,6 @@ function showToast(message){
 loadData();
 
 </script>
+
+</body>
+</html>
