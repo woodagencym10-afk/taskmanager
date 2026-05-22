@@ -6,12 +6,17 @@
     <title>Таск-менеджер Маркетингу</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; background-color: #ebecf0; color: #333; }
-        h2 { text-align: center; color: #172b4d; }
-        .form-container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 30px; max-width: 800px; margin-left: auto; margin-right: auto; }
+        h2 { text-align: center; color: #172b4d; margin-bottom: 10px; }
+        .form-container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; max-width: 800px; margin-left: auto; margin-right: auto; }
         input, select { width: 100%; padding: 10px; margin: 10px 0; border: 2px solid #dfe1e6; border-radius: 4px; box-sizing: border-box; }
         .btn-main { background-color: #0052cc; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; }
         .btn-main:hover { background-color: #0043a6; }
         
+        /* Filters */
+        .filter-container { background: #e4e6ea; padding: 15px; border-radius: 8px; margin-bottom: 20px; max-width: 800px; margin-left: auto; margin-right: auto; display: flex; gap: 15px; align-items: center;}
+        .filter-container select { margin: 0; }
+        .filter-label { font-weight: bold; color: #5e6c84; white-space: nowrap; }
+
         /* Trello Board Styles */
         .board { display: flex; gap: 20px; overflow-x: auto; padding-bottom: 20px; align-items: flex-start; }
         .column { background-color: #f4f5f7; border-radius: 8px; min-width: 300px; width: 33%; padding: 10px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
@@ -48,6 +53,16 @@
     </form>
 </div>
 
+<div class="filter-container">
+    <span class="filter-label">🔍 Фільтри:</span>
+    <select id="filterAssignee">
+        <option value="all">Всі відповідальні</option>
+    </select>
+    <select id="filterProject">
+        <option value="all">Всі проекти</option>
+    </select>
+</div>
+
 <div class="board">
     <div class="column">
         <h3>📝 Треба зробити</h3>
@@ -64,50 +79,72 @@
 </div>
 
 <script>
-    // ВСТАВ СВІЙ URL ТУТ!!!
+    // Твоє посилання вже тут!
     const API_URL = "https://script.google.com/macros/s/AKfycbyz_3lR1eI7Pnm8dLEAf6WbQeIaUlwHwmxMfoHZScmLinXUxagCu08eqMDUZGH19DIJ/exec"; 
+
+    // Глобальна змінна для зберігання всіх задач, щоб фільтрувати їх миттєво
+    let allTasks = [];
 
     async function loadData() {
         try {
             const response = await fetch(API_URL);
             const data = await response.json();
             
+            // Зберігаємо задачі локально
+            allTasks = data.tasks;
+            
+            // Заповнюємо списки для створення задач
             populateSelect('projectSelect', data.projects);
             populateSelect('assigneeSelect', data.team);
-            renderTasks(data.tasks);
+            
+            // Заповнюємо списки для фільтрів
+            populateFilterSelect('filterProject', data.projects, 'Всі проекти');
+            populateFilterSelect('filterAssignee', data.team, 'Всі відповідальні');
+            
+            // Малюємо дошку (одразу всі задачі)
+            renderTasks(allTasks);
         } catch (error) {
             console.error("Помилка:", error);
         }
     }
 
+    // Допоміжна функція для звичайних списків
     function populateSelect(elementId, items) {
         const select = document.getElementById(elementId);
         select.innerHTML = '<option value="">Оберіть...</option>';
         items.forEach(item => { select.innerHTML += `<option value="${item}">${item}</option>`; });
     }
 
-    function renderTasks(tasks) {
-        // Очищаємо всі колонки
+    // Допоміжна функція для фільтрів
+    function populateFilterSelect(elementId, items, defaultText) {
+        const select = document.getElementById(elementId);
+        select.innerHTML = `<option value="all">${defaultText}</option>`;
+        items.forEach(item => { select.innerHTML += `<option value="${item}">${item}</option>`; });
+    }
+
+    // Функція малювання карток
+    function renderTasks(tasksToRender) {
         document.getElementById('col-todo').innerHTML = '';
         document.getElementById('col-progress').innerHTML = '';
         document.getElementById('col-done').innerHTML = '';
 
-        tasks.reverse().forEach(task => {
+        // Робимо копію і перевертаємо, щоб нові були зверху
+        const tasksCopy = [...tasksToRender].reverse();
+
+        tasksCopy.forEach(task => {
             const dateStr = task.deadline ? new Date(task.deadline).toLocaleDateString('uk-UA') : 'Без дедлайну';
             
-            // Формуємо HTML картки
             let cardHtml = `
                 <li class="task-item">
                     <span class="badge">${task.project}</span>
                     <h4>${task.name}</h4>
                     <div class="task-meta">
-                        👤 ${task.assignee}<br>
+                        👤 <b>${task.assignee}</b><br>
                         ⏰ ${dateStr}
                     </div>
                     <div class="actions">
             `;
 
-            // Додаємо кнопки залежно від статусу
             if (task.status === "Треба зробити" || !task.status) {
                 cardHtml += `<button class="btn-action btn-start" onclick="changeStatus('${task.id}', 'В роботі')">В роботу ▶</button>`;
             } else if (task.status === "В роботі") {
@@ -118,7 +155,6 @@
 
             cardHtml += `</div></li>`;
 
-            // Розподіляємо по колонках
             if (task.status === "В роботі") {
                 document.getElementById('col-progress').innerHTML += cardHtml;
             } else if (task.status === "Готово") {
@@ -129,16 +165,36 @@
         });
     }
 
-    // Функція для зміни статусу
+    // --- ЛОГІКА ФІЛЬТРАЦІЇ ---
+    function applyFilters() {
+        const selectedAssignee = document.getElementById('filterAssignee').value;
+        const selectedProject = document.getElementById('filterProject').value;
+
+        // Беремо всі задачі і фільтруємо їх
+        let filteredTasks = allTasks.filter(task => {
+            const matchAssignee = (selectedAssignee === 'all') || (task.assignee === selectedAssignee);
+            const matchProject = (selectedProject === 'all') || (task.project === selectedProject);
+            return matchAssignee && matchProject;
+        });
+
+        // Перемальовуємо дошку тільки з відфільтрованими задачами
+        renderTasks(filteredTasks);
+    }
+
+    // Слухаємо зміни у випадаючих списках фільтрів
+    document.getElementById('filterAssignee').addEventListener('change', applyFilters);
+    document.getElementById('filterProject').addEventListener('change', applyFilters);
+
+    // Зміна статусу
     async function changeStatus(taskId, newStatus) {
         try {
-            // Візуально одразу можна показати завантаження (опціонально)
             await fetch(API_URL, {
                 method: "POST",
                 headers: { "Content-Type": "text/plain;charset=utf-8" },
                 body: JSON.stringify({ action: "updateStatus", id: taskId, newStatus: newStatus })
             });
-            await loadData(); // Перезавантажуємо дошку
+            // Після успішної зміни на сервері - перезавантажуємо всі дані
+            await loadData(); 
         } catch (error) {
             alert("Помилка при зміні статусу.");
         }
@@ -175,6 +231,7 @@
         }
     });
 
+    // Запускаємо завантаження при старті
     loadData();
 </script>
 
