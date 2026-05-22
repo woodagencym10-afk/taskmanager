@@ -1906,7 +1906,145 @@ console.error(error);
 
 }
 loadData();
+/* ========================= */
+/* MODALS */
+/* ========================= */
 
+function openCreateModal(){
+
+document
+.getElementById("createTaskModal")
+.classList
+.add("show");
+
+}
+
+function closeCreateModal(){
+
+document
+.getElementById("createTaskModal")
+.classList
+.remove("show");
+
+}
+
+function openDailyPlanModal(){
+
+document
+.getElementById("dailyPlanModal")
+.classList
+.add("show");
+
+renderDailyPlan();
+
+}
+
+function closeDailyPlanModal(){
+
+document
+.getElementById("dailyPlanModal")
+.classList
+.remove("show");
+
+}
+
+function closeTaskModal(){
+
+document
+.getElementById("taskModal")
+.classList
+.remove("show");
+
+}
+
+/* ========================= */
+/* TASK OPEN */
+/* ========================= */
+
+function openTask(id){
+
+currentTaskId = id;
+
+const task =
+tasks.find(
+t=>t.id == id
+);
+
+if(!task) return;
+
+document.getElementById("editTitle").value =
+task["назва"] || "";
+
+document.getElementById("editDescription").value =
+task["опис"] || "";
+
+document.getElementById("editPriority").value =
+task["пріоритет"] || "Середній";
+
+document.getElementById("editDeadline").value =
+task["дедлайн"] || "";
+
+document.getElementById("editDirection").value =
+task["напрямок"] || "";
+
+document.getElementById("editAssignee").value =
+task["виконавець"] || "";
+
+document
+.getElementById("taskModal")
+.classList
+.add("show");
+
+}
+
+/* ========================= */
+/* CARD CLICK FIX */
+/* ========================= */
+
+const oldCreateTaskCard =
+createTaskCard;
+
+createTaskCard = function(task){
+
+const div =
+document.createElement("div");
+
+div.className =
+`task
+${task["пріоритет"] === "Високий" ? "high" : ""}
+`;
+
+div.dataset.id = task.id;
+
+div.innerHTML = `
+
+<div class="task-title">
+${task["назва"] || "Без назви"}
+</div>
+
+<div class="task-direction">
+📁 ${task["напрямок"] || "—"}
+</div>
+
+<div class="task-meta">
+
+<div>
+👤 ${task["виконавець"] || "—"}
+</div>
+
+<div>
+⏰ ${task["дедлайн"] || "—"}
+</div>
+
+</div>
+
+`;
+
+div.onclick = ()=>openTask(task.id);
+
+return div;
+
+};
 </script>
 
 </body>
