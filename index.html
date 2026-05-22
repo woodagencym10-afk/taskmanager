@@ -24,6 +24,7 @@
     --primary:#5b8cff;
     --danger:#ff5c5c;
     --success:#22c55e;
+    --warning:#f59e0b;
 }
 
 *{
@@ -81,10 +82,57 @@ body{
     padding:30px;
 }
 
+.topbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:25px;
+    gap:20px;
+}
+
 .page-title{
     font-size:34px;
     font-weight:800;
+}
+
+.search{
+    width:320px;
+}
+
+.analytics{
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:16px;
     margin-bottom:25px;
+}
+
+.stat-card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:24px;
+    padding:22px;
+}
+
+.stat-title{
+    color:var(--muted);
+    font-size:13px;
+    margin-bottom:10px;
+}
+
+.stat-value{
+    font-size:34px;
+    font-weight:800;
+}
+
+.filters{
+    display:flex;
+    gap:14px;
+    margin-bottom:25px;
+    flex-wrap:wrap;
+}
+
+.filter{
+    width:220px;
 }
 
 .create-box{
@@ -149,7 +197,17 @@ textarea{
 }
 
 .column-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
     margin-bottom:20px;
+}
+
+.column-count{
+    background:#24314a;
+    padding:6px 10px;
+    border-radius:999px;
+    font-size:12px;
 }
 
 .task{
@@ -159,6 +217,7 @@ textarea{
     margin-bottom:15px;
     cursor:pointer;
     transition:.2s;
+    border:1px solid transparent;
 }
 
 .task:hover{
@@ -168,6 +227,10 @@ textarea{
 
 .task.high{
     border-left:5px solid var(--danger);
+}
+
+.task.overdue{
+    border:1px solid var(--warning);
 }
 
 .task-title{
@@ -250,7 +313,17 @@ textarea{
     padding:14px 18px;
     border-radius:14px;
     cursor:pointer;
-    margin-top:15px;
+}
+
+.revision-btn{
+    background:var(--warning);
+}
+
+.modal-actions{
+    display:flex;
+    gap:12px;
+    margin-top:20px;
+    flex-wrap:wrap;
 }
 
 .comments{
@@ -276,6 +349,14 @@ textarea{
     margin-top:20px;
 }
 
+@media(max-width:1200px){
+
+    .analytics{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+}
+
 @media(max-width:900px){
 
     .sidebar{
@@ -283,8 +364,14 @@ textarea{
     }
 
     .form-grid,
-    .modal-grid{
+    .modal-grid,
+    .analytics{
         grid-template-columns:1fr;
+    }
+
+    .topbar{
+        flex-direction:column;
+        align-items:flex-start;
     }
 
 }
@@ -305,15 +392,15 @@ textarea{
 <div class="nav">
 
 <div class="nav-item">
-📁 Interior Space
+📋 Tasks
 </div>
 
 <div class="nav-item">
-🌿 Ecoforma
+📊 Analytics
 </div>
 
 <div class="nav-item">
-🪵 Wood Agency
+📚 Knowledge Base
 </div>
 
 </div>
@@ -322,8 +409,112 @@ textarea{
 
 <div class="main">
 
+<div class="topbar">
+
 <div class="page-title">
 Marketing Dashboard
+</div>
+
+<input
+class="search"
+type="text"
+id="searchInput"
+placeholder="Пошук задач..."
+oninput="render()"
+/>
+
+</div>
+
+<div class="analytics">
+
+<div class="stat-card">
+<div class="stat-title">
+Всього задач
+</div>
+<div class="stat-value" id="totalTasks">
+0
+</div>
+</div>
+
+<div class="stat-card">
+<div class="stat-title">
+В роботі
+</div>
+<div class="stat-value" id="progressTasks">
+0
+</div>
+</div>
+
+<div class="stat-card">
+<div class="stat-title">
+На погодженні
+</div>
+<div class="stat-value" id="reviewTasks">
+0
+</div>
+</div>
+
+<div class="stat-card">
+<div class="stat-title">
+Прострочені
+</div>
+<div class="stat-value" id="overdueTasks">
+0
+</div>
+</div>
+
+<div class="stat-card">
+<div class="stat-title">
+Готово
+</div>
+<div class="stat-value" id="doneTasks">
+0
+</div>
+</div>
+
+</div>
+
+<div class="filters">
+
+<select
+class="filter"
+id="filterDirection"
+onchange="render()"
+>
+<option value="">
+Всі напрямки
+</option>
+</select>
+
+<select
+class="filter"
+id="filterAssignee"
+onchange="render()"
+>
+<option value="">
+Всі виконавці
+</option>
+</select>
+
+<select
+class="filter"
+id="filterPriority"
+onchange="render()"
+>
+<option value="">
+Всі пріоритети
+</option>
+
+<option value="Високий">
+Високий
+</option>
+
+<option value="Середній">
+Середній
+</option>
+
+</select>
+
 </div>
 
 <div class="create-box">
@@ -388,6 +579,7 @@ type="submit"
 <div class="column">
 <div class="column-header">
 <h3>📝 Треба зробити</h3>
+<div class="column-count" id="countTodo">0</div>
 </div>
 <div id="todo"></div>
 </div>
@@ -395,6 +587,7 @@ type="submit"
 <div class="column">
 <div class="column-header">
 <h3>⚙️ В роботі</h3>
+<div class="column-count" id="countProgress">0</div>
 </div>
 <div id="progress"></div>
 </div>
@@ -402,6 +595,7 @@ type="submit"
 <div class="column">
 <div class="column-header">
 <h3>👀 На погодженні</h3>
+<div class="column-count" id="countReview">0</div>
 </div>
 <div id="review"></div>
 </div>
@@ -409,6 +603,7 @@ type="submit"
 <div class="column">
 <div class="column-header">
 <h3>🔁 Потрібні правки</h3>
+<div class="column-count" id="countRevision">0</div>
 </div>
 <div id="revision"></div>
 </div>
@@ -416,6 +611,7 @@ type="submit"
 <div class="column">
 <div class="column-header">
 <h3>✅ Готово</h3>
+<div class="column-count" id="countDone">0</div>
 </div>
 <div id="done"></div>
 </div>
@@ -477,6 +673,8 @@ onclick="closeModal()"
 
 </div>
 
+<div class="modal-actions">
+
 <button
 class="save-btn"
 type="button"
@@ -484,6 +682,24 @@ onclick="saveTask()"
 >
 💾 Зберегти
 </button>
+
+<button
+class="save-btn"
+type="button"
+onclick="approveTask()"
+>
+✅ Погодити
+</button>
+
+<button
+class="save-btn revision-btn"
+type="button"
+onclick="revisionTask()"
+>
+🔁 На правки
+</button>
+
+</div>
 
 <div class="comments">
 
@@ -555,6 +771,77 @@ async function loadData(){
 
     render();
     renderSelects();
+    renderFilters();
+    renderAnalytics();
+
+}
+
+function renderAnalytics(){
+
+    totalTasks.textContent =
+        tasks.length;
+
+    progressTasks.textContent =
+        tasks.filter(
+            t=>t["статус"] === "В роботі"
+        ).length;
+
+    reviewTasks.textContent =
+        tasks.filter(
+            t=>t["статус"] === "На погодженні"
+        ).length;
+
+    doneTasks.textContent =
+        tasks.filter(
+            t=>t["статус"] === "Готово"
+        ).length;
+
+    overdueTasks.textContent =
+        tasks.filter(isOverdue).length;
+
+}
+
+function isOverdue(task){
+
+    if(
+        !task["дедлайн"] ||
+        task["статус"] === "Готово"
+    ){
+        return false;
+    }
+
+    return new Date(task["дедлайн"])
+        < new Date();
+
+}
+
+function renderFilters(){
+
+    filterDirection.innerHTML =
+        `<option value="">Всі напрямки</option>`;
+
+    filterAssignee.innerHTML =
+        `<option value="">Всі виконавці</option>`;
+
+    projects.forEach(project=>{
+
+        filterDirection.innerHTML += `
+            <option value="${project.name}">
+                ${project.name}
+            </option>
+        `;
+
+    });
+
+    team.forEach(person=>{
+
+        filterAssignee.innerHTML += `
+            <option value="${person.name}">
+                ${person.name}
+            </option>
+        `;
+
+    });
 
 }
 
@@ -592,45 +879,53 @@ function render(){
 
     clearColumns();
 
-    tasks.forEach(task=>{
+    let filteredTasks = [...tasks];
+
+    const search =
+        searchInput.value.toLowerCase();
+
+    const directionFilter =
+        filterDirection.value;
+
+    const assigneeFilter =
+        filterAssignee.value;
+
+    const priorityFilter =
+        filterPriority.value;
+
+    filteredTasks = filteredTasks.filter(task=>{
+
+        const matchSearch =
+            !search ||
+            (task["назва"] || "")
+            .toLowerCase()
+            .includes(search);
+
+        const matchDirection =
+            !directionFilter ||
+            task["напрямок"] === directionFilter;
+
+        const matchAssignee =
+            !assigneeFilter ||
+            task["виконавець"] === assigneeFilter;
+
+        const matchPriority =
+            !priorityFilter ||
+            task["пріоритет"] === priorityFilter;
+
+        return (
+            matchSearch &&
+            matchDirection &&
+            matchAssignee &&
+            matchPriority
+        );
+
+    });
+
+    filteredTasks.forEach(task=>{
 
         const div =
-            document.createElement("div");
-
-        div.className =
-            `task ${
-                task["пріоритет"] === "Високий"
-                ? "high"
-                : ""
-            }`;
-
-        div.dataset.id = task.id;
-
-        div.onclick = ()=>openTask(task.id);
-
-        div.innerHTML = `
-
-            <div class="task-title">
-                ${task["назва"]}
-            </div>
-
-            <div class="task-direction">
-                📁 ${task["напрямок"] || "—"}
-            </div>
-
-            <div class="task-meta">
-
-                <div>
-                    👤 ${task["виконавець"] || "—"}
-                </div>
-
-                <div>
-                    ⏰ ${task["дедлайн"] || "—"}
-                </div>
-
-            </div>
-
-        `;
+            createTaskCard(task);
 
         switch(task["статус"]){
 
@@ -656,6 +951,87 @@ function render(){
         }
 
     });
+
+    updateCounts();
+
+}
+
+function updateCounts(){
+
+    countTodo.textContent =
+        todo.children.length;
+
+    countProgress.textContent =
+        progress.children.length;
+
+    countReview.textContent =
+        review.children.length;
+
+    countRevision.textContent =
+        revision.children.length;
+
+    countDone.textContent =
+        done.children.length;
+
+}
+
+function createTaskCard(task){
+
+    const div =
+        document.createElement("div");
+
+    div.className =
+        `task
+        ${
+            task["пріоритет"] === "Високий"
+            ? "high"
+            : ""
+        }
+        ${
+            isOverdue(task)
+            ? "overdue"
+            : ""
+        }`;
+
+    div.dataset.id = task.id;
+
+    div.onclick = ()=>openTask(task.id);
+
+    div.innerHTML = `
+
+        <div class="task-title">
+            ${task["назва"]}
+        </div>
+
+        <div class="task-direction">
+            📁 ${task["напрямок"] || "—"}
+        </div>
+
+        <div class="task-meta">
+
+            <div>
+                👤 ${task["виконавець"] || "—"}
+            </div>
+
+            <div>
+                ⏰ ${task["дедлайн"] || "—"}
+            </div>
+
+            ${
+                isOverdue(task)
+                ? `
+                    <div style="color:#f59e0b;">
+                        ⚠️ Прострочено
+                    </div>
+                `
+                : ""
+            }
+
+        </div>
+
+    `;
+
+    return div;
 
 }
 
@@ -777,6 +1153,67 @@ async function saveTask(){
 
 }
 
+async function approveTask(){
+
+    const task =
+        tasks.find(
+            t=>t.id == currentTaskId
+        );
+
+    if(!task) return;
+
+    task["статус"] = "Готово";
+
+    render();
+
+    await fetch(API_URL,{
+        method:"POST",
+        body:JSON.stringify({
+
+            action:"updateTaskStatus",
+
+            id:currentTaskId,
+
+            newStatus:"Готово"
+
+        })
+    });
+
+    closeModal();
+
+}
+
+async function revisionTask(){
+
+    const task =
+        tasks.find(
+            t=>t.id == currentTaskId
+        );
+
+    if(!task) return;
+
+    task["статус"] =
+        "Потрібні правки";
+
+    render();
+
+    await fetch(API_URL,{
+        method:"POST",
+        body:JSON.stringify({
+
+            action:"updateTaskStatus",
+
+            id:currentTaskId,
+
+            newStatus:"Потрібні правки"
+
+        })
+    });
+
+    closeModal();
+
+}
+
 function renderComments(){
 
     commentsList.innerHTML = "";
@@ -811,14 +1248,10 @@ function renderComments(){
 async function addComment(){
 
     const author =
-        document
-        .getElementById("commentAuthor")
-        .value;
+        commentAuthor.value;
 
     const text =
-        document
-        .getElementById("commentText")
-        .value;
+        commentText.value;
 
     if(!author || !text){
         return;
@@ -852,9 +1285,7 @@ async function addComment(){
 
     `;
 
-    document
-        .getElementById("commentText")
-        .value = "";
+    commentText.value = "";
 
     await fetch(API_URL,{
         method:"POST",
@@ -941,6 +1372,7 @@ document
     tasks.unshift(newTask);
 
     render();
+    renderAnalytics();
 
     await fetch(API_URL,{
         method:"POST",
@@ -990,6 +1422,8 @@ document
                     taskId,
                     newStatus
                 );
+
+                renderAnalytics();
 
             }
 
