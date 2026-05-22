@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
 <title>Marketing OS</title>
 
@@ -23,6 +23,7 @@
     --muted:#8b97ad;
     --primary:#5b8cff;
     --danger:#ff5c5c;
+    --success:#22c55e;
 }
 
 *{
@@ -48,6 +49,7 @@ body{
     background:var(--sidebar);
     border-right:1px solid var(--border);
     padding:30px 20px;
+    flex-shrink:0;
 }
 
 .logo{
@@ -66,6 +68,7 @@ body{
     padding:14px 16px;
     border-radius:14px;
     cursor:pointer;
+    transition:.2s;
 }
 
 .nav-item:hover{
@@ -133,6 +136,7 @@ textarea{
     display:flex;
     gap:20px;
     overflow:auto;
+    padding-bottom:20px;
 }
 
 .column{
@@ -206,14 +210,26 @@ textarea{
 .modal-box{
     width:900px;
     max-width:95%;
+    max-height:90vh;
+    overflow-y:auto;
     background:#131b2d;
     border-radius:28px;
     padding:30px;
 }
 
+.modal-box::-webkit-scrollbar{
+    width:8px;
+}
+
+.modal-box::-webkit-scrollbar-thumb{
+    background:#31405f;
+    border-radius:999px;
+}
+
 .modal-header{
     display:flex;
     justify-content:space-between;
+    align-items:center;
     margin-bottom:20px;
 }
 
@@ -228,7 +244,7 @@ textarea{
 }
 
 .save-btn{
-    background:#22c55e;
+    background:var(--success);
     border:none;
     color:white;
     padding:14px 18px;
@@ -253,6 +269,26 @@ textarea{
     margin-bottom:6px;
 }
 
+.modal-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+    margin-top:20px;
+}
+
+@media(max-width:900px){
+
+    .sidebar{
+        display:none;
+    }
+
+    .form-grid,
+    .modal-grid{
+        grid-template-columns:1fr;
+    }
+
+}
+
 </style>
 </head>
 
@@ -267,9 +303,19 @@ textarea{
 </div>
 
 <div class="nav">
-<div class="nav-item">📁 Interior Space</div>
-<div class="nav-item">🌿 Ecoforma</div>
-<div class="nav-item">🪵 Wood Agency</div>
+
+<div class="nav-item">
+📁 Interior Space
+</div>
+
+<div class="nav-item">
+🌿 Ecoforma
+</div>
+
+<div class="nav-item">
+🪵 Wood Agency
+</div>
+
 </div>
 
 </aside>
@@ -287,11 +333,19 @@ Marketing Dashboard
 <div class="form-grid">
 
 <div class="full">
-<input type="text" id="title" placeholder="Назва задачі" required>
+<input
+type="text"
+id="title"
+placeholder="Назва задачі"
+required
+/>
 </div>
 
 <div class="full">
-<textarea id="description" placeholder="Опис"></textarea>
+<textarea
+id="description"
+placeholder="Опис"
+></textarea>
 </div>
 
 <select id="direction"></select>
@@ -299,16 +353,28 @@ Marketing Dashboard
 <select id="assignee"></select>
 
 <select id="priority">
-<option value="Середній">Середній</option>
-<option value="Високий">Високий</option>
+
+<option value="Середній">
+Середній
+</option>
+
+<option value="Високий">
+Високий
+</option>
+
 </select>
 
-<input type="date" id="deadline">
+<input type="date" id="deadline"/>
 
 <div class="full">
-<button class="submit-btn" type="submit">
+
+<button
+class="submit-btn"
+type="submit"
+>
 ➕ Створити задачу
 </button>
+
 </div>
 
 </div>
@@ -376,9 +442,12 @@ background:none;
 border:none;
 padding:0;
 "
->
+/>
 
-<button class="close-btn" onclick="closeModal()">
+<button
+class="close-btn"
+onclick="closeModal()"
+>
 ✕
 </button>
 
@@ -386,23 +455,23 @@ padding:0;
 
 <textarea id="editDescription"></textarea>
 
-<div
-style="
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:14px;
-margin-top:20px;
-"
->
+<div class="modal-grid">
 
 <select id="editAssignee"></select>
 
 <select id="editPriority">
-<option value="Середній">Середній</option>
-<option value="Високий">Високий</option>
+
+<option value="Середній">
+Середній
+</option>
+
+<option value="Високий">
+Високий
+</option>
+
 </select>
 
-<input type="date" id="editDeadline">
+<input type="date" id="editDeadline"/>
 
 <select id="editDirection"></select>
 
@@ -429,7 +498,7 @@ type="text"
 id="commentAuthor"
 placeholder="Ваше ім'я"
 style="margin-top:15px;"
->
+/>
 
 <textarea
 id="commentText"
@@ -742,26 +811,50 @@ function renderComments(){
 async function addComment(){
 
     const author =
-        commentAuthor.value;
+        document
+        .getElementById("commentAuthor")
+        .value;
 
     const text =
-        commentText.value;
+        document
+        .getElementById("commentText")
+        .value;
 
     if(!author || !text){
         return;
     }
 
     const localComment = {
+
         taskId:currentTaskId,
+
         author:author,
+
         text:text
+
     };
 
     comments.push(localComment);
 
-    renderComments();
+    commentsList.innerHTML += `
 
-    commentText.value = "";
+        <div class="comment">
+
+            <div class="comment-author">
+                ${author}
+            </div>
+
+            <div>
+                ${text}
+            </div>
+
+        </div>
+
+    `;
+
+    document
+        .getElementById("commentText")
+        .value = "";
 
     await fetch(API_URL,{
         method:"POST",
