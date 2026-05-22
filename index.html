@@ -2,61 +2,143 @@
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <title>Ecoforma Manager</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Таск-менеджер Маркетингу</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; background-color: #f4f7f6; color: #333; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        input, select { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        button { background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
+        button:hover { background-color: #45a049; }
+        .task-list { list-style: none; padding: 0; }
+        .task-item { background: #fff; padding: 15px; border-left: 5px solid #4CAF50; margin-bottom: 10px; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .task-item h4 { margin: 0 0 5px 0; }
+        .task-meta { font-size: 0.9em; color: #666; }
+    </style>
 </head>
-<body class="bg-gray-50 min-h-screen">
+<body>
 
-    <div class="max-w-6xl mx-auto p-6">
-        <div id="projectTabs" class="flex gap-2 mb-8 bg-white p-2 rounded-xl shadow-sm border">
-            </div>
-
-        <div id="board" class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            </div>
+<div class="container">
+    <h2>🎯 Поставити задачу</h2>
+    
+    <div class="card">
+        <form id="taskForm">
+            <label>Що потрібно зробити?</label>
+            <input type="text" id="taskName" required placeholder="Наприклад: Налаштувати UTM-мітки">
+            
+            <label>Проект:</label>
+            <select id="projectSelect" required>
+                <option value="">Завантаження...</option>
+            </select>
+            
+            <label>Відповідальний:</label>
+            <select id="assigneeSelect" required>
+                <option value="">Завантаження...</option>
+            </select>
+            
+            <label>Дедлайн:</label>
+            <input type="date" id="deadline" required>
+            
+            <button type="submit" id="submitBtn">Створити задачу</button>
+        </form>
     </div>
 
-    <script>
-        // ДАНІ (Тут буде fetch з твого GAS)
-        const tasks = [
-            { id: 1, project: 'Ecoforma', task: 'Звіт по рекламі', status: 'In Progress', deadline: '2026-05-25', assignee: 'Vitaliy', telegram: 'vitaliy_user' },
-            { id: 2, project: 'Wood Agency', task: 'Сайт', status: 'Todo', deadline: '2026-06-01', assignee: 'Nazar', telegram: 'nazar_dev' }
-        ];
+    <h2>📋 Актуальні задачі</h2>
+    <ul id="tasksContainer" class="task-list">
+        <li>Завантаження задач...</li>
+    </ul>
+</div>
 
-        let activeProject = 'Ecoforma';
+<script>
+    // Твоє посилання на Google Apps Script
+    const API_URL = "https://script.google.com/macros/s/AKfycbyz_3lR1eI7Pnm8dLEAf6WbQeIaUlwHwmxMfoHZScmLinXUxagCu08eqMDUZGH19DIJ/exec"; 
 
-        function render() {
-            const tabsContainer = document.getElementById('projectTabs');
-            const board = document.getElementById('board');
-            const projects = [...new Set(tasks.map(t => t.project))];
+    // Завантаження даних при відкритті сторінки
+    async function loadData() {
+        try {
+            const response = await fetch(API_URL);
+            const data = await response.json();
             
-            // Рендер табів
-            tabsContainer.innerHTML = projects.map(p => `
-                <button onclick="activeProject='${p}'; render()" 
-                    class="px-4 py-2 rounded-lg ${activeProject === p ? 'bg-indigo-600 text-white' : 'bg-gray-100'}">
-                    ${p}
-                </button>
-            `).join('');
-
-            // Рендер дошки
-            const statuses = ['Todo', 'In Progress', 'Done'];
-            board.innerHTML = statuses.map(s => `
-                <div>
-                    <h2 class="font-bold text-gray-500 mb-4 uppercase text-xs">${s}</h2>
-                    ${tasks.filter(t => t.project === activeProject && t.status === s).map(t => `
-                        <div class="bg-white p-4 rounded-lg shadow-sm border mb-3">
-                            <h3 class="font-semibold">${t.task}</h3>
-                            <p class="text-sm text-gray-500">⏳ ${t.deadline}</p>
-                            <div class="flex justify-between items-center mt-3">
-                                <span class="text-xs bg-gray-100 px-2 py-1 rounded">${t.assignee}</span>
-                                <a href="https://t.me/${t.telegram}" target="_blank" class="text-indigo-600 text-xs font-bold underline">Telegram</a>
-                            </div>
-                        </div>
-                    `).join('')}
-                </div>
-            `).join('');
+            // Заповнюємо випадаючі списки
+            populateSelect('projectSelect', data.projects);
+            populateSelect('assigneeSelect', data.team);
+            
+            // Малюємо задачі
+            renderTasks(data.tasks);
+        } catch (error) {
+            console.error("Помилка завантаження:", error);
         }
+    }
 
-        render();
-    </script>
+    function populateSelect(elementId, items) {
+        const select = document.getElementById(elementId);
+        select.innerHTML = '<option value="">Оберіть...</option>';
+        items.forEach(item => {
+            select.innerHTML += `<option value="${item}">${item}</option>`;
+        });
+    }
+
+    function renderTasks(tasks) {
+        const container = document.getElementById('tasksContainer');
+        container.innerHTML = '';
+        if (tasks.length === 0) {
+            container.innerHTML = '<li>Задач поки немає.</li>';
+            return;
+        }
+        
+        // Виводимо спочатку найновіші
+        tasks.reverse().forEach(task => {
+            // Форматуємо дату для красивого виводу
+            const dateStr = task.deadline ? new Date(task.deadline).toLocaleDateString('uk-UA') : 'Без дедлайну';
+            
+            container.innerHTML += `
+                <li class="task-item">
+                    <h4>${task.name}</h4>
+                    <div class="task-meta">
+                        👤 <b>${task.assignee}</b> | 📁 ${task.project} | ⏰ Дедлайн: ${dateStr} | 📌 ${task.status}
+                    </div>
+                </li>
+            `;
+        });
+    }
+
+    // Відправка форми
+    document.getElementById('taskForm').addEventListener('submit', async (e) => {
+        e.preventDefault(); // Зупиняємо перезавантаження сторінки
+        
+        const btn = document.getElementById('submitBtn');
+        btn.textContent = "Збереження...";
+        btn.disabled = true;
+
+        const newTask = {
+            name: document.getElementById('taskName').value,
+            project: document.getElementById('projectSelect').value,
+            assignee: document.getElementById('assigneeSelect').value,
+            deadline: document.getElementById('deadline').value
+        };
+
+        try {
+            await fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify(newTask)
+            });
+            
+            // Очищаємо форму і перезавантажуємо дані
+            document.getElementById('taskForm').reset();
+            await loadData();
+        } catch (error) {
+            alert("Сталася помилка при збереженні.");
+        } finally {
+            btn.textContent = "Створити задачу";
+            btn.disabled = false;
+        }
+    });
+
+    // Запускаємо завантаження
+    loadData();
+</script>
+
 </body>
 </html>
