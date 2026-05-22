@@ -1331,6 +1331,9 @@ filtered.forEach(task=>{
 const card =
 document.createElement("div");
 
+card.onclick =
+()=>openTask(task.id);
+  
 card.className =
 `task
 ${task["пріоритет"] === "Високий" ? "high" : ""}
@@ -2001,50 +2004,7 @@ document
 /* CARD CLICK FIX */
 /* ========================= */
 
-const oldCreateTaskCard =
-createTaskCard;
 
-createTaskCard = function(task){
-
-const div =
-document.createElement("div");
-
-div.className =
-`task
-${task["пріоритет"] === "Високий" ? "high" : ""}
-`;
-
-div.dataset.id = task.id;
-
-div.innerHTML = `
-
-<div class="task-title">
-${task["назва"] || "Без назви"}
-</div>
-
-<div class="task-direction">
-📁 ${task["напрямок"] || "—"}
-</div>
-
-<div class="task-meta">
-
-<div>
-👤 ${task["виконавець"] || "—"}
-</div>
-
-<div>
-⏰ ${task["дедлайн"] || "—"}
-</div>
-
-</div>
-
-`;
-
-div.onclick = ()=>openTask(task.id);
-
-return div;
-
-};
 </script>
 
 </body>
