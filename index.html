@@ -2,56 +2,75 @@
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ecoforma Task Manager</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <title>Ecoforma Task Manager</title>
 </head>
-<body class="bg-gray-100 p-6 font-sans">
+<body class="bg-gray-50 p-6">
 
-    <div class="max-w-6xl mx-auto">
-        <header class="flex justify-between items-center mb-8">
-            <h1 class="text-2xl font-bold text-gray-800">Ecoforma | Marketing</h1>
-            <button onclick="alert('Тут буде форма додавання')" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition">
-                + Додати задачу
-            </button>
-        </header>
-
-        <!-- Канбан дошка -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <!-- Колонка 1 -->
-            <div class="bg-gray-200 p-4 rounded-xl">
-                <h2 class="font-bold text-gray-700 mb-4 uppercase text-sm">До виконання</h2>
-                <div id="todo" class="space-y-3">
-                    <div class="bg-white p-4 rounded-lg shadow-sm cursor-pointer hover:shadow-md">
-                        <p class="font-medium text-gray-800">Підготувати контент-план</p>
-                        <span class="text-xs text-indigo-600 bg-indigo-50 px-2 py-1 rounded">Katia</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Колонка 2 -->
-            <div class="bg-blue-100 p-4 rounded-xl">
-                <h2 class="font-bold text-blue-700 mb-4 uppercase text-sm">В роботі</h2>
-                <div id="in-progress" class="space-y-3">
-                    <div class="bg-white p-4 rounded-lg shadow-sm cursor-pointer hover:shadow-md">
-                        <p class="font-medium text-gray-800">Запуск реклами в TikTok</p>
-                        <span class="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded">Nazar</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Колонка 3 -->
-            <div class="bg-green-100 p-4 rounded-xl">
-                <h2 class="font-bold text-green-700 mb-4 uppercase text-sm">Виконано</h2>
-                <div id="done" class="space-y-3">
-                    <div class="bg-white p-4 rounded-lg shadow-sm cursor-pointer hover:shadow-md">
-                        <p class="font-medium text-gray-800">Фотосесія</p>
-                        <span class="text-xs text-green-600 bg-green-50 px-2 py-1 rounded">Oleksandr</span>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <!-- Фільтри -->
+    <div class="max-w-6xl mx-auto mb-8 flex gap-4">
+        <select id="projectFilter" onchange="filterTasks()" class="p-2 border rounded-lg">
+            <option value="all">Усі проєкти</option>
+            <option value="Ecoforma">Ecoforma</option>
+            <option value="Wood Agency">Wood Agency</option>
+            <option value="Interior Space">Interior Space</option>
+        </select>
+        
+        <select id="employeeFilter" onchange="filterTasks()" class="p-2 border rounded-lg">
+            <option value="all">Усі працівники</option>
+            <option value="Vitaliy">Vitaliy</option>
+            <option value="Nazar">Nazar</option>
+            <option value="Oleksandr">Oleksandr</option>
+        </select>
     </div>
 
+    <!-- Дошка -->
+    <div id="board" class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Сюди JS буде рендерити картки -->
+    </div>
+
+    <script>
+        // Імітація даних (заміни на fetch з твого GAS API)
+        const allTasks = [
+            { id: 1, title: 'Звіт по деревині', project: 'Ecoforma', assignee: 'Vitaliy', status: 'todo' },
+            { id: 2, title: 'Сайт для клієнта', project: 'Wood Agency', assignee: 'Nazar', status: 'in-progress' },
+            { id: 3, title: 'Заміри приміщення', project: 'Interior Space', assignee: 'Oleksandr', status: 'done' }
+        ];
+
+        function filterTasks() {
+            const proj = document.getElementById('projectFilter').value;
+            const emp = document.getElementById('employeeFilter').value;
+
+            const filtered = allTasks.filter(t => 
+                (proj === 'all' || t.project === proj) && 
+                (emp === 'all' || t.assignee === emp)
+            );
+
+            renderBoard(filtered);
+        }
+
+        function renderBoard(tasks) {
+            const board = document.getElementById('board');
+            board.innerHTML = ''; // Очистка
+            
+            ['todo', 'in-progress', 'done'].forEach(status => {
+                const colTasks = tasks.filter(t => t.status === status);
+                board.innerHTML += `
+                    <div class="bg-gray-100 p-4 rounded-xl">
+                        <h2 class="font-bold mb-4 uppercase text-sm text-gray-600">${status}</h2>
+                        ${colTasks.map(t => `
+                            <div class="bg-white p-4 mb-3 rounded-lg shadow-sm border">
+                                <p class="font-medium">${t.title}</p>
+                                <p class="text-xs text-gray-500 mt-2">${t.project} | ${t.assignee}</p>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            });
+        }
+
+        // Початковий рендер
+        renderBoard(allTasks);
+    </script>
 </body>
 </html>
