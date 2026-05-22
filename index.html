@@ -6,38 +6,170 @@
 
 <title>Marketing OS</title>
 
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 
 <style>
 
-body{
-    margin:0;
-    background:#0f1117;
-    color:white;
-    font-family:Arial;
+:root{
+    --bg:#0b1020;
+    --sidebar:#111827;
+    --card:#182133;
+    --card-hover:#1f2b42;
+    --border:#283247;
+    --text:#f3f5f9;
+    --muted:#8b97ad;
+    --primary:#5b8cff;
+    --danger:#ff5c5c;
+    --success:#22c55e;
+    --warning:#ffb547;
+    --radius:22px;
 }
 
-.top{
-    padding:20px;
-    border-bottom:1px solid #222;
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:Inter,sans-serif;
+    overflow:hidden;
+}
+
+.app{
+    display:flex;
+    height:100vh;
+}
+
+.sidebar{
+    width:260px;
+    background:var(--sidebar);
+    border-right:1px solid var(--border);
+    padding:30px 20px;
+    flex-shrink:0;
+}
+
+.logo{
+    font-size:28px;
+    font-weight:800;
+    margin-bottom:40px;
+}
+
+.nav{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+}
+
+.nav-item{
+    padding:14px 16px;
+    border-radius:14px;
+    cursor:pointer;
+    transition:.2s;
+    color:#dce3ef;
+}
+
+.nav-item:hover{
+    background:#1b2437;
+}
+
+.main{
+    flex:1;
+    overflow:auto;
+    padding:30px;
+}
+
+.page-title{
+    font-size:34px;
+    font-weight:800;
+    margin-bottom:25px;
+}
+
+.create-box{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:30px;
+    padding:25px;
+    margin-bottom:30px;
+}
+
+.form-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:14px;
+}
+
+.full{
+    grid-column:1/-1;
+}
+
+input,
+textarea,
+select{
+    width:100%;
+    background:#101726;
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:16px;
+    color:white;
+    outline:none;
+}
+
+textarea{
+    min-height:110px;
+    resize:vertical;
+}
+
+.submit-btn{
+    background:var(--primary);
+    color:white;
+    padding:16px;
+    border-radius:16px;
+    font-weight:700;
+    border:none;
+    cursor:pointer;
 }
 
 .board{
     display:flex;
     gap:20px;
-    padding:20px;
-    overflow:auto;
+    align-items:flex-start;
+    overflow-x:auto;
+    padding-bottom:30px;
 }
 
 .column{
-    min-width:320px;
-    background:#171d29;
-    border-radius:20px;
-    padding:15px;
+    width:340px;
+    min-width:340px;
+    background:#121a2b;
+    border:1px solid var(--border);
+    border-radius:28px;
+    padding:18px;
 }
 
-.column h2{
-    margin-top:0;
+.column-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+}
+
+.column-title{
+    font-size:18px;
+    font-weight:700;
+}
+
+.column-count{
+    background:#202b42;
+    color:#b6c0d4;
+    border-radius:999px;
+    padding:5px 12px;
+    font-size:12px;
 }
 
 .task-list{
@@ -45,36 +177,95 @@ body{
 }
 
 .task{
-    background:#222b3d;
-    border-radius:14px;
-    padding:15px;
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:22px;
+    padding:18px;
     margin-bottom:15px;
+    transition:.2s;
+    cursor:pointer;
+}
+
+.task:hover{
+    background:var(--card-hover);
+    transform:translateY(-2px);
 }
 
 .task.high{
-    border-left:5px solid red;
+    border-left:5px solid var(--danger);
 }
 
-input,
-textarea,
-select{
-    width:100%;
-    margin-bottom:10px;
-    padding:12px;
-    border:none;
-    border-radius:10px;
-    background:#222b3d;
-    color:white;
+.task-title{
+    font-size:19px;
+    font-weight:700;
+    line-height:1.35;
+    margin-bottom:14px;
 }
 
-button{
-    padding:12px;
-    border:none;
-    border-radius:10px;
-    cursor:pointer;
-    background:#4f8cff;
-    color:white;
-    font-weight:bold;
+.task-direction{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:#222f48;
+    padding:8px 12px;
+    border-radius:999px;
+    font-size:13px;
+    margin-bottom:16px;
+}
+
+.task-meta{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    color:var(--muted);
+    font-size:13px;
+}
+
+.task-footer{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-top:18px;
+}
+
+.priority{
+    padding:6px 10px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:700;
+}
+
+.priority.high{
+    background:#3a1f26;
+    color:#ff8e8e;
+}
+
+.priority.medium{
+    background:#2c3446;
+    color:#b7c3d8;
+}
+
+.avatar{
+    width:34px;
+    height:34px;
+    border-radius:50%;
+    background:#3a4c73;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:700;
+}
+
+@media(max-width:900px){
+
+    .sidebar{
+        display:none;
+    }
+
+    .form-grid{
+        grid-template-columns:1fr;
+    }
+
 }
 
 </style>
@@ -82,38 +273,87 @@ button{
 
 <body>
 
-<div class="top">
+<div class="app">
 
-<h1>🚀 Marketing OS</h1>
+<aside class="sidebar">
+
+    <div class="logo">
+        🚀 Marketing OS
+    </div>
+
+    <div class="nav">
+
+        <div class="nav-item">
+            🏠 Dashboard
+        </div>
+
+        <div class="nav-item">
+            📁 Interior Space
+        </div>
+
+        <div class="nav-item">
+            🌿 Ecoforma
+        </div>
+
+        <div class="nav-item">
+            🪵 Wood Agency
+        </div>
+
+    </div>
+
+</aside>
+
+<div class="main">
+
+<div class="page-title">
+    Marketing Dashboard
+</div>
+
+<div class="create-box">
 
 <form id="taskForm">
 
+<div class="form-grid">
+
+<div class="full">
 <input
     type="text"
     id="title"
     placeholder="Назва задачі"
     required
 />
+</div>
 
+<div class="full">
 <textarea
     id="description"
-    placeholder="Опис"
+    placeholder="Опис задачі"
 ></textarea>
+</div>
 
 <select id="direction"></select>
 
 <select id="assignee"></select>
 
 <select id="priority">
-    <option value="Середній">Середній</option>
-    <option value="Високий">Високий</option>
+    <option value="Середній">
+        Середній
+    </option>
+
+    <option value="Високий">
+        Високий
+    </option>
 </select>
 
 <input type="date" id="deadline"/>
 
-<button type="submit">
-    Створити задачу
+<div class="full">
+<button class="submit-btn" type="submit">
+    ➕ Створити задачу
 </button>
+</div>
+
+</div>
 
 </form>
 
@@ -122,28 +362,82 @@ button{
 <div class="board">
 
 <div class="column">
-<h2>📝 Треба зробити</h2>
+
+<div class="column-header">
+<div class="column-title">
+📝 Треба зробити
+</div>
+<div class="column-count" id="count-todo">
+0
+</div>
+</div>
+
 <div class="task-list" id="todo"></div>
+
 </div>
 
 <div class="column">
-<h2>⚙️ В роботі</h2>
+
+<div class="column-header">
+<div class="column-title">
+⚙️ В роботі
+</div>
+<div class="column-count" id="count-progress">
+0
+</div>
+</div>
+
 <div class="task-list" id="progress"></div>
+
 </div>
 
 <div class="column">
-<h2>👀 На погодженні</h2>
+
+<div class="column-header">
+<div class="column-title">
+👀 На погодженні
+</div>
+<div class="column-count" id="count-review">
+0
+</div>
+</div>
+
 <div class="task-list" id="review"></div>
+
 </div>
 
 <div class="column">
-<h2>🔁 Потрібні правки</h2>
+
+<div class="column-header">
+<div class="column-title">
+🔁 Потрібні правки
+</div>
+<div class="column-count" id="count-revision">
+0
+</div>
+</div>
+
 <div class="task-list" id="revision"></div>
+
 </div>
 
 <div class="column">
-<h2>✅ Готово</h2>
+
+<div class="column-header">
+<div class="column-title">
+✅ Готово
+</div>
+<div class="column-count" id="count-done">
+0
+</div>
+</div>
+
 <div class="task-list" id="done"></div>
+
+</div>
+
+</div>
+
 </div>
 
 </div>
@@ -234,19 +528,50 @@ function render(){
         div.dataset.id = task.id;
 
         div.innerHTML = `
-            <h3>${task["назва"]}</h3>
 
-            <div>
+            <div class="task-title">
+                ${task["назва"]}
+            </div>
+
+            <div class="task-direction">
                 📁 ${task["напрямок"] || "—"}
             </div>
 
-            <div>
-                👤 ${task["виконавець"] || "—"}
+            <div class="task-meta">
+
+                <div>
+                    👤 ${task["виконавець"] || "—"}
+                </div>
+
+                <div>
+                    ⏰ ${task["дедлайн"] || "—"}
+                </div>
+
             </div>
 
-            <div>
-                ⏰ ${task["дедлайн"] || "—"}
+            <div class="task-footer">
+
+                <div class="
+                    priority
+                    ${
+                        task["пріоритет"] === "Високий"
+                        ? "high"
+                        : "medium"
+                    }
+                ">
+                    ${task["пріоритет"]}
+                </div>
+
+                <div class="avatar">
+                    ${
+                        task["виконавець"]
+                        ? task["виконавець"][0]
+                        : "?"
+                    }
+                </div>
+
             </div>
+
         `;
 
         switch(task["статус"]){
@@ -274,6 +599,8 @@ function render(){
 
     });
 
+    updateCounts();
+
 }
 
 function clearColumns(){
@@ -291,6 +618,35 @@ function clearColumns(){
             .innerHTML = "";
 
     });
+
+}
+
+function updateCounts(){
+
+    document.getElementById("count-todo")
+        .textContent =
+        document.getElementById("todo")
+        .children.length;
+
+    document.getElementById("count-progress")
+        .textContent =
+        document.getElementById("progress")
+        .children.length;
+
+    document.getElementById("count-review")
+        .textContent =
+        document.getElementById("review")
+        .children.length;
+
+    document.getElementById("count-revision")
+        .textContent =
+        document.getElementById("revision")
+        .children.length;
+
+    document.getElementById("count-done")
+        .textContent =
+        document.getElementById("done")
+        .children.length;
 
 }
 
