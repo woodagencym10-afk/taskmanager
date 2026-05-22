@@ -5,113 +5,154 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Таск-менеджер Маркетингу</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; background-color: #f4f7f6; color: #333; }
-        .container { max-width: 800px; margin: 0 auto; }
-        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 20px; }
-        input, select { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        button { background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
-        button:hover { background-color: #45a049; }
-        .task-list { list-style: none; padding: 0; }
-        .task-item { background: #fff; padding: 15px; border-left: 5px solid #4CAF50; margin-bottom: 10px; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .task-item h4 { margin: 0 0 5px 0; }
-        .task-meta { font-size: 0.9em; color: #666; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; background-color: #ebecf0; color: #333; }
+        h2 { text-align: center; color: #172b4d; }
+        .form-container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 30px; max-width: 800px; margin-left: auto; margin-right: auto; }
+        input, select { width: 100%; padding: 10px; margin: 10px 0; border: 2px solid #dfe1e6; border-radius: 4px; box-sizing: border-box; }
+        .btn-main { background-color: #0052cc; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; }
+        .btn-main:hover { background-color: #0043a6; }
+        
+        /* Trello Board Styles */
+        .board { display: flex; gap: 20px; overflow-x: auto; padding-bottom: 20px; align-items: flex-start; }
+        .column { background-color: #f4f5f7; border-radius: 8px; min-width: 300px; width: 33%; padding: 10px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        .column h3 { margin-top: 0; padding: 10px; font-size: 16px; color: #172b4d; border-bottom: 2px solid #dfe1e6; }
+        .task-list { list-style: none; padding: 0; margin: 0; min-height: 50px; }
+        .task-item { background: white; padding: 15px; border-radius: 4px; box-shadow: 0 1px 2px rgba(9,30,66,0.25); margin-bottom: 10px; position: relative; }
+        .task-item h4 { margin: 0 0 10px 0; font-size: 15px; }
+        .task-meta { font-size: 0.85em; color: #5e6c84; margin-bottom: 15px; line-height: 1.4; }
+        
+        /* Status Buttons */
+        .actions { display: flex; gap: 5px; }
+        .btn-action { flex: 1; padding: 6px; border: none; border-radius: 3px; cursor: pointer; font-size: 12px; font-weight: bold; transition: 0.2s; }
+        .btn-start { background-color: #ff991f; color: white; }
+        .btn-start:hover { background-color: #e2871b; }
+        .btn-done { background-color: #36b37e; color: white; }
+        .btn-done:hover { background-color: #2b8f65; }
+        
+        /* Labels */
+        .badge { display: inline-block; padding: 2px 6px; border-radius: 3px; background: #dfe1e6; font-size: 11px; font-weight: bold; color: #42526e; margin-bottom: 5px;}
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2>🎯 Поставити задачу</h2>
-    
-    <div class="card">
-        <form id="taskForm">
-            <label>Що потрібно зробити?</label>
-            <input type="text" id="taskName" required placeholder="Наприклад: Налаштувати UTM-мітки">
-            
-            <label>Проект:</label>
-            <select id="projectSelect" required>
-                <option value="">Завантаження...</option>
-            </select>
-            
-            <label>Відповідальний:</label>
-            <select id="assigneeSelect" required>
-                <option value="">Завантаження...</option>
-            </select>
-            
-            <label>Дедлайн:</label>
+<div class="form-container">
+    <h2>🎯 Створити задачу</h2>
+    <form id="taskForm">
+        <input type="text" id="taskName" required placeholder="Що потрібно зробити?">
+        <div style="display: flex; gap: 10px;">
+            <select id="projectSelect" required><option value="">Проект...</option></select>
+            <select id="assigneeSelect" required><option value="">Відповідальний...</option></select>
             <input type="date" id="deadline" required>
-            
-            <button type="submit" id="submitBtn">Створити задачу</button>
-        </form>
-    </div>
+        </div>
+        <button type="submit" id="submitBtn" class="btn-main">Додати на дошку</button>
+    </form>
+</div>
 
-    <h2>📋 Актуальні задачі</h2>
-    <ul id="tasksContainer" class="task-list">
-        <li>Завантаження задач...</li>
-    </ul>
+<div class="board">
+    <div class="column">
+        <h3>📝 Треба зробити</h3>
+        <ul id="col-todo" class="task-list"></ul>
+    </div>
+    <div class="column">
+        <h3>⚙️ В роботі</h3>
+        <ul id="col-progress" class="task-list"></ul>
+    </div>
+    <div class="column">
+        <h3>✅ Готово</h3>
+        <ul id="col-done" class="task-list"></ul>
+    </div>
 </div>
 
 <script>
-    // Твоє посилання на Google Apps Script
+    // ВСТАВ СВІЙ URL ТУТ!!!
     const API_URL = "https://script.google.com/macros/s/AKfycbyz_3lR1eI7Pnm8dLEAf6WbQeIaUlwHwmxMfoHZScmLinXUxagCu08eqMDUZGH19DIJ/exec"; 
 
-    // Завантаження даних при відкритті сторінки
     async function loadData() {
         try {
             const response = await fetch(API_URL);
             const data = await response.json();
             
-            // Заповнюємо випадаючі списки
             populateSelect('projectSelect', data.projects);
             populateSelect('assigneeSelect', data.team);
-            
-            // Малюємо задачі
             renderTasks(data.tasks);
         } catch (error) {
-            console.error("Помилка завантаження:", error);
+            console.error("Помилка:", error);
         }
     }
 
     function populateSelect(elementId, items) {
         const select = document.getElementById(elementId);
         select.innerHTML = '<option value="">Оберіть...</option>';
-        items.forEach(item => {
-            select.innerHTML += `<option value="${item}">${item}</option>`;
-        });
+        items.forEach(item => { select.innerHTML += `<option value="${item}">${item}</option>`; });
     }
 
     function renderTasks(tasks) {
-        const container = document.getElementById('tasksContainer');
-        container.innerHTML = '';
-        if (tasks.length === 0) {
-            container.innerHTML = '<li>Задач поки немає.</li>';
-            return;
-        }
-        
-        // Виводимо спочатку найновіші
+        // Очищаємо всі колонки
+        document.getElementById('col-todo').innerHTML = '';
+        document.getElementById('col-progress').innerHTML = '';
+        document.getElementById('col-done').innerHTML = '';
+
         tasks.reverse().forEach(task => {
-            // Форматуємо дату для красивого виводу
             const dateStr = task.deadline ? new Date(task.deadline).toLocaleDateString('uk-UA') : 'Без дедлайну';
             
-            container.innerHTML += `
+            // Формуємо HTML картки
+            let cardHtml = `
                 <li class="task-item">
+                    <span class="badge">${task.project}</span>
                     <h4>${task.name}</h4>
                     <div class="task-meta">
-                        👤 <b>${task.assignee}</b> | 📁 ${task.project} | ⏰ Дедлайн: ${dateStr} | 📌 ${task.status}
+                        👤 ${task.assignee}<br>
+                        ⏰ ${dateStr}
                     </div>
-                </li>
+                    <div class="actions">
             `;
+
+            // Додаємо кнопки залежно від статусу
+            if (task.status === "Треба зробити" || !task.status) {
+                cardHtml += `<button class="btn-action btn-start" onclick="changeStatus('${task.id}', 'В роботі')">В роботу ▶</button>`;
+            } else if (task.status === "В роботі") {
+                cardHtml += `<button class="btn-action btn-done" onclick="changeStatus('${task.id}', 'Готово')">Готово ✅</button>`;
+            } else {
+                cardHtml += `<span style="color: #36b37e; font-size: 12px; font-weight: bold;">Виконано 🎉</span>`;
+            }
+
+            cardHtml += `</div></li>`;
+
+            // Розподіляємо по колонках
+            if (task.status === "В роботі") {
+                document.getElementById('col-progress').innerHTML += cardHtml;
+            } else if (task.status === "Готово") {
+                document.getElementById('col-done').innerHTML += cardHtml;
+            } else {
+                document.getElementById('col-todo').innerHTML += cardHtml;
+            }
         });
     }
 
-    // Відправка форми
+    // Функція для зміни статусу
+    async function changeStatus(taskId, newStatus) {
+        try {
+            // Візуально одразу можна показати завантаження (опціонально)
+            await fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify({ action: "updateStatus", id: taskId, newStatus: newStatus })
+            });
+            await loadData(); // Перезавантажуємо дошку
+        } catch (error) {
+            alert("Помилка при зміні статусу.");
+        }
+    }
+
+    // Відправка форми (створення нової)
     document.getElementById('taskForm').addEventListener('submit', async (e) => {
-        e.preventDefault(); // Зупиняємо перезавантаження сторінки
-        
+        e.preventDefault();
         const btn = document.getElementById('submitBtn');
-        btn.textContent = "Збереження...";
+        btn.textContent = "Додаємо...";
         btn.disabled = true;
 
         const newTask = {
+            action: "create",
             name: document.getElementById('taskName').value,
             project: document.getElementById('projectSelect').value,
             assignee: document.getElementById('assigneeSelect').value,
@@ -124,19 +165,16 @@
                 headers: { "Content-Type": "text/plain;charset=utf-8" },
                 body: JSON.stringify(newTask)
             });
-            
-            // Очищаємо форму і перезавантажуємо дані
             document.getElementById('taskForm').reset();
             await loadData();
         } catch (error) {
-            alert("Сталася помилка при збереженні.");
+            alert("Помилка.");
         } finally {
-            btn.textContent = "Створити задачу";
+            btn.textContent = "Додати на дошку";
             btn.disabled = false;
         }
     });
 
-    // Запускаємо завантаження
     loadData();
 </script>
 
