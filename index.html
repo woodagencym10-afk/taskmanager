@@ -296,13 +296,15 @@ function showToast(msg, isError = false) {
 }
 
 // ─── API ─────────────────────────────────────────────────
+// Google Apps Script не підтримує CORS для POST з JSON.
+// Тому всі мутації шлемо як GET із параметром ?payload=...
+// У вашому doGet(e) треба обробляти e.parameter.payload так само як doPost.
 async function apiPost(body) {
   try {
-    const r = await fetch(API_URL, {
-      method: "POST",
-      body: JSON.stringify(body)
-    });
-    return await r.json();
+    const payload = encodeURIComponent(JSON.stringify(body));
+    const r = await fetch(`${API_URL}?payload=${payload}&t=${Date.now()}`);
+    const text = await r.text();
+    try { return JSON.parse(text); } catch { return { success: true }; }
   } catch(e) {
     console.error("API error:", e);
     showToast("Помилка з'єднання з сервером", true);
