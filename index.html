@@ -3,73 +3,483 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ecoforma Marketing Tasks</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Ecoforma Task Manager</title>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <style>
+        :root {
+            --bg-color: #f4f6f8;
+            --primary: #2e7d32;
+            --primary-hover: #1b5e20;
+            --danger: #ff4d4f;
+            --text-main: #333;
+            --bg-column: #eef2f5;
+            --card-bg: #ffffff;
+        }
+
+        * { box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg-color); color: var(--text-main); margin: 0; padding: 0; }
+        
+        /* ─── ЛОГІН ─── */
+        #login-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+            display: flex; align-items: center; justify-content: center;
+            background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=2070&auto=format&fit=crop');
+            background-size: cover; z-index: 9999;
+        }
+        .login-box { background: rgba(255, 255, 255, 0.95); width: 320px; padding: 40px 30px; border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); text-align: center; backdrop-filter: blur(5px); }
+        .login-box h2 { color: var(--primary); margin-top: 0; margin-bottom: 25px; font-weight: 700; }
+        .login-box input { width: 100%; margin-bottom: 20px; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 15px; }
+        .login-box button { width: 100%; padding: 12px; background: var(--primary); color: white; font-size: 16px; border: none; border-radius: 6px; cursor: pointer; }
+        .error-msg { color: var(--danger); font-size: 14px; margin-top: 10px; }
+
+        /* ─── ІНТЕРФЕЙС ТА ФІЛЬТРИ ─── */
+        .app-container { display: none; height: 100vh; display: flex; flex-direction: column; }
+        header { background: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; }
+        .filters { background: white; padding: 10px 30px; display: flex; gap: 15px; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .filters input, .filters select { padding: 6px 12px; border: 1px solid #ccc; border-radius: 4px; }
+        
+        button { padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-secondary { background: #f0a500; color: white; }
+        .btn-outline { background: transparent; border: 1px solid #ccc; color: #333; }
+
+        /* ─── ДОШКА ─── */
+        .board { display: flex; gap: 15px; padding: 20px 30px; overflow-x: auto; flex: 1; align-items: flex-start; }
+        .column { background: var(--bg-column); min-width: 280px; width: 280px; border-radius: 8px; display: flex; flex-direction: column; max-height: 100%; }
+        .column-header { padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #ddd; }
+        .column-header h3 { margin: 0; font-size: 16px; color: #444; }
+        .column-count { background: #ccc; padding: 2px 8px; border-radius: 12px; font-size: 12px; font-weight: bold; }
+        .tasks { padding: 10px; flex: 1; overflow-y: auto; min-height: 150px; }
+
+        /* ─── КАРТКИ ЗАДАЧ ─── */
+        .task { background: var(--card-bg); padding: 12px; border-radius: 6px; margin-bottom: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); cursor: grab; border-left: 4px solid var(--primary); font-size: 14px; }
+        .task:active { cursor: grabbing; }
+        .task.high { border-left-color: var(--danger); }
+        .task.overdue { background-color: #fff1f0; border: 1px solid var(--danger); }
+        .task-title { font-weight: bold; margin-bottom: 8px; }
+        .task-meta { font-size: 12px; color: #666; display: flex; justify-content: space-between; margin-top: 8px; }
+
+        /* ─── МОДАЛКИ ТА TOAST ─── */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
+        .modal-content { background: white; width: 500px; max-width: 90%; padding: 25px; border-radius: 8px; position: relative; max-height: 90vh; overflow-y: auto; }
+        .modal-content input, .modal-content textarea, .modal-content select { width: 100%; margin-bottom: 15px; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-family: inherit; }
+        .close-btn { position: absolute; right: 15px; top: 15px; cursor: pointer; font-size: 20px; color: #888; border: none; background: none; }
+        
+        .toast { position: fixed; bottom: 20px; right: 20px; background: #333; color: white; padding: 12px 24px; border-radius: 4px; opacity: 0; transition: opacity 0.3s; z-index: 2000; pointer-events: none; }
+    </style>
 </head>
 <body>
 
-    <div id="login-screen" class="screen">
+    <div id="login-screen">
         <div class="login-box">
-            <h2>Вхід у систему</h2>
+            <h2>🌲 Ecoforma Task</h2>
             <input type="text" id="login-username" placeholder="Твоє ім'я (як у таблиці)">
             <input type="password" id="login-password" placeholder="Пароль">
             <button onclick="loginUser()">Увійти</button>
-            <p id="login-error" class="error-msg"></p>
+            <div id="login-error" class="error-msg"></div>
         </div>
     </div>
 
-    <div id="app-screen" class="screen" style="display: none;">
+    <div id="app-screen" class="app-container">
         <header>
-            <div class="user-info">
-                Привіт, <span id="current-user-name"></span>! 
-                <span class="role-badge" id="current-user-role"></span>
+            <div>
+                <strong>Привіт, <span id="current-user-name"></span>!</strong> 
+                <span id="current-user-role" style="font-size: 12px; color: #666; margin-left: 10px;"></span>
             </div>
-            <div class="header-actions">
-                <button class="btn-primary" onclick="openModal('task-modal')">+ Нова задача</button>
-                <button class="btn-secondary" onclick="openModal('plan-modal')">🌅 План на день</button>
+            <div>
+                <button class="btn-primary" onclick="openModal('modal-create')">+ Нова задача</button>
+                <button class="btn-secondary" onclick="openModal('modal-plan')">🌅 План на день</button>
                 <button class="btn-outline" onclick="logoutUser()">Вийти</button>
             </div>
         </header>
 
+        <div class="filters">
+            <input type="text" id="searchInput" placeholder="Пошук по назві..." oninput="render()">
+            <select id="filterProject" onchange="render()"><option value="all">Всі напрямки</option></select>
+            <select id="filterAssignee" onchange="render()"><option value="all">Всі відповідальні</option></select>
+            <input type="date" id="dateFrom" onchange="render()"> — <input type="date" id="dateTo" onchange="render()">
+            <button class="btn-outline" onclick="clearFilters()" style="padding: 6px 10px; font-size: 12px;">Очистити</button>
+        </div>
+
         <div class="board">
             <div class="column">
-                <h3>В черзі <span class="task-count" id="count-queue">0</span></h3>
-                <div class="task-list" id="list-queue" data-status="В черзі"></div>
+                <div class="column-header"><h3>📝 Треба зробити</h3><div class="column-count" id="count-todo">0</div></div>
+                <div class="tasks" id="col-todo" data-status="Треба зробити"></div>
             </div>
             <div class="column">
-                <h3>В роботі <span class="task-count" id="count-progress">0</span></h3>
-                <div class="task-list" id="list-progress" data-status="В роботі"></div>
+                <div class="column-header"><h3>⚙️ В роботі</h3><div class="column-count" id="count-progress">0</div></div>
+                <div class="tasks" id="col-progress" data-status="В роботі"></div>
             </div>
             <div class="column">
-                <h3>Готово <span class="task-count" id="count-done">0</span></h3>
-                <div class="task-list" id="list-done" data-status="Готово"></div>
+                <div class="column-header"><h3>👀 На погодженні</h3><div class="column-count" id="count-review">0</div></div>
+                <div class="tasks" id="col-review" data-status="На погодженні"></div>
+            </div>
+            <div class="column">
+                <div class="column-header"><h3>🔁 Потрібні правки</h3><div class="column-count" id="count-revision">0</div></div>
+                <div class="tasks" id="col-revision" data-status="Потрібні правки"></div>
+            </div>
+            <div class="column">
+                <div class="column-header"><h3>✅ Готово</h3><div class="column-count" id="count-done">0</div></div>
+                <div class="tasks" id="col-done" data-status="Готово"></div>
             </div>
         </div>
     </div>
 
-    <div id="task-modal" class="modal">
+    <div id="modal-create" class="modal">
         <div class="modal-content">
-            <span class="close" onclick="closeModal('task-modal')">&times;</span>
-            <h2>Додати задачу</h2>
-            <input type="text" id="task-title" placeholder="Назва задачі" required>
-            <textarea id="task-desc" placeholder="Опис та ТЗ..." rows="3"></textarea>
-            <input type="text" id="task-project" placeholder="Напрямок проєкту (напр. SMM, Сайт)">
-            <input type="text" id="task-assignee" placeholder="Відповідальна">
-            <input type="date" id="task-deadline" required>
-            <button class="btn-primary" onclick="createTask()" id="btn-save-task">Зберегти</button>
+            <button class="close-btn" onclick="closeModal('modal-create')">&times;</button>
+            <h2 style="margin-top:0;">Створити задачу</h2>
+            <input type="text" id="newTaskTitle" placeholder="Назва задачі *" required>
+            <textarea id="newTaskDesc" placeholder="Опис та ТЗ..." rows="3"></textarea>
+            <select id="newTaskProject" required></select>
+            <select id="newTaskAssignee" required></select>
+            <input type="date" id="newTaskDeadline" required>
+            <button class="btn-primary" style="width:100%;" onclick="submitCreateTask()" id="btn-save-new">Зберегти задачу</button>
         </div>
     </div>
 
-    <div id="plan-modal" class="modal">
+    <div id="modal-edit" class="modal">
         <div class="modal-content">
-            <span class="close" onclick="closeModal('plan-modal')">&times;</span>
-            <h2>Мій план на сьогодні</h2>
-            <textarea id="plan-details" placeholder="Опиши, що плануєш зробити..." rows="4"></textarea>
-            <button class="btn-primary" onclick="sendMorningPlan()" id="btn-send-plan">Відправити в Telegram</button>
+            <button class="close-btn" onclick="closeModal('modal-edit')">&times;</button>
+            <h2 style="margin-top:0;">Редагувати задачу</h2>
+            <input type="text" id="editTaskTitle">
+            <textarea id="editTaskDesc" rows="3"></textarea>
+            <select id="editTaskProject"></select>
+            <select id="editTaskAssignee"></select>
+            <input type="date" id="editTaskDeadline">
+            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                <button class="btn-primary" style="flex:1;" onclick="submitEditTask()">Зберегти зміни</button>
+                <button class="btn-outline" style="flex:1; color: var(--danger); border-color: var(--danger);" id="btn-delete-task" onclick="deleteTask()">Видалити</button>
+            </div>
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <div id="modal-plan" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal('modal-plan')">&times;</button>
+            <h2 style="margin-top:0;">Мій план на сьогодні</h2>
+            <textarea id="planText" placeholder="Що плануєш зробити?..." rows="5"></textarea>
+            <button class="btn-primary" style="width:100%;" onclick="submitPlan()" id="btn-send-plan">Відправити в групу</button>
+        </div>
+    </div>
+
+    <div class="toast" id="toast">Повідомлення</div>
+
+    <script>
+        // ─── КОНФІГ ──────────────────────────────────────────────
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbwAjlrE0c9qYwGLj2QK4q-nJqHq-AZtquWiYxslNLbPRoidExKAzPJpWqFsrKRkUe45/exec";
+        
+        // ─── STATE ───────────────────────────────────────────────
+        let tasks = [], projects = [], users = [];
+        let currentTaskId = null;
+        
+        const COLUMN_MAP = {
+            "Треба зробити": "col-todo",
+            "В роботі": "col-progress",
+            "На погодженні": "col-review",
+            "Потрібні правки": "col-revision",
+            "Готово": "col-done"
+        };
+
+        // Перевірка при завантаженні: чи є збережений логін
+        window.addEventListener("DOMContentLoaded", () => {
+            const user = localStorage.getItem('currentUser');
+            if (user) {
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('app-screen').style.display = 'flex';
+                document.getElementById('current-user-name').innerText = user;
+                document.getElementById('current-user-role').innerText = localStorage.getItem('currentRole') === 'owner' ? '(Керівник)' : '';
+                loadData();
+            }
+        });
+
+        // ─── API BRIDGE ──────────────────────────────────────────
+        async function gasPost(payload) {
+            const res = await fetch(GAS_URL, {
+                method: "POST",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify(payload)
+            });
+            return res.json();
+        }
+
+        // ─── АВТОРИЗАЦІЯ ─────────────────────────────────────────
+        async function loginUser() {
+            const u = document.getElementById('login-username').value;
+            const p = document.getElementById('login-password').value;
+            const err = document.getElementById('login-error');
+            err.innerText = "Перевірка...";
+            
+            try {
+                const res = await gasPost({ action: 'login', username: u, password: p });
+                if (res.status === 'success') {
+                    localStorage.setItem('currentUser', res.name);
+                    localStorage.setItem('currentRole', res.role);
+                    location.reload(); // Перезавантажуємо сторінку для чистого старту
+                } else { err.innerText = res.message; }
+            } catch(e) { err.innerText = "Помилка зв'язку з сервером"; }
+        }
+
+        function logoutUser() {
+            localStorage.clear();
+            location.reload();
+        }
+
+        // ─── ЗАВАНТАЖЕННЯ ДАНИХ ──────────────────────────────────
+        async function loadData() {
+            try {
+                const res = await fetch(GAS_URL);
+                const data = await res.json();
+                
+                if (data.status === 'success') {
+                    tasks = data.tasks || [];
+                    projects = data.projects || [];
+                    users = data.users || [];
+                    
+                    populateDropdowns();
+                    render();
+                    initSortable();
+                } else {
+                    showToast("Помилка завантаження бази", true);
+                }
+            } catch (e) {
+                showToast("Помилка мережі", true);
+            }
+        }
+
+        function populateDropdowns() {
+            const projSelects = ['filterProject', 'newTaskProject', 'editTaskProject'];
+            const userSelects = ['filterAssignee', 'newTaskAssignee', 'editTaskAssignee'];
+
+            projSelects.forEach(id => {
+                const el = document.getElementById(id);
+                if(!el) return;
+                el.innerHTML = id === 'filterProject' ? '<option value="all">Всі напрямки</option>' : '<option value="" disabled selected>Оберіть напрямок</option>';
+                projects.forEach(p => el.add(new Option(p, p)));
+            });
+
+            userSelects.forEach(id => {
+                const el = document.getElementById(id);
+                if(!el) return;
+                el.innerHTML = id === 'filterAssignee' ? '<option value="all">Всі відповідальні</option>' : '<option value="" disabled selected>Оберіть відповідальну</option>';
+                users.forEach(u => el.add(new Option(u, u)));
+            });
+
+            // Автовибір себе при створенні
+            document.getElementById('newTaskAssignee').value = localStorage.getItem('currentUser');
+        }
+
+        // ─── РЕНДЕР (ВІДОБРАЖЕННЯ) ───────────────────────────────
+        function render() {
+            // Очищення
+            Object.values(COLUMN_MAP).forEach(id => document.getElementById(id).innerHTML = "");
+            const counts = {"Треба зробити":0, "В роботі":0, "На погодженні":0, "Потрібні правки":0, "Готово":0};
+
+            const search = document.getElementById("searchInput").value.toLowerCase();
+            const fProj = document.getElementById("filterProject").value;
+            const fAss = document.getElementById("filterAssignee").value;
+            const from = document.getElementById("dateFrom").value;
+            const to = document.getElementById("dateTo").value;
+            const now = new Date();
+
+            const filtered = tasks.filter(task => {
+                const matchSearch = (task.Title || "").toLowerCase().includes(search) || (task.Description || "").toLowerCase().includes(search);
+                const matchProj = fProj === "all" || task.Project === fProj;
+                const matchAss = fAss === "all" || task.Assignee === fAss;
+                
+                let matchDate = true;
+                if (from || to) {
+                    const d = task.Deadline ? new Date(task.Deadline) : null;
+                    if (d && !isNaN(d)) {
+                        if (from) matchDate = matchDate && d >= new Date(from);
+                        if (to) { const e = new Date(to); e.setHours(23,59,59); matchDate = matchDate && d <= e; }
+                    } else { matchDate = false; }
+                }
+                return matchSearch && matchProj && matchAss && matchDate;
+            });
+
+            filtered.forEach(task => {
+                const status = task.Status || "Треба зробити";
+                const colId = COLUMN_MAP[status];
+                if (!colId) return;
+                
+                counts[status]++;
+                const deadline = task.Deadline ? new Date(task.Deadline) : null;
+                const isOverdue = deadline && !isNaN(deadline) && deadline < now && status !== "Готово";
+                
+                const card = document.createElement("div");
+                card.className = `task ${isOverdue ? "overdue" : ""}`;
+                card.dataset.id = task.ID;
+                card.onclick = () => openTask(task.ID);
+                
+                card.innerHTML = `
+                    <div class="task-title">${task.Title || "Без назви"}</div>
+                    <div style="font-size: 12px; color: #555;">📁 ${task.Project || "—"} | 👤 ${task.Assignee || "—"}</div>
+                    <div class="task-meta">
+                        <span>⏰ ${task.Deadline || "Немає"}</span>
+                        ${isOverdue ? '<span style="color:var(--danger)">Прострочено!</span>' : ''}
+                    </div>
+                `;
+                document.getElementById(colId).appendChild(card);
+            });
+
+            // Оновлення лічильників
+            document.getElementById("count-todo").textContent = counts["Треба зробити"];
+            document.getElementById("count-progress").textContent = counts["В роботі"];
+            document.getElementById("count-review").textContent = counts["На погодженні"];
+            document.getElementById("count-revision").textContent = counts["Потрібні правки"];
+            document.getElementById("count-done").textContent = counts["Готово"];
+        }
+
+        function clearFilters() {
+            document.getElementById("searchInput").value = "";
+            document.getElementById("filterProject").value = "all";
+            document.getElementById("filterAssignee").value = "all";
+            document.getElementById("dateFrom").value = "";
+            document.getElementById("dateTo").value = "";
+            render();
+        }
+
+        // ─── SORTABLE (DRAG & DROP) ──────────────────────────────
+        function initSortable() {
+            Object.values(COLUMN_MAP).forEach(colId => {
+                const el = document.getElementById(colId);
+                if (!el) return;
+                new Sortable(el, {
+                    group: "tasks", animation: 150,
+                    onEnd: async (evt) => {
+                        const taskId = evt.item.dataset.id;
+                        const newColId = evt.to.id;
+                        const newStatus = Object.keys(COLUMN_MAP).find(k => COLUMN_MAP[k] === newColId);
+                        
+                        if (!newStatus || !taskId) return;
+                        
+                        // Оновлюємо локально для швидкості
+                        const task = tasks.find(t => String(t.ID) === String(taskId));
+                        if (task) task.Status = newStatus;
+                        render();
+                        
+                        // Відправляємо на сервер
+                        try {
+                            await gasPost({ action: 'update', ID: taskId, Status: newStatus });
+                            showToast(`Переміщено: ${newStatus}`);
+                        } catch(e) { loadData(); showToast("Помилка синхронізації", true); }
+                    }
+                });
+            });
+        }
+
+        // ─── СТВОРЕННЯ ЗАДАЧІ ────────────────────────────────────
+        async function submitCreateTask() {
+            const btn = document.getElementById('btn-save-new');
+            const title = document.getElementById("newTaskTitle").value;
+            if (!title) return showToast("Введіть назву!", true);
+            
+            btn.innerText = 'Збереження...'; btn.disabled = true;
+
+            const payload = {
+                action: 'add',
+                Title: title,
+                Description: document.getElementById("newTaskDesc").value,
+                Project: document.getElementById("newTaskProject").value,
+                Assignee: document.getElementById("newTaskAssignee").value,
+                Deadline: document.getElementById("newTaskDeadline").value,
+                Status: 'Треба зробити'
+            };
+
+            try {
+                const res = await gasPost(payload);
+                if(res.status === 'success') {
+                    showToast("Задачу створено ✓");
+                    closeModal('modal-create');
+                    document.getElementById("newTaskTitle").value = "";
+                    document.getElementById("newTaskDesc").value = "";
+                    loadData();
+                }
+            } catch(e) { showToast("Помилка збереження", true); }
+            
+            btn.innerText = 'Зберегти задачу'; btn.disabled = false;
+        }
+
+        // ─── РЕДАГУВАННЯ ТА ВИДАЛЕННЯ ────────────────────────────
+        function openTask(id) {
+            currentTaskId = id;
+            const task = tasks.find(t => String(t.ID) === String(id));
+            if (!task) return;
+
+            document.getElementById("editTaskTitle").value = task.Title || "";
+            document.getElementById("editTaskDesc").value = task.Description || "";
+            document.getElementById("editTaskProject").value = task.Project || "";
+            document.getElementById("editTaskAssignee").value = task.Assignee || "";
+            document.getElementById("editTaskDeadline").value = task.Deadline || "";
+
+            // Кнопка видалення тільки для власника
+            document.getElementById("btn-delete-task").style.display = localStorage.getItem('currentRole') === 'owner' ? 'block' : 'none';
+            
+            openModal('modal-edit');
+        }
+
+        async function submitEditTask() {
+            const payload = {
+                action: 'update',
+                ID: currentTaskId,
+                Title: document.getElementById("editTaskTitle").value,
+                Description: document.getElementById("editTaskDesc").value,
+                Project: document.getElementById("editTaskProject").value,
+                Assignee: document.getElementById("editTaskAssignee").value,
+                Deadline: document.getElementById("editTaskDeadline").value
+            };
+
+            try {
+                await gasPost(payload);
+                showToast("Зміни збережено ✓");
+                closeModal('modal-edit');
+                loadData();
+            } catch(e) { showToast("Помилка збереження", true); }
+        }
+
+        async function deleteTask() {
+            if (!confirm("Видалити цю задачу назавжди?")) return;
+            try {
+                await gasPost({ action: 'delete', ID: currentTaskId, role: localStorage.getItem('currentRole') });
+                showToast("Видалено 🗑️");
+                closeModal('modal-edit');
+                loadData();
+            } catch(e) { showToast("Помилка видалення", true); }
+        }
+
+        // ─── РАНКОВИЙ ПЛАН ───────────────────────────────────────
+        async function submitPlan() {
+            const text = document.getElementById("planText").value;
+            if(!text) return;
+            const btn = document.getElementById('btn-send-plan');
+            btn.innerText = 'Відправка...'; btn.disabled = true;
+
+            try {
+                await gasPost({ action: 'morning_plan', Assignee: localStorage.getItem('currentUser'), PlanDetails: text });
+                showToast("План відправлено в ТГ ✓");
+                document.getElementById("planText").value = "";
+                closeModal('modal-plan');
+            } catch(e) { showToast("Помилка", true); }
+            
+            btn.innerText = 'Відправити в групу'; btn.disabled = false;
+        }
+
+        // ─── ДОПОМІЖНІ ФУНКЦІЇ ───────────────────────────────────
+        function openModal(id) { document.getElementById(id).style.display = "flex"; }
+        function closeModal(id) { document.getElementById(id).style.display = "none"; }
+        
+        let toastTimeout;
+        function showToast(msg, isError=false) {
+            const t = document.getElementById("toast");
+            t.textContent = msg;
+            t.style.background = isError ? "var(--danger)" : "#333";
+            t.style.opacity = 1;
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => t.style.opacity = 0, 3000);
+        }
+    </script>
 </body>
 </html>
+
+```
