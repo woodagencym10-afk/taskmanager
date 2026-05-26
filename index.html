@@ -9,17 +9,9 @@
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 <style>
 :root{
-  --bg:#081120;
-  --sidebar:#101827;
-  --card:#172235;
-  --card2:#1d2a42;
-  --border:#2b3850;
-  --text:#f3f5f8;
-  --muted:#8b97ad;
-  --primary:#5b8cff;
-  --success:#22c55e;
-  --warning:#f59e0b;
-  --danger:#ef4444;
+  --bg:#081120;--sidebar:#101827;--card:#172235;--card2:#1d2a42;
+  --border:#2b3850;--text:#f3f5f8;--muted:#8b97ad;
+  --primary:#5b8cff;--success:#22c55e;--warning:#f59e0b;--danger:#ef4444;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:var(--bg);color:var(--text);font-family:Inter,sans-serif;overflow:hidden;}
@@ -60,7 +52,6 @@ textarea{min-height:120px;resize:vertical;}
 .task-title{font-size:18px;font-weight:700;margin-bottom:12px;}
 .task-direction{display:inline-flex;padding:7px 12px;border-radius:999px;background:#24314a;font-size:13px;margin-bottom:12px;}
 .task-meta{display:flex;flex-direction:column;gap:6px;font-size:13px;color:#97a5bb;}
-/* MODALS */
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.72);display:none;align-items:center;justify-content:center;padding:20px;z-index:999;}
 .modal.show{display:flex;}
 .modal-box{width:900px;max-width:100%;max-height:90vh;overflow:auto;background:#131d31;border-radius:28px;padding:28px;}
@@ -82,6 +73,9 @@ textarea{min-height:120px;resize:vertical;}
 .toast{position:fixed;bottom:28px;right:28px;background:#22c55e;color:white;padding:14px 20px;border-radius:16px;font-weight:700;z-index:9999;transform:translateY(60px);opacity:0;transition:.3s;}
 .toast.show{transform:translateY(0);opacity:1;}
 .toast.error{background:var(--danger);}
+.loading-overlay{position:fixed;inset:0;background:rgba(8,17,32,.85);display:flex;align-items:center;justify-content:center;z-index:9998;flex-direction:column;gap:16px;}
+.spinner{width:44px;height:44px;border:3px solid #2b3850;border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
 @media(max-width:1200px){.filters{grid-template-columns:repeat(2,1fr);}.analytics{grid-template-columns:repeat(2,1fr);}}
 @media(max-width:850px){.sidebar{display:none;}.filters{grid-template-columns:1fr;}.analytics{grid-template-columns:1fr;}.topbar{flex-direction:column;}}
 </style>
@@ -96,61 +90,56 @@ textarea{min-height:120px;resize:vertical;}
       <div class="nav-item" onclick="showAnalyticsPage()">📊 Analytics</div>
     </div>
   </aside>
-
-  <div class="main" id="mainContent">
-    <div id="boardView">
-      <div class="topbar">
-        <div class="left-top">
-          <div class="page-title">Marketing Dashboard</div>
-          <div class="filters">
-            <input type="text" id="searchInput" placeholder="Пошук задач..." oninput="render()"/>
-            <select id="filterDirection" onchange="render()"><option value="">Всі напрямки</option></select>
-            <select id="filterAssignee" onchange="render()"><option value="">Всі виконавці</option></select>
-            <input type="date" id="dateFrom" onchange="render()"/>
-            <input type="date" id="dateTo" onchange="render()"/>
-          </div>
-          <div class="quick-filters">
-            <button class="quick-btn" onclick="setTodayFilter()">Сьогодні</button>
-            <button class="quick-btn" onclick="setWeekFilter()">7 днів</button>
-            <button class="quick-btn" onclick="setMonthFilter()">30 днів</button>
-            <button class="quick-btn" onclick="clearDateFilter()">Весь актив</button>
-          </div>
+  <div class="main">
+    <div class="topbar">
+      <div class="left-top">
+        <div class="page-title">Marketing Dashboard</div>
+        <div class="filters">
+          <input type="text" id="searchInput" placeholder="Пошук задач..." oninput="render()"/>
+          <select id="filterDirection" onchange="render()"><option value="">Всі напрямки</option></select>
+          <select id="filterAssignee" onchange="render()"><option value="">Всі виконавці</option></select>
+          <input type="date" id="dateFrom" onchange="render()"/>
+          <input type="date" id="dateTo" onchange="render()"/>
         </div>
-        <div class="top-actions">
-          <button class="action-btn primary-btn" onclick="openCreateModal()">➕ Нова задача</button>
-          <button class="action-btn success-btn" onclick="openDailyPlanModal()">📋 План на день</button>
+        <div class="quick-filters">
+          <button class="quick-btn" onclick="setTodayFilter()">Сьогодні</button>
+          <button class="quick-btn" onclick="setWeekFilter()">7 днів</button>
+          <button class="quick-btn" onclick="setMonthFilter()">30 днів</button>
+          <button class="quick-btn" onclick="clearDateFilter()">Весь актив</button>
         </div>
       </div>
-
-      <div class="analytics">
-        <div class="stat"><div class="stat-label">Всього задач</div><div class="stat-value" id="totalTasks">0</div></div>
-        <div class="stat"><div class="stat-label">В роботі</div><div class="stat-value" id="progressTasks">0</div></div>
-        <div class="stat"><div class="stat-label">На погодженні</div><div class="stat-value" id="reviewTasks">0</div></div>
-        <div class="stat"><div class="stat-label">Прострочені</div><div class="stat-value" id="overdueTasks">0</div></div>
-        <div class="stat"><div class="stat-label">Готово</div><div class="stat-value" id="doneTasks">0</div></div>
+      <div class="top-actions">
+        <button class="action-btn primary-btn" onclick="openCreateModal()">➕ Нова задача</button>
+        <button class="action-btn success-btn" onclick="openDailyPlanModal()">📋 План на день</button>
       </div>
-
-      <div class="board">
-        <div class="column">
-          <div class="column-header"><h3>📝 Треба зробити</h3><div class="column-count" id="countTodo">0</div></div>
-          <div class="tasks" id="todo"></div>
-        </div>
-        <div class="column">
-          <div class="column-header"><h3>⚙️ В роботі</h3><div class="column-count" id="countProgress">0</div></div>
-          <div class="tasks" id="progress"></div>
-        </div>
-        <div class="column">
-          <div class="column-header"><h3>👀 На погодженні</h3><div class="column-count" id="countReview">0</div></div>
-          <div class="tasks" id="review"></div>
-        </div>
-        <div class="column">
-          <div class="column-header"><h3>🔁 Потрібні правки</h3><div class="column-count" id="countRevision">0</div></div>
-          <div class="tasks" id="revision"></div>
-        </div>
-        <div class="column">
-          <div class="column-header"><h3>✅ Готово</h3><div class="column-count" id="countDone">0</div></div>
-          <div class="tasks" id="done"></div>
-        </div>
+    </div>
+    <div class="analytics">
+      <div class="stat"><div class="stat-label">Всього задач</div><div class="stat-value" id="totalTasks">0</div></div>
+      <div class="stat"><div class="stat-label">В роботі</div><div class="stat-value" id="progressTasks">0</div></div>
+      <div class="stat"><div class="stat-label">На погодженні</div><div class="stat-value" id="reviewTasks">0</div></div>
+      <div class="stat"><div class="stat-label">Прострочені</div><div class="stat-value" id="overdueTasks">0</div></div>
+      <div class="stat"><div class="stat-label">Готово</div><div class="stat-value" id="doneTasks">0</div></div>
+    </div>
+    <div class="board">
+      <div class="column">
+        <div class="column-header"><h3>📝 Треба зробити</h3><div class="column-count" id="countTodo">0</div></div>
+        <div class="tasks" id="todo"></div>
+      </div>
+      <div class="column">
+        <div class="column-header"><h3>⚙️ В роботі</h3><div class="column-count" id="countProgress">0</div></div>
+        <div class="tasks" id="progress"></div>
+      </div>
+      <div class="column">
+        <div class="column-header"><h3>👀 На погодженні</h3><div class="column-count" id="countReview">0</div></div>
+        <div class="tasks" id="review"></div>
+      </div>
+      <div class="column">
+        <div class="column-header"><h3>🔁 Потрібні правки</h3><div class="column-count" id="countRevision">0</div></div>
+        <div class="tasks" id="revision"></div>
+      </div>
+      <div class="column">
+        <div class="column-header"><h3>✅ Готово</h3><div class="column-count" id="countDone">0</div></div>
+        <div class="tasks" id="done"></div>
       </div>
     </div>
   </div>
@@ -180,12 +169,10 @@ textarea{min-height:120px;resize:vertical;}
       <button class="save-btn success-btn" onclick="confirmApprove()">✅ Погодити</button>
       <button class="save-btn" style="background:#f59e0b;" onclick="openRevisionPrompt()">🔁 На правки</button>
     </div>
-
     <div style="margin-top:25px;padding:16px;background:#1b2437;border-radius:18px;">
       <div style="font-weight:700;margin-bottom:8px;">Approval History</div>
       <div id="approvalHistory">Поки немає погодження</div>
     </div>
-
     <div class="comments">
       <h3 style="margin-bottom:15px;">💬 Коментарі</h3>
       <div id="commentsList"></div>
@@ -238,7 +225,7 @@ textarea{min-height:120px;resize:vertical;}
   </div>
 </div>
 
-<!-- REVISION PROMPT MODAL -->
+<!-- REVISION MODAL -->
 <div class="modal" id="revisionModal">
   <div class="modal-box" style="max-width:500px;">
     <div class="modal-header">
@@ -252,39 +239,39 @@ textarea{min-height:120px;resize:vertical;}
   </div>
 </div>
 
-<!-- TOAST -->
+<!-- LOADING -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+  <div style="color:var(--muted);font-size:14px;">Завантаження даних...</div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbw3H8TvVhJoENmSts6Msrenivow2rZifFrYlOVcgtE7-SJ8cLEdx9sBGQQHY5YT8AKo/exec";
-
 // ─── STATE ───────────────────────────────────────────────
-let tasks    = [];
-let comments = [];
-let projects = [];
-let team     = [];
-let dailyPlan   = [];
-let quickTasks  = [];
+let tasks = [], comments = [], projects = [], team = [];
+let dailyPlan = [], quickTasks = [];
 let currentTaskId = null;
 
-const STATUS_ORDER = [
-  "Треба зробити",
-  "В роботі",
-  "На погодженні",
-  "Потрібні правки",
-  "Готово"
-];
+const STATUS_ORDER = ["Треба зробити","В роботі","На погодженні","Потрібні правки","Готово"];
+const COLUMN_MAP   = {todo:"Треба зробити",progress:"В роботі",review:"На погодженні",revision:"Потрібні правки",done:"Готово"};
+const COL_ID_MAP   = {};
+Object.entries(COLUMN_MAP).forEach(([id,s]) => COL_ID_MAP[s] = id);
 
-const COLUMN_MAP = {
-  "todo":     "Треба зробити",
-  "progress": "В роботі",
-  "review":   "На погодженні",
-  "revision": "Потрібні правки",
-  "done":     "Готово"
-};
-
-const COL_ID_MAP = {};
-Object.entries(COLUMN_MAP).forEach(([id, status]) => COL_ID_MAP[status] = id);
+// ─── GAS BRIDGE ──────────────────────────────────────────
+// Замість fetch — google.script.run (без CORS взагалі)
+function gasRun(fnName, arg) {
+  return new Promise((resolve, reject) => {
+    const runner = google.script.run
+      .withSuccessHandler(resolve)
+      .withFailureHandler(reject);
+    if (arg !== undefined) {
+      runner[fnName](arg);
+    } else {
+      runner[fnName]();
+    }
+  });
+}
 
 // ─── TOAST ───────────────────────────────────────────────
 function showToast(msg, isError = false) {
@@ -295,27 +282,15 @@ function showToast(msg, isError = false) {
   setTimeout(() => t.classList.remove("show"), 2800);
 }
 
-// ─── API ─────────────────────────────────────────────────
-// Google Apps Script не підтримує CORS для POST з JSON.
-// Тому всі мутації шлемо як GET із параметром ?payload=...
-// У вашому doGet(e) треба обробляти e.parameter.payload так само як doPost.
-async function apiPost(body) {
-  try {
-    const payload = encodeURIComponent(JSON.stringify(body));
-    const r = await fetch(`${API_URL}?payload=${payload}&t=${Date.now()}`);
-    const text = await r.text();
-    try { return JSON.parse(text); } catch { return { success: true }; }
-  } catch(e) {
-    console.error("API error:", e);
-    showToast("Помилка з'єднання з сервером", true);
-    return null;
-  }
+function showLoading(on) {
+  document.getElementById("loadingOverlay").style.display = on ? "flex" : "none";
 }
 
+// ─── LOAD DATA ────────────────────────────────────────────
 async function loadData() {
+  showLoading(true);
   try {
-    const r    = await fetch(API_URL + "?t=" + Date.now());
-    const data = await r.json();
+    const data = await gasRun("getAllData");
     tasks    = data.tasks    || [];
     comments = data.comments || [];
     projects = data.projects || [];
@@ -323,145 +298,101 @@ async function loadData() {
     renderSelects();
     render();
   } catch(e) {
-    console.error("Load error:", e);
-    showToast("Не вдалося завантажити дані", true);
+    console.error(e);
+    showToast("Помилка завантаження даних", true);
   }
+  showLoading(false);
 }
 
 // ─── SELECTS ─────────────────────────────────────────────
 function renderSelects() {
-  const dirSelects = ["filterDirection","editDirection","newDirection"];
-  const asnSelects = ["filterAssignee","editAssignee","newAssignee"];
-
-  dirSelects.forEach(id => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    const isFilter = id === "filterDirection";
-    el.innerHTML = isFilter ? `<option value="">Всі напрямки</option>` : `<option value="">Напрямок</option>`;
-    projects.forEach(p => el.innerHTML += `<option value="${p.name}">${p.name}</option>`);
-  });
-
-  asnSelects.forEach(id => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    const isFilter = id === "filterAssignee";
-    el.innerHTML = isFilter ? `<option value="">Всі виконавці</option>` : `<option value="">Виконавець</option>`;
-    team.forEach(p => el.innerHTML += `<option value="${p.name}">${p.name}</option>`);
+  [["filterDirection","editDirection","newDirection"], ["filterAssignee","editAssignee","newAssignee"]].forEach(([f,e,n], idx) => {
+    const list  = idx === 0 ? projects : team;
+    const label = idx === 0 ? ["Всі напрямки","Напрямок"] : ["Всі виконавці","Виконавець"];
+    [[f,label[0]],[e,label[1]],[n,label[1]]].forEach(([id, placeholder]) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.innerHTML = `<option value="">${placeholder}</option>`;
+      list.forEach(item => el.innerHTML += `<option value="${item.name}">${item.name}</option>`);
+    });
   });
 }
 
-// ─── RENDER BOARD ─────────────────────────────────────────
+// ─── RENDER ───────────────────────────────────────────────
 function render() {
-  ["todo","progress","review","revision","done"].forEach(id => {
-    document.getElementById(id).innerHTML = "";
-  });
+  ["todo","progress","review","revision","done"].forEach(id => document.getElementById(id).innerHTML = "");
 
   const search    = document.getElementById("searchInput").value.toLowerCase();
   const direction = document.getElementById("filterDirection").value;
   const assignee  = document.getElementById("filterAssignee").value;
   const from      = document.getElementById("dateFrom").value;
   const to        = document.getElementById("dateTo").value;
+  const now       = new Date();
 
   const filtered = tasks.filter(task => {
-    const matchSearch    = !search    || (task["назва"] || "").toLowerCase().includes(search);
+    const matchSearch    = !search    || (task["назва"]||"").toLowerCase().includes(search);
     const matchDirection = !direction || task["напрямок"] === direction;
     const matchAssignee  = !assignee  || task["виконавець"] === assignee;
     let matchDate = true;
     if (from || to) {
-      const taskDate = new Date(task["дедлайн"]);
-      if (from) matchDate = matchDate && taskDate >= new Date(from);
-      if (to)   { const end = new Date(to); end.setHours(23,59,59); matchDate = matchDate && taskDate <= end; }
+      const d = new Date(task["дедлайн"]);
+      if (from) matchDate = matchDate && d >= new Date(from);
+      if (to)   { const e = new Date(to); e.setHours(23,59,59); matchDate = matchDate && d <= e; }
     }
     return matchSearch && matchDirection && matchAssignee && matchDate;
   });
 
-  const now = new Date();
-
   filtered.forEach(task => {
     const isOverdue = task["дедлайн"] && new Date(task["дедлайн"]) < now && task["статус"] !== "Готово";
     const card = document.createElement("div");
-    card.className = `task ${task["пріоритет"] === "Високий" ? "high" : ""} ${isOverdue ? "overdue" : ""}`;
+    card.className = `task ${task["пріоритет"]==="Високий"?"high":""} ${isOverdue?"overdue":""}`;
     card.dataset.id = task.id;
     card.onclick = () => openTask(task.id);
     card.innerHTML = `
-      <div class="task-title">${task["назва"] || "Без назви"}</div>
-      <div class="task-direction">📁 ${task["напрямок"] || "—"}</div>
+      <div class="task-title">${task["назва"]||"Без назви"}</div>
+      <div class="task-direction">📁 ${task["напрямок"]||"—"}</div>
       <div class="task-meta">
-        <div>👤 ${task["виконавець"] || "—"}</div>
-        <div>⏰ ${task["дедлайн"] || "—"}</div>
-        ${task["пріоритет"] === "Високий" ? '<div style="color:var(--danger)">🔥 Високий пріоритет</div>' : ""}
+        <div>👤 ${task["виконавець"]||"—"}</div>
+        <div>⏰ ${task["дедлайн"]||"—"}</div>
+        ${task["пріоритет"]==="Високий"?'<div style="color:var(--danger)">🔥 Високий пріоритет</div>':""}
       </div>`;
-
-    const status = task["статус"] || "Треба зробити";
-    const colId  = COL_ID_MAP[status] || "todo";
-    document.getElementById(colId).appendChild(card);
+    document.getElementById(COL_ID_MAP[task["статус"]||"Треба зробити"]||"todo").appendChild(card);
   });
 
-  // Update counts
   ["todo","progress","review","revision","done"].forEach(id => {
-    document.getElementById("count" + id.charAt(0).toUpperCase() + id.slice(1)).textContent =
-      document.getElementById(id).children.length;
+    document.getElementById("count"+id[0].toUpperCase()+id.slice(1)).textContent = document.getElementById(id).children.length;
   });
-
   document.getElementById("totalTasks").textContent    = filtered.length;
   document.getElementById("progressTasks").textContent = document.getElementById("progress").children.length;
   document.getElementById("reviewTasks").textContent   = document.getElementById("review").children.length;
   document.getElementById("doneTasks").textContent     = document.getElementById("done").children.length;
   document.getElementById("overdueTasks").textContent  = filtered.filter(t =>
-    t["дедлайн"] && new Date(t["дедлайн"]) < now && t["статус"] !== "Готово"
-  ).length;
+    t["дедлайн"] && new Date(t["дедлайн"]) < now && t["статус"] !== "Готово").length;
 }
 
 // ─── DATE FILTERS ─────────────────────────────────────────
 function formatDate(d) { return d.toISOString().split("T")[0]; }
+function setTodayFilter()  { const t=new Date(); document.getElementById("dateFrom").value=formatDate(t); document.getElementById("dateTo").value=formatDate(t); render(); }
+function setWeekFilter()   { const t=new Date(),w=new Date(); w.setDate(t.getDate()-7); document.getElementById("dateFrom").value=formatDate(w); document.getElementById("dateTo").value=formatDate(t); render(); }
+function setMonthFilter()  { const t=new Date(),m=new Date(); m.setDate(t.getDate()-30); document.getElementById("dateFrom").value=formatDate(m); document.getElementById("dateTo").value=formatDate(t); render(); }
+function clearDateFilter() { document.getElementById("dateFrom").value=""; document.getElementById("dateTo").value=""; render(); }
 
-function setTodayFilter() {
-  const t = new Date();
-  document.getElementById("dateFrom").value = formatDate(t);
-  document.getElementById("dateTo").value   = formatDate(t);
-  render();
-}
-function setWeekFilter() {
-  const t = new Date(), w = new Date();
-  w.setDate(t.getDate() - 7);
-  document.getElementById("dateFrom").value = formatDate(w);
-  document.getElementById("dateTo").value   = formatDate(t);
-  render();
-}
-function setMonthFilter() {
-  const t = new Date(), m = new Date();
-  m.setDate(t.getDate() - 30);
-  document.getElementById("dateFrom").value = formatDate(m);
-  document.getElementById("dateTo").value   = formatDate(t);
-  render();
-}
-function clearDateFilter() {
-  document.getElementById("dateFrom").value = "";
-  document.getElementById("dateTo").value   = "";
-  render();
-}
-
-// ─── SORTABLE (DRAG & DROP) ────────────────────────────────
+// ─── SORTABLE ─────────────────────────────────────────────
 function initSortable() {
   ["todo","progress","review","revision","done"].forEach(id => {
     new Sortable(document.getElementById(id), {
-      group: "tasks",
-      animation: 150,
+      group:"tasks", animation:150,
       onEnd: async (evt) => {
-        const taskId   = evt.item.dataset.id;
+        const taskId    = evt.item.dataset.id;
         const newStatus = COLUMN_MAP[evt.to.id];
         if (!newStatus || !taskId) return;
-
-        // Optimistic local update
         const task = tasks.find(t => t.id == taskId);
         if (task) task["статус"] = newStatus;
         render();
-
-        const res = await apiPost({ action: "updateStatus", taskId, status: newStatus });
-        if (res && res.success) {
-          showToast(`Статус змінено → ${newStatus}`);
-        } else {
-          // Revert on fail
+        try {
+          await gasRun("updateTaskStatus", { taskId, status: newStatus });
+          showToast(`→ ${newStatus}`);
+        } catch(e) {
           await loadData();
           showToast("Не вдалося оновити статус", true);
         }
@@ -470,23 +401,19 @@ function initSortable() {
   });
 }
 
-// ─── OPEN TASK ─────────────────────────────────────────────
+// ─── OPEN TASK ────────────────────────────────────────────
 function openTask(id) {
   currentTaskId = id;
   const task = tasks.find(t => t.id == id);
   if (!task) return;
-
   document.getElementById("editTitle").value       = task["назва"]      || "";
   document.getElementById("editDescription").value = task["опис"]       || "";
-  document.getElementById("editPriority").value     = task["пріоритет"] || "Середній";
-  document.getElementById("editDeadline").value     = task["дедлайн"]   || "";
-
-  // Wait for selects to be populated
+  document.getElementById("editPriority").value    = task["пріоритет"]  || "Середній";
+  document.getElementById("editDeadline").value    = task["дедлайн"]    || "";
   setTimeout(() => {
     document.getElementById("editDirection").value = task["напрямок"]   || "";
     document.getElementById("editAssignee").value  = task["виконавець"] || "";
   }, 0);
-
   renderApprovalHistory(task);
   renderComments();
   document.getElementById("taskModal").classList.add("show");
@@ -496,47 +423,38 @@ function openTask(id) {
 async function saveTask() {
   const task = tasks.find(t => t.id == currentTaskId);
   if (!task) return;
-
-  const updated = {
-    ...task,
+  Object.assign(task, {
     "назва":      document.getElementById("editTitle").value,
     "опис":       document.getElementById("editDescription").value,
     "пріоритет":  document.getElementById("editPriority").value,
     "дедлайн":    document.getElementById("editDeadline").value,
     "напрямок":   document.getElementById("editDirection").value,
     "виконавець": document.getElementById("editAssignee").value,
-  };
-
-  // Optimistic
-  Object.assign(task, updated);
+  });
   render();
-
-  const res = await apiPost({ action: "updateTask", task: updated });
-  if (res && res.success) {
-    showToast("Задачу збережено ✓");
+  try {
+    await gasRun("updateTask", task);
+    showToast("Збережено ✓");
     closeTaskModal();
-  } else {
+  } catch(e) {
     showToast("Помилка збереження", true);
   }
 }
 
 // ─── MOVE TASK ────────────────────────────────────────────
-async function moveTask(direction) {
+async function moveTask(dir) {
   const task = tasks.find(t => t.id == currentTaskId);
   if (!task) return;
-
-  const idx = STATUS_ORDER.indexOf(task["статус"] || "Треба зробити");
-  const newIdx = idx + direction;
-  if (newIdx < 0 || newIdx >= STATUS_ORDER.length) return showToast("Далі нікуди", true);
-
-  const newStatus = STATUS_ORDER[newIdx];
+  const idx = STATUS_ORDER.indexOf(task["статус"]||"Треба зробити");
+  const nIdx = idx + dir;
+  if (nIdx < 0 || nIdx >= STATUS_ORDER.length) return showToast("Далі нікуди", true);
+  const newStatus = STATUS_ORDER[nIdx];
   task["статус"] = newStatus;
   render();
-
-  const res = await apiPost({ action: "updateStatus", taskId: currentTaskId, status: newStatus });
-  if (res && res.success) {
+  try {
+    await gasRun("updateTaskStatus", { taskId: currentTaskId, status: newStatus });
     showToast(`→ ${newStatus}`);
-  } else {
+  } catch(e) {
     await loadData();
     showToast("Помилка зміни статусу", true);
   }
@@ -544,113 +462,88 @@ async function moveTask(direction) {
 function moveTaskBack()    { moveTask(-1); }
 function moveTaskForward() { moveTask(+1); }
 
-// ─── APPROVE ─────────────────────────────────────────────
+// ─── APPROVE ──────────────────────────────────────────────
 async function confirmApprove() {
   const task = tasks.find(t => t.id == currentTaskId);
   if (!task) return;
-
   const approver = prompt("Ваше ім'я (для підпису):");
   if (!approver) return;
-
-  const record = {
-    approver,
-    date:   new Date().toLocaleString("uk-UA"),
-    status: "Погоджено"
-  };
-
+  const record = { approver, date: new Date().toLocaleString("uk-UA"), status: "Погоджено" };
   if (!task["approvalHistory"]) task["approvalHistory"] = [];
   task["approvalHistory"].push(record);
   task["статус"] = "Готово";
   render();
   renderApprovalHistory(task);
-
-  const res = await apiPost({ action: "approve", taskId: currentTaskId, approver, date: record.date });
-  if (res && res.success) {
-    showToast("Задачу погоджено ✓");
-  } else {
-    showToast("Погодження збережено локально", false);
+  try {
+    await gasRun("approveTask", { taskId: currentTaskId, approver, date: record.date });
+    showToast("Погоджено ✓");
+  } catch(e) {
+    showToast("Погоджено локально", false);
   }
 }
 
 function renderApprovalHistory(task) {
   const el = document.getElementById("approvalHistory");
-  if (!task["approvalHistory"] || !task["approvalHistory"].length) {
-    el.innerHTML = "Поки немає погодження";
-    return;
-  }
-  el.innerHTML = task["approvalHistory"].map(r => `
-    <div class="history-item">
-      <strong>${r.approver}</strong> — ${r.status} <span style="color:var(--muted)">${r.date}</span>
-    </div>`).join("");
+  if (!task["approvalHistory"]?.length) { el.innerHTML = "Поки немає погодження"; return; }
+  el.innerHTML = task["approvalHistory"].map(r =>
+    `<div class="history-item"><strong>${r.approver}</strong> — ${r.status} <span style="color:var(--muted)">${r.date}</span></div>`
+  ).join("");
 }
 
 // ─── REVISION ─────────────────────────────────────────────
-function openRevisionPrompt() {
-  document.getElementById("revisionComment").value = "";
-  document.getElementById("revisionModal").classList.add("show");
-}
-function closeRevisionModal() {
-  document.getElementById("revisionModal").classList.remove("show");
-}
+function openRevisionPrompt() { document.getElementById("revisionComment").value=""; document.getElementById("revisionModal").classList.add("show"); }
+function closeRevisionModal() { document.getElementById("revisionModal").classList.remove("show"); }
+
 async function submitRevision() {
   const comment = document.getElementById("revisionComment").value.trim();
   if (!comment) return showToast("Вкажіть причину правок", true);
-
   const task = tasks.find(t => t.id == currentTaskId);
   if (!task) return;
-
   task["статус"] = "Потрібні правки";
   render();
   closeRevisionModal();
-
-  // Auto-add as comment
-  const res = await apiPost({
-    action:  "addComment",
-    taskId:  currentTaskId,
-    author:  "Reviewer",
-    text:    `🔁 На правки: ${comment}`
-  });
-
-  await apiPost({ action: "updateStatus", taskId: currentTaskId, status: "Потрібні правки" });
-  comments.push({ taskId: currentTaskId, author: "Reviewer", text: `🔁 На правки: ${comment}`, date: new Date().toISOString() });
+  const text = `🔁 На правки: ${comment}`;
+  comments.push({ taskId: currentTaskId, author:"Reviewer", text, date:new Date().toISOString() });
   renderComments();
-  showToast("Відправлено на правки");
+  try {
+    await gasRun("addComment",    { taskId:currentTaskId, author:"Reviewer", text });
+    await gasRun("updateTaskStatus", { taskId:currentTaskId, status:"Потрібні правки" });
+    showToast("Відправлено на правки");
+  } catch(e) { showToast("Помилка синхронізації", true); }
 }
 
 // ─── COMMENTS ─────────────────────────────────────────────
 function renderComments() {
-  const el = document.getElementById("commentsList");
+  const el   = document.getElementById("commentsList");
   const list = comments.filter(c => c.taskId == currentTaskId);
-  if (!list.length) { el.innerHTML = `<div style="color:var(--muted);font-size:13px;">Коментарів немає</div>`; return; }
-  el.innerHTML = list.map(c => `
-    <div class="comment">
-      <div class="comment-author">${c.author}</div>
-      ${c.date ? `<div class="comment-date">${new Date(c.date).toLocaleString("uk-UA")}</div>` : ""}
-      <div>${c.text}</div>
-    </div>`).join("");
+  el.innerHTML = list.length
+    ? list.map(c => `<div class="comment">
+        <div class="comment-author">${c.author}</div>
+        ${c.date?`<div class="comment-date">${new Date(c.date).toLocaleString("uk-UA")}</div>`:""}
+        <div>${c.text}</div></div>`).join("")
+    : `<div style="color:var(--muted);font-size:13px;">Коментарів немає</div>`;
 }
 
 async function addComment() {
   const author = document.getElementById("commentAuthor").value.trim();
   const text   = document.getElementById("commentText").value.trim();
   if (!author || !text) return showToast("Заповніть ім'я та текст", true);
-
-  const newComment = { taskId: currentTaskId, author, text, date: new Date().toISOString() };
-  comments.push(newComment);
+  const nc = { taskId:currentTaskId, author, text, date:new Date().toISOString() };
+  comments.push(nc);
   renderComments();
   document.getElementById("commentText").value = "";
-
-  await apiPost({ action: "addComment", taskId: currentTaskId, author, text });
-  showToast("Коментар додано");
+  try {
+    await gasRun("addComment", { taskId:currentTaskId, author, text });
+    showToast("Коментар додано");
+  } catch(e) { showToast("Помилка синхронізації", true); }
 }
 
 // ─── CREATE TASK ──────────────────────────────────────────
 async function createTask() {
   const title = document.getElementById("newTitle").value.trim();
   if (!title) return showToast("Введіть назву задачі", true);
-
   const newTask = {
-    id:            Date.now(),
+    id: Date.now(),
     "назва":       title,
     "опис":        document.getElementById("newDescription").value,
     "напрямок":    document.getElementById("newDirection").value,
@@ -660,119 +553,89 @@ async function createTask() {
     "статус":      "Треба зробити",
     "approvalHistory": []
   };
-
   tasks.push(newTask);
   render();
   closeCreateModal();
-
-  // Clear form
-  ["newTitle","newDescription","newDeadline"].forEach(id => document.getElementById(id).value = "");
-
-  const res = await apiPost({ action: "createTask", task: newTask });
-  if (res && res.success) {
-    if (res.id) { newTask.id = res.id; }
+  ["newTitle","newDescription","newDeadline"].forEach(id => document.getElementById(id).value="");
+  try {
+    const res = await gasRun("createTask", newTask);
+    if (res?.id) newTask.id = res.id;
     showToast("Задачу створено ✓");
-  } else {
-    showToast("Задачу додано локально (без синхронізації)", false);
+  } catch(e) {
+    showToast("Задача додана локально", false);
   }
 }
 
 // ─── DAILY PLAN ───────────────────────────────────────────
 function renderDailyPlan() {
   const el = document.getElementById("dailyPlanTasks");
-  const activeTasks = tasks.filter(t => t["статус"] !== "Готово");
-
-  el.innerHTML = activeTasks.length
-    ? activeTasks.map(task => `
+  const active = tasks.filter(t => t["статус"] !== "Готово");
+  el.innerHTML = active.length
+    ? active.map(task => `
         <label class="plan-task">
-          <input type="checkbox" ${dailyPlan.includes(String(task.id)) ? "checked" : ""}
-            onchange="toggleDailyTask('${task.id}', this.checked)"/>
+          <input type="checkbox" ${dailyPlan.includes(String(task.id))?"checked":""}
+            onchange="toggleDailyTask('${task.id}',this.checked)"/>
           <div class="plan-task-content">
             <div class="plan-task-title">${task["назва"]}</div>
-            <div class="task-direction">📁 ${task["напрямок"] || "—"}</div>
-            <div style="font-size:13px;color:var(--muted)">👤 ${task["виконавець"] || "—"} · ⏰ ${task["дедлайн"] || "—"}</div>
+            <div class="task-direction">📁 ${task["напрямок"]||"—"}</div>
+            <div style="font-size:13px;color:var(--muted)">👤 ${task["виконавець"]||"—"} · ⏰ ${task["дедлайн"]||"—"}</div>
           </div>
         </label>`).join("")
-    : `<div style="color:var(--muted);">Активних задач немає</div>`;
+    : `<div style="color:var(--muted)">Активних задач немає</div>`;
 }
 
 function toggleDailyTask(id, checked) {
-  const sid = String(id);
-  if (checked) {
-    if (!dailyPlan.includes(sid)) dailyPlan.push(sid);
-  } else {
-    dailyPlan = dailyPlan.filter(x => x !== sid);
-  }
+  const s = String(id);
+  dailyPlan = checked ? [...new Set([...dailyPlan, s])] : dailyPlan.filter(x => x !== s);
 }
 
 function addQuickTask() {
   const input = document.getElementById("quickTaskInput");
-  const val   = input.value.trim();
-  if (!val) return;
-  quickTasks.push(val);
+  if (!input.value.trim()) return;
+  quickTasks.push(input.value.trim());
   renderQuickTasksList();
   input.value = "";
 }
 
 function renderQuickTasksList() {
-  const el = document.getElementById("quickTasksList");
-  el.innerHTML = quickTasks.map((t, i) => `
+  document.getElementById("quickTasksList").innerHTML = quickTasks.map((t,i) => `
     <div class="plan-task" style="align-items:center;">
       <span style="font-size:18px;">📌</span>
-      <div class="plan-task-content">
-        <div class="plan-task-title">${t}</div>
-      </div>
+      <div class="plan-task-content"><div class="plan-task-title">${t}</div></div>
       <button onclick="removeQuickTask(${i})" style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:18px;">✕</button>
     </div>`).join("");
 }
 
-function removeQuickTask(i) {
-  quickTasks.splice(i, 1);
-  renderQuickTasksList();
-}
+function removeQuickTask(i) { quickTasks.splice(i,1); renderQuickTasksList(); }
 
 async function confirmDailyPlan() {
   const selected = tasks.filter(t => dailyPlan.includes(String(t.id)));
   const lines = [
-    `📋 План на ${new Date().toLocaleDateString("uk-UA")}`,
-    "",
-    ...selected.map(t => `✅ ${t["назва"]} (${t["виконавець"] || "—"})`),
-    ...(quickTasks.length ? ["", "📌 Швидкі задачі:", ...quickTasks.map(t => `• ${t}`)] : [])
+    `📋 План на ${new Date().toLocaleDateString("uk-UA")}`, "",
+    ...selected.map(t => `✅ ${t["назва"]} (${t["виконавець"]||"—"})`),
+    ...(quickTasks.length ? ["","📌 Швидкі задачі:",...quickTasks.map(t=>`• ${t}`)] : [])
   ];
-  const text = lines.join("\n");
-  await navigator.clipboard.writeText(text).catch(() => {});
-  showToast(`План сформовано (${selected.length + quickTasks.length} задач) — скопійовано в буфер`);
+  await navigator.clipboard.writeText(lines.join("\n")).catch(()=>{});
+  showToast(`План сформовано (${selected.length + quickTasks.length} задач) — скопійовано`);
   closeDailyPlanModal();
 }
 
-// ─── MODAL HELPERS ────────────────────────────────────────
+// ─── MODALS ───────────────────────────────────────────────
 function openCreateModal()    { document.getElementById("createTaskModal").classList.add("show"); }
 function closeCreateModal()   { document.getElementById("createTaskModal").classList.remove("show"); }
 function openDailyPlanModal() {
-  dailyPlan  = [];
-  quickTasks = [];
-  renderDailyPlan();
-  renderQuickTasksList();
+  dailyPlan=[]; quickTasks=[];
+  renderDailyPlan(); renderQuickTasksList();
   document.getElementById("dailyPlanModal").classList.add("show");
 }
 function closeDailyPlanModal(){ document.getElementById("dailyPlanModal").classList.remove("show"); }
-function closeTaskModal()     { document.getElementById("taskModal").classList.remove("show"); currentTaskId = null; }
+function closeTaskModal()     { document.getElementById("taskModal").classList.remove("show"); currentTaskId=null; }
 
-// Close modal on backdrop click
-document.querySelectorAll(".modal").forEach(modal => {
-  modal.addEventListener("click", e => {
-    if (e.target === modal) modal.classList.remove("show");
-  });
-});
+document.querySelectorAll(".modal").forEach(m => m.addEventListener("click", e => { if(e.target===m) m.classList.remove("show"); }));
 
-// ─── NAV ─────────────────────────────────────────────────
-function showBoard() {
-  document.querySelectorAll(".nav-item").forEach((el,i) => el.classList.toggle("active", i===0));
-}
-function showAnalyticsPage() {
-  document.querySelectorAll(".nav-item").forEach((el,i) => el.classList.toggle("active", i===1));
-  showToast("Розділ аналітики — в розробці");
-}
+// ─── NAV ──────────────────────────────────────────────────
+function showBoard()        { document.querySelectorAll(".nav-item").forEach((el,i)=>el.classList.toggle("active",i===0)); }
+function showAnalyticsPage(){ document.querySelectorAll(".nav-item").forEach((el,i)=>el.classList.toggle("active",i===1)); showToast("Аналітика — в розробці"); }
 
 // ─── INIT ─────────────────────────────────────────────────
 initSortable();
