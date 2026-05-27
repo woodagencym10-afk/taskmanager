@@ -14,10 +14,10 @@
         button:hover { background-color: #0043a6; }
         
         #board-screen { display: none; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;}
         
-        .filters-bar { display: none; background: #dfe1e6; padding: 10px 15px; border-radius: 8px; margin-bottom: 20px; align-items: center; gap: 15px; }
-        .filters-bar select { padding: 6px; border-radius: 4px; border: 1px solid #ccc; }
+        .filters-bar { display: none; background: #dfe1e6; padding: 10px 15px; border-radius: 8px; margin-bottom: 20px; align-items: center; gap: 15px; flex-wrap: wrap; }
+        .filters-bar select, .filters-bar input[type="date"] { padding: 6px; border-radius: 4px; border: 1px solid #ccc; font-family: inherit; }
         
         .board { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 10px; }
         .column { background-color: var(--col-bg); border-radius: 8px; width: 280px; min-width: 280px; display: flex; flex-direction: column; max-height: 80vh; }
@@ -40,8 +40,6 @@
         .btn-success { background-color: #36b37e; margin-top: 15px; width: 100%;}
         .btn-success:hover { background-color: #2b9065; }
         .btn-logout { background-color: #ff5630; }
-        
-        /* Стиль для інпута дедлайну в режимі перегляду */
         .inline-edit-date { padding: 2px 5px !important; margin: 0 !important; width: auto !important; display: inline-block; font-size: 13px; }
     </style>
 </head>
@@ -61,16 +59,22 @@
                 <h2 style="margin: 0 0 5px 0;">Маркетинг / Задачі</h2>
                 <span id="user-info" style="color: #5e6c84; font-size: 14px;"></span>
             </div>
-            <div>
-                <button onclick="openCreateModal()" style="margin-right: 10px;">+ Нова картка</button>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <button onclick="openCreateModal()">+ Нова картка</button>
                 <button class="btn-logout" onclick="logout()">Вийти</button>
             </div>
         </div>
 
         <div id="filters-container" class="filters-bar">
-            <span>🔍 <b>Фільтри:</b></span>
-            <div><label>Відповідальний:</label><select id="filter-responsible" onchange="applyFilters()"><option value="">Всі</option></select></div>
-            <div><label>Напрямок:</label><select id="filter-direction" onchange="applyFilters()"><option value="">Всі</option></select></div>
+            <span>📅 <b>Показати виконане за:</b></span>
+            <input type="date" id="date-start" onchange="loadTasks()">
+            <span>до</span>
+            <input type="date" id="date-end" onchange="loadTasks()">
+            
+            <div style="border-left: 1px solid #aaa; padding-left: 15px; margin-left: 10px; display: flex; gap: 10px;">
+                <select id="filter-responsible" onchange="applyFilters()"><option value="">Всі відповідальні</option></select>
+                <select id="filter-direction" onchange="applyFilters()"><option value="">Всі напрямки</option></select>
+            </div>
         </div>
 
         <div class="board">
@@ -201,8 +205,20 @@
 
         async function loadTasks() {
             try {
-                const res = await fetch(SCRIPT_URL);
+                let startInput = document.getElementById('date-start');
+                let endInput = document.getElementById('date-end');
+                
+                if (!startInput.value) {
+                    const today = new Date().toISOString().split('T')[0];
+                    startInput.value = today;
+                    endInput.value = today;
+                }
+
+                const fetchUrl = `${SCRIPT_URL}?start=${startInput.value}&end=${endInput.value}`;
+                
+                const res = await fetch(fetchUrl);
                 const data = await res.json();
+                
                 if (data.success) {
                     currentTasks = data.tasks;
                     populateDropdowns(data.users, data.directions); 
@@ -217,7 +233,7 @@
             const filterDir = document.getElementById('filter-direction');
             const filterResp = document.getElementById('filter-responsible');
             
-            if (dirSelect.options.length > 0) return; // Щоб не перезаписувати, якщо вже заповнено
+            if (dirSelect.options.length > 0) return;
 
             filterDir.innerHTML = '<option value="">Всі напрямки</option>';
             filterResp.innerHTML = '<option value="">Всі відповідальні</option>';
@@ -232,10 +248,14 @@
 
         function applyFilters() { renderTasks(); }
 
+        // ОНОВЛЕНА ЛОГІКА ВІДОБРАЖЕННЯ З ПІДСВІТКОЮ ДЕДЛАЙНІВ
         function renderTasks() {
             document.querySelectorAll('.task-list').forEach(col => col.innerHTML = '');
             const selectedResp = document.getElementById('filter-responsible').value;
             const selectedDir = document.getElementById('filter-direction').value;
+
+            const today = new Date();
+            today.setHours(0,0,0,0);
 
             currentTasks.forEach(task => {
                 if (selectedResp && task.Responsible !== selectedResp) return;
@@ -249,8 +269,28 @@
                 card.dataset.id = task.ID;
                 card.onclick = () => openTaskModal(task.ID);
                 
-                let dateDisplay = task.Deadline ? new Date(task.Deadline).toLocaleDateString('uk-UA') : 'Без дедлайну';
-                card.innerHTML = `<div class="task-title">${task.Title}</div><div class="task-meta"><span>👤 ${task.Responsible}</span><span>📅 ${dateDisplay}</span></div>`;
+                let dateDisplay = 'Без дедлайну';
+                let isOverdue = false;
+
+                if (task.Deadline) {
+                    let dlDate = new Date(task.Deadline);
+                    dateDisplay = dlDate.toLocaleDateString('uk-UA');
+                    
+                    if (dlDate < today && task.Status !== 'Готово') {
+                        isOverdue = true;
+                    }
+                }
+                
+                let dateStyle = isOverdue ? 'color: #ff5630; font-weight: bold;' : '';
+                let warningIcon = isOverdue ? ' ⚠️' : '';
+                
+                card.innerHTML = `
+                    <div class="task-title">${task.Title}</div>
+                    <div class="task-meta">
+                        <span>👤 ${task.Responsible}</span>
+                        <span style="${dateStyle}">📅 ${dateDisplay}${warningIcon}</span>
+                    </div>
+                `;
                 column.appendChild(card);
             });
         }
@@ -274,7 +314,6 @@
             });
         }
 
-        // ЛОГІКА ІДЕЯ vs ЗАДАЧА
         function toggleDeadlineField() {
             const isIdea = document.getElementById('new-type').value === 'idea';
             document.getElementById('deadline-container').style.display = isIdea ? 'none' : 'block';
@@ -320,7 +359,6 @@
             document.getElementById('view-direction').innerText = task.Direction;
             document.getElementById('view-responsible').innerText = task.Responsible;
             
-            // Вставляємо дату в інпут для редагування
             const dateInput = document.getElementById('view-deadline-input');
             if (task.Deadline) {
                 dateInput.value = new Date(task.Deadline).toISOString().split('T')[0];
@@ -342,7 +380,6 @@
             document.getElementById('task-modal').style.display = 'flex';
         }
 
-        // РЕДАГУВАННЯ ДЕДЛАЙНУ
         async function updateTaskDeadline(newDate) {
             if (!openedTaskId) return;
             const res = await apiRequest({ action: "updateDeadline", taskId: openedTaskId, deadline: newDate });
@@ -350,10 +387,9 @@
                 document.getElementById('deadline-save-msg').style.display = 'inline';
                 setTimeout(() => { document.getElementById('deadline-save-msg').style.display = 'none'; }, 2000);
                 
-                // Оновлюємо локально
                 const taskIndex = currentTasks.findIndex(t => t.ID.toString() === openedTaskId.toString());
                 if (taskIndex > -1) currentTasks[taskIndex].Deadline = newDate;
-                renderTasks(); // Перемальовуємо дошку
+                renderTasks(); 
             }
         }
 
