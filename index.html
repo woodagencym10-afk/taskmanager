@@ -275,7 +275,6 @@
                 if (task.Status === 'Ідеї') {
                     dateHtml = `<span style="color: #8993a4;">💡 Ідея</span>`;
                 } else if (task.Status === 'Готово') {
-                    // ФОРМАТУВАННЯ КОЛОНКИ ГОТОВО: ДЕДЛАЙН ТА ФАКТИЧНА ДАТА
                     let closedDate = new Date(task.UpdatedAt).toLocaleDateString('uk-UA');
                     
                     if (task.Deadline) {
@@ -303,9 +302,13 @@
                     }
                 }
                 
+                // ДОДАНО ВИВЕДЕННЯ НАПРЯМКУ У ВИГЛЯДІ БЕЙДЖИКА
                 card.innerHTML = `
                     <div class="task-title">${task.Title}</div>
-                    <div class="task-meta" style="align-items: center;">
+                    <div style="font-size: 11px; color: #42526e; margin-bottom: 8px; font-weight: 500; background: #dfe1e6; display: inline-block; padding: 2px 6px; border-radius: 3px;">
+                        📁 ${task.Direction}
+                    </div>
+                    <div class="task-meta" style="align-items: flex-end;">
                         <span style="margin-bottom: 2px;">👤 ${task.Responsible}</span>
                         ${dateHtml}
                     </div>
