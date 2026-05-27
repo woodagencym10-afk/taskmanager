@@ -6,66 +6,31 @@
     <title>Маркетинг Таск-Менеджер</title>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <style>
-        :root {
-            --bg-color: #f4f5f7;
-            --col-bg: #ebecf0;
-            --card-bg: #ffffff;
-            --primary: #0052cc;
-            --text: #172b4d;
-        }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text);
-            margin: 0;
-            padding: 20px;
-        }
-        #login-screen {
-            max-width: 300px; margin: 100px auto; background: white;
-            padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); text-align: center;
-        }
-        #login-screen input, #login-screen select {
-            width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;
-        }
-        button {
-            background-color: var(--primary); color: white; border: none;
-            padding: 10px 15px; border-radius: 4px; cursor: pointer; font-weight: bold;
-        }
+        :root { --bg-color: #f4f5f7; --col-bg: #ebecf0; --card-bg: #ffffff; --primary: #0052cc; --text: #172b4d; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); color: var(--text); margin: 0; padding: 20px; }
+        #login-screen { max-width: 300px; margin: 100px auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); text-align: center; }
+        #login-screen input, #login-screen select { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        button { background-color: var(--primary); color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; }
         button:hover { background-color: #0043a6; }
         
         #board-screen { display: none; }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         
-        /* Блок фільтрів */
-        .filters-bar {
-            display: none; /* Приховано за замовчуванням, покажеться тільки керівнику */
-            background: #dfe1e6; padding: 10px 15px; border-radius: 8px;
-            margin-bottom: 20px; align-items: center; gap: 15px;
-        }
+        .filters-bar { display: none; background: #dfe1e6; padding: 10px 15px; border-radius: 8px; margin-bottom: 20px; align-items: center; gap: 15px; }
         .filters-bar select { padding: 6px; border-radius: 4px; border: 1px solid #ccc; }
-        .filters-bar label { font-size: 14px; font-weight: 500; }
-
+        
         .board { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 10px; }
         .column { background-color: var(--col-bg); border-radius: 8px; width: 280px; min-width: 280px; display: flex; flex-direction: column; max-height: 80vh; }
         .column-header { padding: 10px 15px; font-weight: bold; border-bottom: 2px solid #dfe1e6; }
         .task-list { padding: 10px; flex-grow: 1; overflow-y: auto; min-height: 50px; }
-        .task-card {
-            background-color: var(--card-bg); padding: 10px; border-radius: 4px;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1); margin-bottom: 10px; cursor: pointer; border-left: 4px solid var(--primary);
-        }
+        .task-card { background-color: var(--card-bg); padding: 10px; border-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); margin-bottom: 10px; cursor: pointer; border-left: 4px solid var(--primary); }
         .task-card:hover { background-color: #f9fafc; }
         .task-title { font-weight: bold; margin-bottom: 5px; font-size: 14px; }
         .task-meta { font-size: 12px; color: #5e6c84; display: flex; justify-content: space-between;}
 
-        .modal-overlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000;
-        }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; }
         .modal { background: white; padding: 25px; border-radius: 8px; width: 450px; max-width: 90%; max-height: 90vh; overflow-y: auto; }
-        .modal input, .modal select, .modal textarea {
-            width: 100%; padding: 8px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;
-            font-family: inherit;
-        }
+        .modal input, .modal select, .modal textarea { width: 100%; padding: 8px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-family: inherit; }
         .close-btn { float: right; cursor: pointer; font-size: 20px; font-weight: bold; }
         
         .comment-box { background: #f4f5f7; padding: 8px; border-radius: 4px; margin-bottom: 5px; font-size: 13px;}
@@ -75,6 +40,9 @@
         .btn-success { background-color: #36b37e; margin-top: 15px; width: 100%;}
         .btn-success:hover { background-color: #2b9065; }
         .btn-logout { background-color: #ff5630; }
+        
+        /* Стиль для інпута дедлайну в режимі перегляду */
+        .inline-edit-date { padding: 2px 5px !important; margin: 0 !important; width: auto !important; display: inline-block; font-size: 13px; }
     </style>
 </head>
 <body>
@@ -94,25 +62,15 @@
                 <span id="user-info" style="color: #5e6c84; font-size: 14px;"></span>
             </div>
             <div>
-                <button onclick="openCreateModal()" style="margin-right: 10px;">+ Нова задача</button>
+                <button onclick="openCreateModal()" style="margin-right: 10px;">+ Нова картка</button>
                 <button class="btn-logout" onclick="logout()">Вийти</button>
             </div>
         </div>
 
         <div id="filters-container" class="filters-bar">
             <span>🔍 <b>Фільтри:</b></span>
-            <div>
-                <label>Відповідальний:</label>
-                <select id="filter-responsible" onchange="applyFilters()">
-                    <option value="">Всі</option>
-                </select>
-            </div>
-            <div>
-                <label>Напрямок:</label>
-                <select id="filter-direction" onchange="applyFilters()">
-                    <option value="">Всі</option>
-                </select>
-            </div>
+            <div><label>Відповідальний:</label><select id="filter-responsible" onchange="applyFilters()"><option value="">Всі</option></select></div>
+            <div><label>Напрямок:</label><select id="filter-direction" onchange="applyFilters()"><option value="">Всі</option></select></div>
         </div>
 
         <div class="board">
@@ -128,24 +86,32 @@
     <div id="create-modal" class="modal-overlay">
         <div class="modal">
             <span class="close-btn" onclick="closeModal('create-modal')">&times;</span>
-            <h3 style="margin-top: 0;">Додати задачу</h3>
+            <h3 style="margin-top: 0;">Створити</h3>
             
-            <label>Що треба зробити?</label>
-            <input type="text" id="new-title" placeholder="Коротка назва">
+            <label>Тип картки:</label>
+            <select id="new-type" onchange="toggleDeadlineField()">
+                <option value="task">📝 Задача (обов'язково виконати)</option>
+                <option value="idea">💡 Ідея (на потім)</option>
+            </select>
+
+            <label>Назва</label>
+            <input type="text" id="new-title" placeholder="Коротко...">
             
-            <label>Детальний опис задачі</label>
-            <textarea id="new-description" rows="3" placeholder="Опишіть деталі, посилання або вимоги..."></textarea>
+            <label>Детальний опис</label>
+            <textarea id="new-description" rows="3" placeholder="Опишіть деталі..."></textarea>
             
-            <label>Напрямок (Сторінка)</label>
+            <label>Напрямок</label>
             <select id="new-direction"></select>
 
             <label>Відповідальний</label>
             <select id="new-responsible"></select>
 
-            <label>Дедлайн</label>
-            <input type="date" id="new-deadline">
+            <div id="deadline-container">
+                <label>Дедлайн</label>
+                <input type="date" id="new-deadline">
+            </div>
 
-            <button style="width: 100%;" onclick="submitTask()">Створити</button>
+            <button style="width: 100%;" onclick="submitTask()">Зберегти</button>
         </div>
     </div>
 
@@ -153,11 +119,14 @@
         <div class="modal">
             <span class="close-btn" onclick="closeModal('task-modal')">&times;</span>
             <h3 id="view-title" style="margin-top: 0;">Назва</h3>
-            <p style="font-size: 13px; color: #555; margin-bottom: 10px;">
-                Напрямок: <b id="view-direction"></b> | 
-                Відповідальний: <b id="view-responsible"></b><br>
-                Дедлайн: <b id="view-deadline"></b>
-            </p>
+            
+            <div style="font-size: 13px; color: #555; margin-bottom: 10px; display: flex; flex-direction: column; gap: 5px;">
+                <div>Напрямок: <b id="view-direction"></b> | Відповідальний: <b id="view-responsible"></b></div>
+                <div style="display: flex; align-items: center; gap: 5px;">
+                    Дедлайн: <input type="date" id="view-deadline-input" class="inline-edit-date" onchange="updateTaskDeadline(this.value)">
+                    <span id="deadline-save-msg" style="color: green; font-size: 11px; display: none;">✔ Збережено</span>
+                </div>
+            </div>
             
             <div style="background: #f4f5f7; padding: 10px; border-radius: 4px; margin-bottom: 15px;">
                 <b style="font-size: 13px;">Опис:</b>
@@ -168,7 +137,6 @@
             
             <h4 style="margin: 0 0 10px 0;">Коментарі</h4>
             <div id="comments-container" style="max-height: 150px; overflow-y: auto; margin-bottom: 15px;"></div>
-            
             <textarea id="new-comment" rows="2" placeholder="Написати коментар..."></textarea>
             <button style="width: 100%;" onclick="addComment()">Додати коментар</button>
 
@@ -178,13 +146,11 @@
 
     <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyOTEc7GxwlQJTXehW6zmDbSdFkwBswC9mIGdknwEufNIpeYrAjaSuhXw5rW3Is60ME/exec";
-        
         let currentTasks = [];
         let openedTaskId = null;
 
         window.onload = () => {
-            const token = localStorage.getItem("userToken");
-            if (token) showBoard();
+            if (localStorage.getItem("userToken")) showBoard();
         };
 
         async function appLogin() {
@@ -193,8 +159,7 @@
             const err = document.getElementById("login-error");
             
             err.style.display = "none";
-            const btn = document.querySelector("#login-screen button");
-            btn.innerText = "Завантаження...";
+            document.querySelector("#login-screen button").innerText = "Завантаження...";
 
             try {
                 const res = await apiRequest({ action: "login", username: user, password: pass });
@@ -205,11 +170,9 @@
                     showBoard();
                 } else {
                     err.innerText = res.error; err.style.display = "block";
+                    document.querySelector("#login-screen button").innerText = "Увійти";
                 }
-            } catch (e) {
-                err.innerText = "Помилка з'єднання."; err.style.display = "block";
-            }
-            btn.innerText = "Увійти";
+            } catch (e) { err.innerText = "Помилка."; err.style.display = "block"; }
         }
 
         function logout() {
@@ -223,11 +186,8 @@
             document.getElementById("board-screen").style.display = "block";
             document.getElementById("user-info").innerText = `Користувач: ${localStorage.getItem("userName")} (${localStorage.getItem("userRole")})`;
             
-            // Показуємо фільтри тільки для керівника/овнера
             const role = localStorage.getItem("userRole");
-            if (role === "manager" || role === "owner") {
-                document.getElementById("filters-container").style.display = "flex";
-            }
+            if (role === "manager" || role === "owner") document.getElementById("filters-container").style.display = "flex";
 
             initSortable();
             loadTasks();
@@ -235,9 +195,7 @@
 
         async function apiRequest(payload) {
             payload.token = localStorage.getItem("userToken");
-            const response = await fetch(SCRIPT_URL, {
-                method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload)
-            });
+            const response = await fetch(SCRIPT_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
             return await response.json();
         }
 
@@ -259,36 +217,27 @@
             const filterDir = document.getElementById('filter-direction');
             const filterResp = document.getElementById('filter-responsible');
             
-            dirSelect.innerHTML = ''; respSelect.innerHTML = '';
+            if (dirSelect.options.length > 0) return; // Щоб не перезаписувати, якщо вже заповнено
+
             filterDir.innerHTML = '<option value="">Всі напрямки</option>';
             filterResp.innerHTML = '<option value="">Всі відповідальні</option>';
 
             if (directions) {
-                directions.forEach(d => {
-                    dirSelect.innerHTML += `<option value="${d}">${d}</option>`;
-                    filterDir.innerHTML += `<option value="${d}">${d}</option>`;
-                });
+                directions.forEach(d => { dirSelect.innerHTML += `<option value="${d}">${d}</option>`; filterDir.innerHTML += `<option value="${d}">${d}</option>`; });
             }
             if (users) {
-                users.forEach(u => {
-                    respSelect.innerHTML += `<option value="${u}">${u}</option>`;
-                    filterResp.innerHTML += `<option value="${u}">${u}</option>`;
-                });
+                users.forEach(u => { respSelect.innerHTML += `<option value="${u}">${u}</option>`; filterResp.innerHTML += `<option value="${u}">${u}</option>`; });
             }
         }
 
-        function applyFilters() {
-            renderTasks();
-        }
+        function applyFilters() { renderTasks(); }
 
         function renderTasks() {
             document.querySelectorAll('.task-list').forEach(col => col.innerHTML = '');
-            
             const selectedResp = document.getElementById('filter-responsible').value;
             const selectedDir = document.getElementById('filter-direction').value;
 
             currentTasks.forEach(task => {
-                // Логіка фільтрації
                 if (selectedResp && task.Responsible !== selectedResp) return;
                 if (selectedDir && task.Direction !== selectedDir) return;
 
@@ -300,15 +249,8 @@
                 card.dataset.id = task.ID;
                 card.onclick = () => openTaskModal(task.ID);
                 
-                let dateDisplay = task.Deadline ? new Date(task.Deadline).toLocaleDateString('uk-UA') : 'Немає';
-                
-                card.innerHTML = `
-                    <div class="task-title">${task.Title}</div>
-                    <div class="task-meta">
-                        <span>👤 ${task.Responsible}</span>
-                        <span>📅 ${dateDisplay}</span>
-                    </div>
-                `;
+                let dateDisplay = task.Deadline ? new Date(task.Deadline).toLocaleDateString('uk-UA') : 'Без дедлайну';
+                card.innerHTML = `<div class="task-title">${task.Title}</div><div class="task-meta"><span>👤 ${task.Responsible}</span><span>📅 ${dateDisplay}</span></div>`;
                 column.appendChild(card);
             });
         }
@@ -321,7 +263,6 @@
                         const taskId = evt.item.dataset.id;
                         const newStatus = evt.to.dataset.status;
                         if (newStatus !== evt.from.dataset.status) {
-                            // Локально оновлюємо стан, щоб фільтри працювали одразу
                             const tIndex = currentTasks.findIndex(t => t.ID.toString() === taskId.toString());
                             if(tIndex > -1) currentTasks[tIndex].Status = newStatus;
 
@@ -333,25 +274,40 @@
             });
         }
 
-        function openCreateModal() { document.getElementById('create-modal').style.display = 'flex'; }
+        // ЛОГІКА ІДЕЯ vs ЗАДАЧА
+        function toggleDeadlineField() {
+            const isIdea = document.getElementById('new-type').value === 'idea';
+            document.getElementById('deadline-container').style.display = isIdea ? 'none' : 'block';
+        }
+
+        function openCreateModal() { 
+            document.getElementById('new-type').value = 'task';
+            toggleDeadlineField();
+            document.getElementById('create-modal').style.display = 'flex'; 
+        }
+        
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
         async function submitTask() {
             const title = document.getElementById('new-title').value;
             if (!title) return alert("Введіть назву!");
             
+            const isIdea = document.getElementById('new-type').value === 'idea';
+            
             await apiRequest({
                 action: "createTask",
+                isIdea: isIdea,
                 title: title,
-                description: document.getElementById('new-description').value, // Передаємо опис
+                description: document.getElementById('new-description').value,
                 direction: document.getElementById('new-direction').value,
                 responsible: document.getElementById('new-responsible').value,
-                deadline: document.getElementById('new-deadline').value
+                deadline: isIdea ? "" : document.getElementById('new-deadline').value
             });
             
             closeModal('create-modal');
             document.getElementById('new-title').value = '';
             document.getElementById('new-description').value = '';
+            document.getElementById('new-deadline').value = '';
             loadTasks();
         }
 
@@ -360,12 +316,18 @@
             const task = currentTasks.find(t => t.ID.toString() === id.toString());
             
             document.getElementById('view-title').innerText = task.Title;
-            // Відображаємо опис. Якщо він порожній, пишемо "Немає опису"
             document.getElementById('view-description').innerText = task.Description ? task.Description : 'Немає опису';
-            
             document.getElementById('view-direction').innerText = task.Direction;
             document.getElementById('view-responsible').innerText = task.Responsible;
-            document.getElementById('view-deadline').innerText = task.Deadline ? new Date(task.Deadline).toLocaleDateString('uk-UA') : 'Не встановлено';
+            
+            // Вставляємо дату в інпут для редагування
+            const dateInput = document.getElementById('view-deadline-input');
+            if (task.Deadline) {
+                dateInput.value = new Date(task.Deadline).toISOString().split('T')[0];
+            } else {
+                dateInput.value = '';
+            }
+            document.getElementById('deadline-save-msg').style.display = 'none';
             
             renderComments(task.Comments);
             
@@ -380,16 +342,28 @@
             document.getElementById('task-modal').style.display = 'flex';
         }
 
+        // РЕДАГУВАННЯ ДЕДЛАЙНУ
+        async function updateTaskDeadline(newDate) {
+            if (!openedTaskId) return;
+            const res = await apiRequest({ action: "updateDeadline", taskId: openedTaskId, deadline: newDate });
+            if (res.success) {
+                document.getElementById('deadline-save-msg').style.display = 'inline';
+                setTimeout(() => { document.getElementById('deadline-save-msg').style.display = 'none'; }, 2000);
+                
+                // Оновлюємо локально
+                const taskIndex = currentTasks.findIndex(t => t.ID.toString() === openedTaskId.toString());
+                if (taskIndex > -1) currentTasks[taskIndex].Deadline = newDate;
+                renderTasks(); // Перемальовуємо дошку
+            }
+        }
+
         function renderComments(commentsJson) {
             const container = document.getElementById('comments-container');
             container.innerHTML = '';
             let comments = [];
             try { comments = JSON.parse(commentsJson); } catch(e) {}
             
-            if (comments.length === 0) {
-                container.innerHTML = '<span style="font-size:12px; color:#999;">Ще немає коментарів.</span>';
-                return;
-            }
+            if (comments.length === 0) { container.innerHTML = '<span style="font-size:12px; color:#999;">Ще немає коментарів.</span>'; return; }
             comments.forEach(c => {
                 const dateObj = new Date(c.date);
                 const dateStr = dateObj.toLocaleDateString('uk-UA') + ' ' + dateObj.toLocaleTimeString('uk-UA', {hour: '2-digit', minute:'2-digit'});
