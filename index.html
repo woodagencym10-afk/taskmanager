@@ -65,15 +65,16 @@
         .header-title { font-size: 24px; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 10px; letter-spacing: -0.5px;}
         .user-badge { background: var(--bg-col); border: 1px solid var(--border-light); padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 500; color: var(--text-sec); }
         
-        /* АНАЛІТИКА — тепер 6 карток по статусах */
         .stats-container { display: none; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 25px; }
         .stat-card { background: var(--bg-col); border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 16px 20px; box-shadow: var(--shadow-card); display: flex; flex-direction: column; gap: 6px; }
         .stat-card.alert { background: rgba(239, 68, 68, 0.05); border-color: rgba(239, 68, 68, 0.3); }
         .stat-card.success { background: rgba(16, 185, 129, 0.05); border-color: rgba(16, 185, 129, 0.3); }
+        .stat-card.warning { background: rgba(234, 179, 8, 0.05); border-color: rgba(234, 179, 8, 0.3); }
         .stat-title { font-size: 11px; font-weight: 600; color: var(--text-sec); text-transform: uppercase; letter-spacing: 0.5px; }
         .stat-value { font-size: 28px; font-weight: 700; color: var(--text-main); line-height: 1; }
         .stat-card.alert .stat-value { color: #F87171; }
         .stat-card.success .stat-value { color: #34D399; }
+        .stat-card.warning .stat-value { color: #FBBF24; }
 
         .filters-bar { display: none; background: var(--bg-col); padding: 12px 20px; border-radius: var(--radius-md); margin-bottom: 25px; align-items: center; gap: 15px; flex-wrap: wrap; border: 1px solid var(--border-light); box-shadow: var(--shadow-card); }
         .filters-bar label { font-size: 13px; font-weight: 600; color: var(--text-main); }
@@ -89,6 +90,13 @@
         
         .task-card { background-color: var(--bg-card); padding: 16px; border-radius: var(--radius-md); box-shadow: var(--shadow-card); margin-bottom: 10px; cursor: pointer; border: 1px solid var(--border-light); transition: all 0.2s ease; position: relative; }
         .task-card:hover { box-shadow: var(--shadow-hover); border-color: #64748B; transform: translateY(-2px); }
+        /* Жовта картка — на погодженні */
+        .task-card.card-pending { background-color: rgba(234, 179, 8, 0.08); border-color: rgba(234, 179, 8, 0.4); }
+        .task-card.card-pending:hover { border-color: rgba(234, 179, 8, 0.7); }
+        /* Червона картка — прострочена */
+        .task-card.card-overdue { background-color: rgba(239, 68, 68, 0.07); border-color: rgba(239, 68, 68, 0.4); }
+        .task-card.card-overdue:hover { border-color: rgba(239, 68, 68, 0.7); }
+
         .card-direction { font-size: 11px; font-weight: 600; color: #818CF8; background: rgba(99, 102, 241, 0.15); padding: 4px 10px; border-radius: 20px; display: inline-block; margin-bottom: 10px; letter-spacing: 0.3px; border: 1px solid rgba(99, 102, 241, 0.3); }
         .task-title { font-weight: 600; margin-bottom: 12px; font-size: 14px; color: var(--text-main); line-height: 1.4; }
         .task-meta { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; border-top: 1px dashed var(--border-light); padding-top: 12px;}
@@ -112,6 +120,16 @@
         .meta-label { font-size: 11px; text-transform: uppercase; font-weight: 700; color: var(--text-sec); letter-spacing: 0.5px;}
         .meta-value { font-size: 14px; font-weight: 600; color: var(--text-main); display: flex; align-items: center; gap: 5px;}
         
+        /* Блок опису — режим перегляду / редагування */
+        .desc-view-block { font-size: 14px; margin-top: 8px; white-space: pre-wrap; color: var(--text-main); line-height: 1.6; min-height: 40px; }
+        .desc-view-block.empty { color: var(--text-sec); font-style: italic; }
+        .desc-edit-row { display: flex; gap: 8px; align-items: flex-start; margin-top: 6px; }
+        .btn-desc-edit { background: transparent; border: 1px solid var(--border-light); color: var(--text-sec); padding: 4px 10px; font-size: 12px; border-radius: var(--radius-sm); }
+        .btn-desc-edit:hover { background: var(--bg-card); color: var(--text-main); transform: none; }
+        .btn-desc-save { background: #10B981; color: #064E3B; padding: 4px 12px; font-size: 12px; border-radius: var(--radius-sm); }
+        .btn-desc-save:hover { background: #059669; color: white; transform: none; }
+        .desc-save-msg { color: #34D399; font-size: 12px; font-weight: 600; display: none; }
+
         .comment-box { background: var(--bg-card); border: 1px solid var(--border-light); padding: 14px; border-radius: var(--radius-md); margin-bottom: 12px; box-shadow: var(--shadow-card);}
         .comment-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;}
         .comment-author { font-weight: 600; font-size: 13px; color: var(--text-main); display: flex; align-items: center; gap: 6px;}
@@ -120,8 +138,6 @@
 
         .btn-success { background-color: #10B981; color: #064E3B; margin-top: 25px; width: 100%; padding: 14px; font-size: 15px;}
         .btn-success:hover { background-color: #059669; color: white;}
-        .btn-logout { background-color: transparent; color: #F87171; border: 1px solid #F87171; }
-        .btn-logout:hover { background-color: #F87171; color: white; }
         
         .inline-edit-date { padding: 4px 8px !important; margin: 0 !important; width: auto !important; display: inline-block; font-size: 13px; border-color: transparent !important; background: transparent !important;}
         .inline-edit-date:hover { background: var(--bg-card) !important; border-color: var(--border-light) !important; }
@@ -150,7 +166,6 @@
             </div>
         </div>
 
-        <!-- АНАЛІТИКА: 6 карток по статусах за обраний період -->
         <div id="stats-container" class="stats-container">
             <div class="stat-card">
                 <div class="stat-title">💡 Ідеї</div>
@@ -164,7 +179,7 @@
                 <div class="stat-title">⚙️ В роботі</div>
                 <div class="stat-value" id="stat-inprogress">0</div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card warning">
                 <div class="stat-title">👀 На погодженні</div>
                 <div class="stat-value" id="stat-pending">0</div>
             </div>
@@ -183,9 +198,7 @@
             <input type="date" id="date-start" onchange="loadTasks()">
             <span style="color: var(--text-sec); font-size: 13px;">—</span>
             <input type="date" id="date-end" onchange="loadTasks()">
-            
             <div class="filter-divider"></div>
-            
             <select id="filter-responsible" onchange="applyFilters()"><option value="">Всі відповідальні</option></select>
             <select id="filter-direction" onchange="applyFilters()"><option value="">Всі напрямки</option></select>
         </div>
@@ -220,7 +233,6 @@
             <div id="mode-single-fields">
                 <label>Коротка назва</label>
                 <input type="text" id="new-title" placeholder="Що потрібно зробити?">
-                
                 <label>Детальний опис</label>
                 <textarea id="new-description" rows="3" placeholder="ТЗ, посилання, деталі..."></textarea>
             </div>
@@ -228,10 +240,9 @@
             <div id="mode-bulk-fields" style="display: none;">
                 <label>Список задач</label>
                 <textarea id="new-bulk-titles" rows="6" placeholder="Задача 1&#10;Задача 2&#10;Задача 3..."></textarea>
-                <div style="font-size: 11px; color: var(--text-sec); margin-top: 4px;">Кожна задача з нового рядка. Опис для масових задач недоступний.</div>
+                <div style="font-size: 11px; color: var(--text-sec); margin-top: 4px;">Кожна задача з нового рядка. Опис для масових задач недоступний — можна додати потім у картці.</div>
             </div>
             
-            <!-- Напрямок і відповідальний — ховаємо для ідей -->
             <div id="direction-responsible-fields">
                 <div style="display: flex; gap: 15px; margin-top: 10px;">
                     <div style="flex: 1;">
@@ -275,9 +286,25 @@
                 </div>
             </div>
             
+            <!-- Блок опису з inline-редагуванням -->
             <div style="margin-bottom: 30px;">
-                <b style="font-size: 14px; color: var(--text-sec);">Опис задачі:</b>
-                <div id="view-description" style="font-size: 14px; margin-top: 10px; white-space: pre-wrap; color: var(--text-main); line-height: 1.6;"></div>
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
+                    <b style="font-size: 13px; font-weight: 600; color: var(--text-sec); text-transform: uppercase; letter-spacing: 0.5px;">Опис задачі</b>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span id="desc-save-msg" class="desc-save-msg">✔ Збережено</span>
+                        <button class="btn-desc-edit" id="desc-edit-btn" onclick="toggleDescEdit()">✏️ Редагувати</button>
+                    </div>
+                </div>
+                <!-- Режим перегляду -->
+                <div id="desc-view" class="desc-view-block empty">Немає опису. Натисніть «Редагувати», щоб додати.</div>
+                <!-- Режим редагування (прихований) -->
+                <div id="desc-edit-area" style="display: none;">
+                    <textarea id="desc-edit-input" rows="5" placeholder="ТЗ, посилання, деталі..."></textarea>
+                    <div style="display: flex; gap: 8px; margin-top: 6px;">
+                        <button class="btn-desc-save" onclick="saveDescription()">💾 Зберегти опис</button>
+                        <button class="btn-desc-edit" onclick="cancelDescEdit()">Скасувати</button>
+                    </div>
+                </div>
             </div>
             
             <hr style="border: 0; border-top: 1px solid var(--border-light); margin: 25px 0;">
@@ -305,10 +332,8 @@
             const user = document.getElementById("login-username").value;
             const pass = document.getElementById("login-password").value;
             const err = document.getElementById("login-error");
-            
             err.style.display = "none";
             document.querySelector("#login-screen button").innerText = "Завантаження...";
-
             try {
                 const res = await apiRequest({ action: "login", username: user, password: pass });
                 if (res.success) {
@@ -335,12 +360,9 @@
             document.getElementById("login-screen").style.display = "none";
             document.getElementById("board-screen").style.display = "block";
             document.getElementById("user-info").innerText = `👤 ${localStorage.getItem("userName")} (${localStorage.getItem("userRole")})`;
-            
             document.getElementById("stats-container").style.display = "grid";
-            
             const role = localStorage.getItem("userRole");
             if (role === "manager" || role === "owner") document.getElementById("filters-container").style.display = "flex";
-
             initSortable();
             loadTasks();
         }
@@ -355,17 +377,14 @@
             try {
                 let startInput = document.getElementById('date-start');
                 let endInput = document.getElementById('date-end');
-                
                 if (!startInput.value) {
                     const today = new Date().toISOString().split('T')[0];
                     startInput.value = today;
                     endInput.value = today;
                 }
-
                 const fetchUrl = `${SCRIPT_URL}?start=${startInput.value}&end=${endInput.value}`;
                 const res = await fetch(fetchUrl);
                 const data = await res.json();
-                
                 if (data.success) {
                     currentTasks = data.tasks;
                     populateDropdowns(data.users, data.directions); 
@@ -379,18 +398,11 @@
             const respSelect = document.getElementById('new-responsible');
             const filterDir = document.getElementById('filter-direction');
             const filterResp = document.getElementById('filter-responsible');
-            
             if (dirSelect.options.length > 0) return;
-
             filterDir.innerHTML = '<option value="">Всі напрямки</option>';
             filterResp.innerHTML = '<option value="">Всі відповідальні</option>';
-
-            if (directions) {
-                directions.forEach(d => { dirSelect.innerHTML += `<option value="${d}">${d}</option>`; filterDir.innerHTML += `<option value="${d}">${d}</option>`; });
-            }
-            if (users) {
-                users.forEach(u => { respSelect.innerHTML += `<option value="${u}">${u}</option>`; filterResp.innerHTML += `<option value="${u}">${u}</option>`; });
-            }
+            if (directions) directions.forEach(d => { dirSelect.innerHTML += `<option value="${d}">${d}</option>`; filterDir.innerHTML += `<option value="${d}">${d}</option>`; });
+            if (users) users.forEach(u => { respSelect.innerHTML += `<option value="${u}">${u}</option>`; filterResp.innerHTML += `<option value="${u}">${u}</option>`; });
         }
 
         function applyFilters() { renderTasks(); }
@@ -402,27 +414,10 @@
             const selectedDir = document.getElementById('filter-direction').value;
 
             const today = new Date();
-            today.setHours(0,0,0,0);
+            today.setHours(0, 0, 0, 0);
 
-            // Скидаємо лічильники статусів
-            const statusCounts = {
-                'Ідеї': 0,
-                'Треба зробити': 0,
-                'В роботі': 0,
-                'На погодження': 0,
-                'Потребує правок': 0,
-                'Готово': 0
-            };
-
-            // Лічильники для аналітики (задачі що відображаються після фільтрів)
-            const statsCount = {
-                'Ідеї': 0,
-                'Треба зробити': 0,
-                'В роботі': 0,
-                'На погодження': 0,
-                'Потребує правок': 0,
-                'Готово': 0
-            };
+            const statusCounts = { 'Ідеї': 0, 'Треба зробити': 0, 'В роботі': 0, 'На погодження': 0, 'Потребує правок': 0, 'Готово': 0 };
+            const statsCount   = { 'Ідеї': 0, 'Треба зробити': 0, 'В роботі': 0, 'На погодження': 0, 'Потребує правок': 0, 'Готово': 0 };
 
             currentTasks.forEach(task => {
                 if (selectedResp && task.Responsible !== selectedResp) return;
@@ -432,25 +427,52 @@
                 const column = document.getElementById(colId) || document.getElementById('col-Ідеї');
 
                 statusCounts[task.Status] = (statusCounts[task.Status] || 0) + 1;
-                statsCount[task.Status] = (statsCount[task.Status] || 0) + 1;
+                statsCount[task.Status]   = (statsCount[task.Status]   || 0) + 1;
+
+                // --- Логіка кольору картки ---
+                const isIdea = task.Status === 'Ідеї';
+                const isDone = task.Status === 'Готово';
 
                 let isOverdue = false;
-                if (task.Deadline && task.Status !== 'Готово' && task.Status !== 'Ідеї') {
+                // Прострочена = дедлайн <= сьогодні (для всіх крім Готово та Ідеї)
+                if (task.Deadline && !isDone && !isIdea) {
                     let dlDate = new Date(task.Deadline);
-                    dlDate.setHours(0,0,0,0);
+                    dlDate.setHours(0, 0, 0, 0);
                     if (dlDate <= today) isOverdue = true;
                 }
 
+                // "Потребує правок" — також прострочена якщо UpdatedAt застарів (колонка J)
+                // UpdatedAt вважається застарілим якщо він старший за дедлайн
+                let isRevisionOverdue = false;
+                if (task.Status === 'Потребує правок') {
+                    if (isOverdue) {
+                        isRevisionOverdue = true;
+                    } else if (task.UpdatedAt && task.Deadline) {
+                        const updDate = new Date(task.UpdatedAt);
+                        const dlDate  = new Date(task.Deadline);
+                        updDate.setHours(0, 0, 0, 0);
+                        dlDate.setHours(0, 0, 0, 0);
+                        if (updDate >= dlDate) isRevisionOverdue = true;
+                    }
+                }
+
+                const isPending = task.Status === 'На погодження';
+
                 const card = document.createElement('div');
                 card.className = 'task-card';
+                if (isPending) {
+                    card.classList.add('card-pending');
+                } else if (isRevisionOverdue || (isOverdue && task.Status !== 'На погодження')) {
+                    card.classList.add('card-overdue');
+                }
                 card.dataset.id = task.ID;
                 card.onclick = () => openTaskModal(task.ID);
 
+                // --- Дата на картці ---
                 let dateHtml = '';
-
-                if (task.Status === 'Ідеї') {
+                if (isIdea) {
                     dateHtml = `<span style="color: var(--text-sec); font-weight: 600;">💡 Ідея</span>`;
-                } else if (task.Status === 'Готово') {
+                } else if (isDone) {
                     let closedDate = new Date(task.UpdatedAt).toLocaleDateString('uk-UA');
                     if (task.Deadline) {
                         let dlDate = new Date(task.Deadline).toLocaleDateString('uk-UA');
@@ -461,6 +483,15 @@
                         </div>`;
                     } else {
                         dateHtml = `<span style="color: #34D399; font-weight: 700;">✅ ${closedDate}</span>`;
+                    }
+                } else if (isPending) {
+                    // На погодженні — показуємо дедлайн жовтим
+                    if (task.Deadline) {
+                        let dlDate = new Date(task.Deadline);
+                        let dateStr = dlDate.toLocaleDateString('uk-UA', {day: 'numeric', month: 'short'});
+                        dateHtml = `<span style="color: #FBBF24; font-weight: 700;">👀 ${dateStr}</span>`;
+                    } else {
+                        dateHtml = `<span style="color: #FBBF24; font-weight: 700;">👀 На погодженні</span>`;
                     }
                 } else {
                     if (task.Deadline) {
@@ -476,8 +507,6 @@
                     }
                 }
 
-                // Для ідей — не показуємо напрямок і відповідального
-                const isIdea = task.Status === 'Ідеї';
                 let avatarInitial = task.Responsible ? task.Responsible.charAt(0).toUpperCase() : '?';
 
                 card.innerHTML = `
@@ -497,13 +526,11 @@
                 if (column) column.appendChild(card);
             });
 
-            // Оновлюємо лічильники колонок
             for (let status in statusCounts) {
                 let countEl = document.getElementById(`count-${status.replace(/ /g, '-')}`);
                 if (countEl) countEl.innerText = statusCounts[status];
             }
 
-            // Оновлюємо аналітику — кількість задач по кожному статусу
             document.getElementById('stat-ideas').innerText      = statsCount['Ідеї'];
             document.getElementById('stat-todo').innerText       = statsCount['Треба зробити'];
             document.getElementById('stat-inprogress').innerText = statsCount['В роботі'];
@@ -521,9 +548,9 @@
                         const newStatus = evt.to.dataset.status;
                         if (newStatus !== evt.from.dataset.status) {
                             const tIndex = currentTasks.findIndex(t => t.ID.toString() === taskId.toString());
-                            if(tIndex > -1) currentTasks[tIndex].Status = newStatus;
-                            const res = await apiRequest({ action: "updateStatus", taskId: taskId, status: newStatus, isApprovedAction: false });
-                            if(!res.success) { alert(res.error); loadTasks(); }
+                            if (tIndex > -1) currentTasks[tIndex].Status = newStatus;
+                            const res = await apiRequest({ action: "updateStatus", taskId, status: newStatus, isApprovedAction: false });
+                            if (!res.success) { alert(res.error); loadTasks(); }
                             else { renderTasks(); }
                         }
                     },
@@ -531,7 +558,6 @@
             });
         }
 
-        // Перемикає видимість полів залежно від типу (задача / ідея)
         function toggleIdeaMode() {
             const isIdea = document.getElementById('new-type').value === 'idea';
             document.getElementById('direction-responsible-fields').style.display = isIdea ? 'none' : 'block';
@@ -541,9 +567,9 @@
         function setCreateMode(mode) {
             createMode = mode;
             document.getElementById('tab-single').className = mode === 'single' ? 'modal-tab active' : 'modal-tab';
-            document.getElementById('tab-bulk').className = mode === 'bulk' ? 'modal-tab active' : 'modal-tab';
+            document.getElementById('tab-bulk').className   = mode === 'bulk'   ? 'modal-tab active' : 'modal-tab';
             document.getElementById('mode-single-fields').style.display = mode === 'single' ? 'block' : 'none';
-            document.getElementById('mode-bulk-fields').style.display = mode === 'bulk' ? 'block' : 'none';
+            document.getElementById('mode-bulk-fields').style.display   = mode === 'bulk'   ? 'block' : 'none';
             document.getElementById('submit-btn').innerText = mode === 'single' ? 'Створити картку' : 'Створити список задач';
         }
 
@@ -557,46 +583,21 @@
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
         async function submitTask() {
-            const isIdea = document.getElementById('new-type').value === 'idea';
-            // Для ідей напрямок і відповідальний — порожні
+            const isIdea      = document.getElementById('new-type').value === 'idea';
             const direction   = isIdea ? '' : document.getElementById('new-direction').value;
             const responsible = isIdea ? '' : document.getElementById('new-responsible').value;
             const deadline    = isIdea ? '' : document.getElementById('new-deadline').value;
-
             document.getElementById('submit-btn').innerText = "Завантаження...";
 
             if (createMode === 'single') {
                 const title = document.getElementById('new-title').value;
-                if (!title) {
-                    alert("Введіть назву!");
-                    document.getElementById('submit-btn').innerText = "Створити картку";
-                    return;
-                }
-                await apiRequest({
-                    action: "createTask",
-                    isIdea: isIdea,
-                    title: title,
-                    description: document.getElementById('new-description').value,
-                    direction: direction,
-                    responsible: responsible,
-                    deadline: deadline
-                });
+                if (!title) { alert("Введіть назву!"); document.getElementById('submit-btn').innerText = "Створити картку"; return; }
+                await apiRequest({ action: "createTask", isIdea, title, description: document.getElementById('new-description').value, direction, responsible, deadline });
             } else {
                 const bulkText = document.getElementById('new-bulk-titles').value;
                 const titles = bulkText.split('\n').map(t => t.trim()).filter(t => t !== '');
-                if (titles.length === 0) {
-                    alert("Введіть хоча б одну задачу!");
-                    document.getElementById('submit-btn').innerText = "Створити список задач";
-                    return;
-                }
-                await apiRequest({
-                    action: "bulkCreateTasks",
-                    isIdea: isIdea,
-                    titles: titles,
-                    direction: direction,
-                    responsible: responsible,
-                    deadline: deadline
-                });
+                if (titles.length === 0) { alert("Введіть хоча б одну задачу!"); document.getElementById('submit-btn').innerText = "Створити список задач"; return; }
+                await apiRequest({ action: "bulkCreateTasks", isIdea, titles, direction, responsible, deadline });
             }
             
             closeModal('create-modal');
@@ -612,9 +613,22 @@
             const task = currentTasks.find(t => t.ID.toString() === id.toString());
             
             document.getElementById('view-title').innerText = task.Title;
-            document.getElementById('view-description').innerText = task.Description ? task.Description : 'Немає опису. Додайте деталі, щоб було зрозуміліше.';
             document.getElementById('view-direction').innerText = task.Direction || '';
             
+            // Опис — режим перегляду
+            const descView = document.getElementById('desc-view');
+            if (task.Description && task.Description.trim() !== '') {
+                descView.innerText = task.Description;
+                descView.classList.remove('empty');
+            } else {
+                descView.innerText = 'Немає опису. Натисніть «Редагувати», щоб додати.';
+                descView.classList.add('empty');
+            }
+            document.getElementById('desc-edit-area').style.display = 'none';
+            document.getElementById('desc-view').style.display = 'block';
+            document.getElementById('desc-edit-btn').innerText = '✏️ Редагувати';
+            document.getElementById('desc-save-msg').style.display = 'none';
+
             let avatarInitial = task.Responsible ? task.Responsible.charAt(0).toUpperCase() : '?';
             document.getElementById('view-responsible').innerHTML = `<div class="task-resp-avatar" style="display:inline-flex; width:24px; height:24px; margin-right:6px;">${avatarInitial}</div>${task.Responsible || '—'}`;
             
@@ -629,6 +643,44 @@
             btn.style.display = ((role === 'manager' || role === 'owner') && task.Status === 'На погодження') ? 'block' : 'none';
 
             document.getElementById('task-modal').style.display = 'flex';
+        }
+
+        // --- Редагування опису ---
+        function toggleDescEdit() {
+            const task = currentTasks.find(t => t.ID.toString() === openedTaskId.toString());
+            document.getElementById('desc-edit-input').value = (task && task.Description) ? task.Description : '';
+            document.getElementById('desc-view').style.display = 'none';
+            document.getElementById('desc-edit-area').style.display = 'block';
+            document.getElementById('desc-edit-btn').style.display = 'none';
+        }
+
+        function cancelDescEdit() {
+            document.getElementById('desc-edit-area').style.display = 'none';
+            document.getElementById('desc-view').style.display = 'block';
+            document.getElementById('desc-edit-btn').style.display = 'inline-flex';
+        }
+
+        async function saveDescription() {
+            const newDesc = document.getElementById('desc-edit-input').value;
+            const res = await apiRequest({ action: "updateDescription", taskId: openedTaskId, description: newDesc });
+            if (res.success) {
+                const taskIndex = currentTasks.findIndex(t => t.ID.toString() === openedTaskId.toString());
+                if (taskIndex > -1) currentTasks[taskIndex].Description = newDesc;
+
+                const descView = document.getElementById('desc-view');
+                if (newDesc.trim() !== '') {
+                    descView.innerText = newDesc;
+                    descView.classList.remove('empty');
+                } else {
+                    descView.innerText = 'Немає опису. Натисніть «Редагувати», щоб додати.';
+                    descView.classList.add('empty');
+                }
+                cancelDescEdit();
+                document.getElementById('desc-save-msg').style.display = 'inline';
+                setTimeout(() => { document.getElementById('desc-save-msg').style.display = 'none'; }, 2500);
+            } else {
+                alert('Помилка збереження: ' + (res.error || ''));
+            }
         }
 
         async function updateTaskDeadline(newDate) {
@@ -648,7 +700,6 @@
             container.innerHTML = '';
             let comments = [];
             try { comments = JSON.parse(commentsJson); } catch(e) {}
-            
             if (comments.length === 0) {
                 container.innerHTML = '<span style="font-size:13px; color:var(--text-sec); font-style: italic;">Коментарів ще немає. Будьте першим!</span>';
                 return;
@@ -672,7 +723,7 @@
         async function addComment() {
             const text = document.getElementById('new-comment').value;
             if (!text) return;
-            const res = await apiRequest({ action: "addComment", taskId: openedTaskId, text: text });
+            const res = await apiRequest({ action: "addComment", taskId: openedTaskId, text });
             if (res.success) {
                 document.getElementById('new-comment').value = '';
                 const taskIndex = currentTasks.findIndex(t => t.ID.toString() === openedTaskId.toString());
