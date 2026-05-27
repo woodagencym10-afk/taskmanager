@@ -505,11 +505,31 @@
                         dateHtml = `<span style="color: #34D399; font-weight: 700;">✅ ${closedDate}</span>`;
                     }
                 } else if (isPending) {
-                    // На погодженні — показуємо дедлайн жовтим
+                    // На погодженні — перевіряємо чи здано вчасно (UpdatedAt після дедлайну)
                     if (task.Deadline) {
                         let dlDate = new Date(task.Deadline);
-                        let dateStr = dlDate.toLocaleDateString('uk-UA', {day: 'numeric', month: 'short'});
-                        dateHtml = `<span style="color: #FBBF24; font-weight: 700;">👀 ${dateStr}</span>`;
+                        dlDate.setHours(0, 0, 0, 0);
+                        let dateStr = new Date(task.Deadline).toLocaleDateString('uk-UA', {day: 'numeric', month: 'short'});
+
+                        // Якщо дедлайн уже минув — перевіряємо чи UpdatedAt був ДО або В ДЕНЬ дедлайну
+                        const pendingDeadlinePassed = dlDate < today;
+                        let submittedOnTime = false;
+                        if (pendingDeadlinePassed && task.UpdatedAt) {
+                            const updDate = new Date(task.UpdatedAt);
+                            updDate.setHours(0, 0, 0, 0);
+                            // Здано вчасно = UpdatedAt <= дедлайн
+                            submittedOnTime = updDate <= dlDate;
+                        }
+
+                        if (pendingDeadlinePassed && submittedOnTime) {
+                            // Здали вчасно, але дедлайн уже минув — показуємо "Здано вчасно"
+                            dateHtml = `<span style="color: #34D399; font-size: 11px; font-weight: 700; background: rgba(52,211,153,0.12); padding: 2px 7px; border-radius: 4px; border: 1px solid rgba(52,211,153,0.3);">✓ здано вчасно</span>`;
+                        } else if (pendingDeadlinePassed) {
+                            // Дедлайн минув, але здали пізніше дедлайну
+                            dateHtml = `<span style="color: #FBBF24; font-weight: 700;">👀 ${dateStr}</span>`;
+                        } else {
+                            dateHtml = `<span style="color: #FBBF24; font-weight: 700;">👀 ${dateStr}</span>`;
+                        }
                     } else {
                         dateHtml = `<span style="color: #FBBF24; font-weight: 700;">👀 На погодженні</span>`;
                     }
@@ -529,9 +549,23 @@
 
                 let avatarInitial = task.Responsible ? task.Responsible.charAt(0).toUpperCase() : '?';
 
+                // Мікро-бейдж під назвою для "На погодженні здано вчасно"
+                let submittedBadge = '';
+                if (isPending && task.Deadline && task.UpdatedAt) {
+                    const dlDate  = new Date(task.Deadline);  dlDate.setHours(0,0,0,0);
+                    const updDate = new Date(task.UpdatedAt); updDate.setHours(0,0,0,0);
+                    if (dlDate < today && updDate <= dlDate) {
+                        submittedBadge = `<div style="font-size: 11px; color: #6EE7B7; margin-bottom: 8px; display: flex; align-items: center; gap: 4px;">
+                            <span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#34D399;"></span>
+                            здано вчасно · керівник ще не переглянув
+                        </div>`;
+                    }
+                }
+
                 card.innerHTML = `
                     ${!isIdea ? `<div class="card-direction">${task.Direction || '—'}</div>` : ''}
                     <div class="task-title">${task.Title}</div>
+                    ${submittedBadge}
                     <div class="task-meta">
                         ${!isIdea
                             ? `<div class="task-resp">
