@@ -87,6 +87,7 @@
         </div>
     </div>
 
+    <!-- СТВОРЕННЯ КАРТКИ -->
     <div id="create-modal" class="modal-overlay">
         <div class="modal">
             <span class="close-btn" onclick="closeModal('create-modal')">&times;</span>
@@ -119,6 +120,7 @@
         </div>
     </div>
 
+    <!-- ПЕРЕГЛЯД КАРТКИ -->
     <div id="task-modal" class="modal-overlay">
         <div class="modal">
             <span class="close-btn" onclick="closeModal('task-modal')">&times;</span>
@@ -248,12 +250,13 @@
 
         function applyFilters() { renderTasks(); }
 
-        // ОНОВЛЕНА ЛОГІКА ВІДОБРАЖЕННЯ З ПІДСВІТКОЮ ДЕДЛАЙНІВ
+        // ПОВНІСТЮ ОНОВЛЕНА ЛОГІКА ВІДОБРАЖЕННЯ ДАТ НА КАРТКАХ
         function renderTasks() {
             document.querySelectorAll('.task-list').forEach(col => col.innerHTML = '');
             const selectedResp = document.getElementById('filter-responsible').value;
             const selectedDir = document.getElementById('filter-direction').value;
 
+            // Отримуємо сьогоднішню дату (без часу) для порівняння дедлайнів
             const today = new Date();
             today.setHours(0,0,0,0);
 
@@ -269,26 +272,36 @@
                 card.dataset.id = task.ID;
                 card.onclick = () => openTaskModal(task.ID);
                 
-                let dateDisplay = 'Без дедлайну';
-                let isOverdue = false;
+                let dateHtml = '';
 
-                if (task.Deadline) {
-                    let dlDate = new Date(task.Deadline);
-                    dateDisplay = dlDate.toLocaleDateString('uk-UA');
-                    
-                    if (dlDate < today && task.Status !== 'Готово') {
-                        isOverdue = true;
+                if (task.Status === 'Ідеї') {
+                    // Для ідей дедлайн не показуємо взагалі
+                    dateHtml = `<span style="color: #8993a4;">💡 Ідея</span>`;
+                } else if (task.Status === 'Готово') {
+                    // Для готових показуємо ДАТУ ФАКТИЧНОГО ВИКОНАННЯ
+                    let closedDate = new Date(task.UpdatedAt).toLocaleDateString('uk-UA');
+                    dateHtml = `<span style="color: #36b37e; font-weight: bold;">✅ Закрито: ${closedDate}</span>`;
+                } else {
+                    // Для тих, що в процесі — показуємо дедлайн і перевіряємо протермінування
+                    if (task.Deadline) {
+                        let dlDate = new Date(task.Deadline);
+                        let dateStr = dlDate.toLocaleDateString('uk-UA');
+                        let isOverdue = dlDate < today;
+                        
+                        let dateStyle = isOverdue ? 'color: #ff5630; font-weight: bold;' : 'color: #5e6c84;';
+                        let warningIcon = isOverdue ? ' ⚠️' : '';
+                        
+                        dateHtml = `<span style="${dateStyle}">📅 ${dateStr}${warningIcon}</span>`;
+                    } else {
+                        dateHtml = `<span style="color: #8993a4;">📅 Без дедлайну</span>`;
                     }
                 }
-                
-                let dateStyle = isOverdue ? 'color: #ff5630; font-weight: bold;' : '';
-                let warningIcon = isOverdue ? ' ⚠️' : '';
                 
                 card.innerHTML = `
                     <div class="task-title">${task.Title}</div>
                     <div class="task-meta">
                         <span>👤 ${task.Responsible}</span>
-                        <span style="${dateStyle}">📅 ${dateDisplay}${warningIcon}</span>
+                        ${dateHtml}
                     </div>
                 `;
                 column.appendChild(card);
@@ -308,6 +321,7 @@
 
                             const res = await apiRequest({ action: "updateStatus", taskId: taskId, status: newStatus, isApprovedAction: false });
                             if(!res.success) { alert(res.error); loadTasks(); }
+                            else { renderTasks(); } // Відразу перемальовуємо, щоб оновити статуси (напр. Ідея -> В роботі)
                         }
                     },
                 });
