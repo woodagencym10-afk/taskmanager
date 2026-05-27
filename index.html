@@ -68,108 +68,49 @@
         .user-badge { background: var(--bg-col); border: 1px solid var(--border-light); padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 500; color: var(--text-sec); }
         
         /* ВІДЖЕТИ АНАЛІТИКИ */
-        .stats-container {
-            display: none;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 25px;
-        }
-        .stat-card {
-            background: var(--bg-col);
-            border: 1px solid var(--border-light);
-            border-radius: var(--radius-md);
-            padding: 20px;
-            box-shadow: var(--shadow-card);
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        .stat-card.alert {
-            background: rgba(239, 68, 68, 0.05);
-            border-color: rgba(239, 68, 68, 0.3);
-        }
-        .stat-title {
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text-sec);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .stat-value {
-            font-size: 32px;
-            font-weight: 700;
-            color: var(--text-main);
-            line-height: 1;
-        }
+        .stats-container { display: none; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 25px; }
+        .stat-card { background: var(--bg-col); border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 20px; box-shadow: var(--shadow-card); display: flex; flex-direction: column; gap: 8px; }
+        .stat-card.alert { background: rgba(239, 68, 68, 0.05); border-color: rgba(239, 68, 68, 0.3); }
+        .stat-title { font-size: 13px; font-weight: 600; color: var(--text-sec); text-transform: uppercase; letter-spacing: 0.5px; }
+        .stat-value { font-size: 32px; font-weight: 700; color: var(--text-main); line-height: 1; }
         .stat-card.alert .stat-value { color: #F87171; }
 
         /* ФІЛЬТРИ */
-        .filters-bar { 
-            display: none; background: var(--bg-col); padding: 12px 20px; border-radius: var(--radius-md); 
-            margin-bottom: 25px; align-items: center; gap: 15px; flex-wrap: wrap; 
-            border: 1px solid var(--border-light); box-shadow: var(--shadow-card);
-        }
+        .filters-bar { display: none; background: var(--bg-col); padding: 12px 20px; border-radius: var(--radius-md); margin-bottom: 25px; align-items: center; gap: 15px; flex-wrap: wrap; border: 1px solid var(--border-light); box-shadow: var(--shadow-card); }
         .filters-bar label { font-size: 13px; font-weight: 600; color: var(--text-main); }
-        .filters-bar select, .filters-bar input[type="date"] { 
-            padding: 8px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-light); 
-            font-family: inherit; font-size: 13px; color: var(--text-main); outline: none; background: var(--bg-input); cursor: pointer;
-            color-scheme: dark; 
-        }
+        .filters-bar select, .filters-bar input[type="date"] { padding: 8px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-light); font-family: inherit; font-size: 13px; color: var(--text-main); outline: none; background: var(--bg-input); cursor: pointer; color-scheme: dark; }
         .filters-bar select:focus, .filters-bar input[type="date"]:focus { border-color: var(--primary); }
         .filter-divider { width: 1px; height: 24px; background: var(--border-light); margin: 0 5px; }
 
         /* ДОШКА */
         .board { display: flex; gap: 20px; overflow-x: auto; padding-bottom: 20px; align-items: flex-start; }
-        .column { 
-            background-color: var(--bg-col); border-radius: var(--radius-md); 
-            width: 320px; min-width: 320px; display: flex; flex-direction: column; max-height: calc(100vh - 280px); 
-            border: 1px solid var(--border-light); box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
-        }
-        .column-header { 
-            padding: 16px 16px 12px 16px; font-weight: 700; font-size: 14px; color: var(--text-main);
-            display: flex; align-items: center; justify-content: space-between;
-        }
+        .column { background-color: var(--bg-col); border-radius: var(--radius-md); width: 320px; min-width: 320px; display: flex; flex-direction: column; max-height: calc(100vh - 280px); border: 1px solid var(--border-light); box-shadow: inset 0 1px 0 rgba(255,255,255,0.05); }
+        .column-header { padding: 16px 16px 12px 16px; font-weight: 700; font-size: 14px; color: var(--text-main); display: flex; align-items: center; justify-content: space-between; }
         .col-count { background: var(--bg-card); color: var(--text-sec); padding: 2px 8px; border-radius: 12px; font-size: 12px; font-weight: 600; border: 1px solid var(--border-light);}
         .task-list { padding: 0 12px 12px 12px; flex-grow: 1; overflow-y: auto; min-height: 80px; }
         
         /* КАРТКА */
-        .task-card { 
-            background-color: var(--bg-card); padding: 16px; border-radius: var(--radius-md); 
-            box-shadow: var(--shadow-card); margin-bottom: 10px; cursor: pointer; 
-            border: 1px solid var(--border-light); transition: all 0.2s ease; position: relative;
-        }
+        .task-card { background-color: var(--bg-card); padding: 16px; border-radius: var(--radius-md); box-shadow: var(--shadow-card); margin-bottom: 10px; cursor: pointer; border: 1px solid var(--border-light); transition: all 0.2s ease; position: relative; }
         .task-card:hover { box-shadow: var(--shadow-hover); border-color: #64748B; transform: translateY(-2px); }
-        
-        .card-direction { 
-            font-size: 11px; font-weight: 600; color: #818CF8; background: rgba(99, 102, 241, 0.15); 
-            padding: 4px 10px; border-radius: 20px; display: inline-block; margin-bottom: 10px; 
-            letter-spacing: 0.3px; border: 1px solid rgba(99, 102, 241, 0.3);
-        }
+        .card-direction { font-size: 11px; font-weight: 600; color: #818CF8; background: rgba(99, 102, 241, 0.15); padding: 4px 10px; border-radius: 20px; display: inline-block; margin-bottom: 10px; letter-spacing: 0.3px; border: 1px solid rgba(99, 102, 241, 0.3); }
         .task-title { font-weight: 600; margin-bottom: 12px; font-size: 14px; color: var(--text-main); line-height: 1.4; }
         .task-meta { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; border-top: 1px dashed var(--border-light); padding-top: 12px;}
         .task-resp { font-size: 12px; font-weight: 500; color: var(--text-sec); display: flex; align-items: center; gap: 6px;}
         .task-resp-avatar { width: 20px; height: 20px; background: var(--border-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--text-main);}
 
         /* МОДАЛКИ */
-        .modal-overlay { 
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(4px);
-            justify-content: center; align-items: center; z-index: 1000; 
-        }
-        .modal { 
-            background: var(--bg-col); padding: 35px; border-radius: var(--radius-lg); 
-            width: 550px; max-width: 90%; max-height: 85vh; overflow-y: auto; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            border: 1px solid var(--border-light);
-        }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(4px); justify-content: center; align-items: center; z-index: 1000; }
+        .modal { background: var(--bg-col); padding: 35px; border-radius: var(--radius-lg); width: 550px; max-width: 90%; max-height: 85vh; overflow-y: auto; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); border: 1px solid var(--border-light); }
         .modal label { font-size: 13px; font-weight: 600; color: var(--text-sec); display: block; margin-bottom: 6px; margin-top: 16px; }
-        .modal input[type="text"], .modal input[type="date"], .modal select, .modal textarea { 
-            width: 100%; padding: 12px 14px; margin-bottom: 5px; border: 1px solid var(--border-light); 
-            border-radius: var(--radius-md); box-sizing: border-box; font-family: inherit; font-size: 14px; 
-            background: var(--bg-input); color: var(--text-main); color-scheme: dark;
-        }
+        .modal input[type="text"], .modal input[type="date"], .modal select, .modal textarea { width: 100%; padding: 12px 14px; margin-bottom: 5px; border: 1px solid var(--border-light); border-radius: var(--radius-md); box-sizing: border-box; font-family: inherit; font-size: 14px; background: var(--bg-input); color: var(--text-main); color-scheme: dark; }
         .modal input:focus, .modal select:focus, .modal textarea:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2); }
         .close-btn { float: right; cursor: pointer; font-size: 24px; color: var(--text-sec); line-height: 1; transition: 0.2s;}
         .close-btn:hover { color: var(--text-main); }
+        
+        /* Вкладки в модалці */
+        .modal-tabs { display: flex; gap: 5px; background: var(--bg-input); padding: 5px; border-radius: var(--radius-md); margin-bottom: 15px; }
+        .modal-tab { flex: 1; text-align: center; padding: 10px; font-size: 13px; font-weight: 600; cursor: pointer; border-radius: var(--radius-sm); transition: 0.2s; color: var(--text-sec); }
+        .modal-tab.active { background: var(--bg-card); color: var(--text-main); box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
         
         .view-meta-box { background: var(--bg-input); border: 1px solid var(--border-light); padding: 16px; border-radius: var(--radius-md); margin-bottom: 20px; display: flex; gap: 20px; flex-wrap: wrap;}
         .meta-item { display: flex; flex-direction: column; gap: 4px; }
@@ -189,7 +130,6 @@
         
         .inline-edit-date { padding: 4px 8px !important; margin: 0 !important; width: auto !important; display: inline-block; font-size: 13px; border-color: transparent !important; background: transparent !important;}
         .inline-edit-date:hover { background: var(--bg-card) !important; border-color: var(--border-light) !important; }
-        
         .sortable-ghost { opacity: 0.3; background-color: var(--bg-input); border: 2px dashed var(--border-light); }
     </style>
 </head>
@@ -215,7 +155,6 @@
             </div>
         </div>
 
-        <!-- ДАШБОРД (ШВИДКИЙ АНАЛІЗ) -->
         <div id="stats-container" class="stats-container">
             <div class="stat-card">
                 <div class="stat-title">Заплановано на період</div>
@@ -257,11 +196,15 @@
         </div>
     </div>
 
-    <!-- СТВОРЕННЯ КАРТКИ -->
     <div id="create-modal" class="modal-overlay">
         <div class="modal">
             <span class="close-btn" onclick="closeModal('create-modal')">&times;</span>
-            <h3 style="margin-top: 0; font-size: 22px; color: var(--text-main);">Нова картка</h3>
+            <h3 style="margin-top: 0; font-size: 22px; color: var(--text-main); margin-bottom: 20px;">Створити</h3>
+            
+            <div class="modal-tabs">
+                <div class="modal-tab active" id="tab-single" onclick="setCreateMode('single')">Одиночна задача</div>
+                <div class="modal-tab" id="tab-bulk" onclick="setCreateMode('bulk')">План на день (Масово)</div>
+            </div>
             
             <label>Тип:</label>
             <select id="new-type" onchange="toggleDeadlineField()">
@@ -269,13 +212,21 @@
                 <option value="idea">💡 Ідея (на потім)</option>
             </select>
 
-            <label>Коротка назва</label>
-            <input type="text" id="new-title" placeholder="Що потрібно зробити?">
+            <div id="mode-single-fields">
+                <label>Коротка назва</label>
+                <input type="text" id="new-title" placeholder="Що потрібно зробити?">
+                
+                <label>Детальний опис</label>
+                <textarea id="new-description" rows="3" placeholder="ТЗ, посилання, деталі..."></textarea>
+            </div>
             
-            <label>Детальний опис</label>
-            <textarea id="new-description" rows="4" placeholder="ТЗ, посилання, деталі..."></textarea>
+            <div id="mode-bulk-fields" style="display: none;">
+                <label>Список задач</label>
+                <textarea id="new-bulk-titles" rows="6" placeholder="Задача 1&#10;Задача 2&#10;Задача 3..."></textarea>
+                <div style="font-size: 11px; color: var(--text-sec); margin-top: 4px;">Кожна задача з нового рядка. Опис для масових задач недоступний.</div>
+            </div>
             
-            <div style="display: flex; gap: 15px;">
+            <div style="display: flex; gap: 15px; margin-top: 10px;">
                 <div style="flex: 1;">
                     <label>Напрямок</label>
                     <select id="new-direction"></select>
@@ -291,11 +242,10 @@
                 <input type="date" id="new-deadline">
             </div>
 
-            <button style="width: 100%; margin-top: 25px; padding: 14px;" onclick="submitTask()">Створити картку</button>
+            <button id="submit-btn" style="width: 100%; margin-top: 25px; padding: 14px;" onclick="submitTask()">Створити картку</button>
         </div>
     </div>
 
-    <!-- ПЕРЕГЛЯД КАРТКИ -->
     <div id="task-modal" class="modal-overlay">
         <div class="modal">
             <span class="close-btn" onclick="closeModal('task-modal')">&times;</span>
@@ -336,6 +286,7 @@
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyOTEc7GxwlQJTXehW6zmDbSdFkwBswC9mIGdknwEufNIpeYrAjaSuhXw5rW3Is60ME/exec";
         let currentTasks = [];
         let openedTaskId = null;
+        let createMode = 'single'; // 'single' або 'bulk'
 
         window.onload = () => {
             if (localStorage.getItem("userToken")) showBoard();
@@ -444,7 +395,6 @@
             const today = new Date();
             today.setHours(0,0,0,0);
             
-            // Дати з фільтру для підрахунку "Заплановано"
             const filterStart = new Date(document.getElementById('date-start').value);
             filterStart.setHours(0,0,0,0);
             const filterEnd = new Date(document.getElementById('date-end').value);
@@ -468,8 +418,6 @@
                     if (dlDate < today && task.Status !== 'Готово') {
                         isOverdue = true;
                     }
-                    
-                    // Підрахунок "Заплановано на період"
                     if (task.Status !== 'Готово' && task.Status !== 'Ідеї') {
                         if (dlDate >= filterStart && dlDate <= filterEnd) {
                             stats.planned++;
@@ -477,7 +425,6 @@
                     }
                 }
                 
-                // Інша статистика
                 if (task.Status === 'В роботі') stats.inProgress++;
                 if (task.Status === 'Готово') stats.done++;
                 if (isOverdue) stats.overdue++;
@@ -533,13 +480,11 @@
                 column.appendChild(card);
             });
             
-            // Оновлення лічильників колонок
             for (let status in counts) {
                 let countEl = document.getElementById(`count-${status.replace(/ /g, '-')}`);
                 if(countEl) countEl.innerText = counts[status];
             }
             
-            // Оновлення дашборду
             document.getElementById('stat-planned').innerText = stats.planned;
             document.getElementById('stat-in-progress').innerText = stats.inProgress;
             document.getElementById('stat-done').innerText = stats.done;
@@ -571,8 +516,20 @@
             document.getElementById('deadline-container').style.display = isIdea ? 'none' : 'block';
         }
 
+        function setCreateMode(mode) {
+            createMode = mode;
+            document.getElementById('tab-single').className = mode === 'single' ? 'modal-tab active' : 'modal-tab';
+            document.getElementById('tab-bulk').className = mode === 'bulk' ? 'modal-tab active' : 'modal-tab';
+            
+            document.getElementById('mode-single-fields').style.display = mode === 'single' ? 'block' : 'none';
+            document.getElementById('mode-bulk-fields').style.display = mode === 'bulk' ? 'block' : 'none';
+            
+            document.getElementById('submit-btn').innerText = mode === 'single' ? 'Створити картку' : 'Створити список задач';
+        }
+
         function openCreateModal() { 
             document.getElementById('new-type').value = 'task';
+            setCreateMode('single');
             toggleDeadlineField();
             document.getElementById('create-modal').style.display = 'flex'; 
         }
@@ -580,24 +537,51 @@
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
         async function submitTask() {
-            const title = document.getElementById('new-title').value;
-            if (!title) return alert("Введіть назву!");
-            
             const isIdea = document.getElementById('new-type').value === 'idea';
-            
-            await apiRequest({
-                action: "createTask",
-                isIdea: isIdea,
-                title: title,
-                description: document.getElementById('new-description').value,
-                direction: document.getElementById('new-direction').value,
-                responsible: document.getElementById('new-responsible').value,
-                deadline: isIdea ? "" : document.getElementById('new-deadline').value
-            });
+            const direction = document.getElementById('new-direction').value;
+            const responsible = document.getElementById('new-responsible').value;
+            const deadline = isIdea ? "" : document.getElementById('new-deadline').value;
+
+            document.getElementById('submit-btn').innerText = "Завантаження...";
+
+            if (createMode === 'single') {
+                const title = document.getElementById('new-title').value;
+                if (!title) {
+                    alert("Введіть назву!");
+                    document.getElementById('submit-btn').innerText = "Створити картку";
+                    return;
+                }
+                await apiRequest({
+                    action: "createTask",
+                    isIdea: isIdea,
+                    title: title,
+                    description: document.getElementById('new-description').value,
+                    direction: direction,
+                    responsible: responsible,
+                    deadline: deadline
+                });
+            } else {
+                const bulkText = document.getElementById('new-bulk-titles').value;
+                const titles = bulkText.split('\n').map(t => t.trim()).filter(t => t !== '');
+                if (titles.length === 0) {
+                    alert("Введіть хоча б одну задачу!");
+                    document.getElementById('submit-btn').innerText = "Створити список задач";
+                    return;
+                }
+                await apiRequest({
+                    action: "bulkCreateTasks",
+                    isIdea: isIdea,
+                    titles: titles,
+                    direction: direction,
+                    responsible: responsible,
+                    deadline: deadline
+                });
+            }
             
             closeModal('create-modal');
             document.getElementById('new-title').value = '';
             document.getElementById('new-description').value = '';
+            document.getElementById('new-bulk-titles').value = '';
             document.getElementById('new-deadline').value = '';
             loadTasks();
         }
