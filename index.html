@@ -65,7 +65,7 @@
         .header-title { font-size: 24px; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 10px; letter-spacing: -0.5px;}
         .user-badge { background: var(--bg-col); border: 1px solid var(--border-light); padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 500; color: var(--text-sec); }
         
-        .stats-container { display: none; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 25px; }
+        .stats-container { display: none; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 25px; }
         .stat-card { background: var(--bg-col); border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 16px 20px; box-shadow: var(--shadow-card); display: flex; flex-direction: column; gap: 6px; }
         .stat-card.alert { background: rgba(239, 68, 68, 0.05); border-color: rgba(239, 68, 68, 0.3); }
         .stat-card.success { background: rgba(16, 185, 129, 0.05); border-color: rgba(16, 185, 129, 0.3); }
@@ -183,9 +183,13 @@
                 <div class="stat-title">👀 На погодженні</div>
                 <div class="stat-value" id="stat-pending">0</div>
             </div>
-            <div class="stat-card alert">
-                <div class="stat-title">⚠️ Потребує правок</div>
+            <div class="stat-card">
+                <div class="stat-title">🔧 Потребує правок</div>
                 <div class="stat-value" id="stat-revision">0</div>
+            </div>
+            <div class="stat-card alert">
+                <div class="stat-title">🔴 Прострочені</div>
+                <div class="stat-value" id="stat-overdue">0</div>
             </div>
             <div class="stat-card success">
                 <div class="stat-title">✅ Готово</div>
@@ -417,7 +421,8 @@
             today.setHours(0, 0, 0, 0);
 
             const statusCounts = { 'Ідеї': 0, 'Треба зробити': 0, 'В роботі': 0, 'На погодження': 0, 'Потребує правок': 0, 'Готово': 0 };
-            const statsCount   = { 'Ідеї': 0, 'Треба зробити': 0, 'В роботі': 0, 'На погодження': 0, 'Потребує правок': 0, 'Готово': 0 };
+            // Статистика для швидкого звіту (враховує логіку прострочення)
+            const statsCount = { ideas: 0, todo: 0, inprogress: 0, pending: 0, revision: 0, overdue: 0, done: 0 };
 
             currentTasks.forEach(task => {
                 if (selectedResp && task.Responsible !== selectedResp) return;
@@ -427,42 +432,57 @@
                 const column = document.getElementById(colId) || document.getElementById('col-Ідеї');
 
                 statusCounts[task.Status] = (statusCounts[task.Status] || 0) + 1;
-                statsCount[task.Status]   = (statsCount[task.Status]   || 0) + 1;
 
-                // --- Логіка кольору картки ---
-                const isIdea = task.Status === 'Ідеї';
-                const isDone = task.Status === 'Готово';
+                // --- Базові прапори ---
+                const isIdea    = task.Status === 'Ідеї';
+                const isDone    = task.Status === 'Готово';
+                const isPending = task.Status === 'На погодження';
 
-                let isOverdue = false;
-                // Прострочена = дедлайн <= сьогодні (для всіх крім Готово та Ідеї)
-                if (task.Deadline && !isDone && !isIdea) {
+                // Прострочена по дедлайну (дедлайн < сьогодні, тобто строго минув)
+                let isDeadlineOverdue = false;
+                if (task.Deadline && !isDone && !isIdea && !isPending) {
                     let dlDate = new Date(task.Deadline);
                     dlDate.setHours(0, 0, 0, 0);
-                    if (dlDate <= today) isOverdue = true;
+                    if (dlDate < today) isDeadlineOverdue = true;
                 }
 
-                // "Потребує правок" — також прострочена якщо UpdatedAt застарів (колонка J)
-                // UpdatedAt вважається застарілим якщо він старший за дедлайн
+                // --- Логіка "Потребує правок" ---
+                // НЕ прострочена якщо:
+                //   (а) UpdatedAt — сьогодні між 16:00–18:00 (працівник здав ввечері)
+                //   (б) дедлайн не сьогодні (ще є час)
                 let isRevisionOverdue = false;
                 if (task.Status === 'Потребує правок') {
-                    if (isOverdue) {
-                        isRevisionOverdue = true;
-                    } else if (task.UpdatedAt && task.Deadline) {
-                        const updDate = new Date(task.UpdatedAt);
-                        const dlDate  = new Date(task.Deadline);
-                        updDate.setHours(0, 0, 0, 0);
-                        dlDate.setHours(0, 0, 0, 0);
-                        if (updDate >= dlDate) isRevisionOverdue = true;
+                    if (isDeadlineOverdue) {
+                        // Перевіряємо виняток: UpdatedAt сьогодні між 16–18 год
+                        const updDate = task.UpdatedAt ? new Date(task.UpdatedAt) : null;
+                        const updIsToday = updDate && updDate.toDateString() === new Date().toDateString();
+                        const updHour   = updDate ? updDate.getHours() : -1;
+                        const updInWindow = updIsToday && updHour >= 16 && updHour < 18;
+                        // Якщо оновлено у вікні — не прострочена
+                        isRevisionOverdue = !updInWindow;
                     }
+                    // Якщо дедлайн ще не минув — не прострочена (лишається в "Потребує правок")
                 }
 
-                const isPending = task.Status === 'На погодження';
+                // Загальний прапор прострочення (для кольору картки та статистики)
+                const isOverdue = (task.Status === 'Треба зробити' || task.Status === 'В роботі')
+                    ? isDeadlineOverdue
+                    : isRevisionOverdue;
+
+                // --- Статистика швидкого звіту ---
+                if (isIdea)         statsCount.ideas++;
+                else if (isDone)    statsCount.done++;
+                else if (isPending) statsCount.pending++;
+                else if (isOverdue) statsCount.overdue++;
+                else if (task.Status === 'Треба зробити')    statsCount.todo++;
+                else if (task.Status === 'В роботі')         statsCount.inprogress++;
+                else if (task.Status === 'Потребує правок')  statsCount.revision++;
 
                 const card = document.createElement('div');
                 card.className = 'task-card';
                 if (isPending) {
                     card.classList.add('card-pending');
-                } else if (isRevisionOverdue || (isOverdue && task.Status !== 'На погодження')) {
+                } else if (isOverdue) {
                     card.classList.add('card-overdue');
                 }
                 card.dataset.id = task.ID;
@@ -531,12 +551,13 @@
                 if (countEl) countEl.innerText = statusCounts[status];
             }
 
-            document.getElementById('stat-ideas').innerText      = statsCount['Ідеї'];
-            document.getElementById('stat-todo').innerText       = statsCount['Треба зробити'];
-            document.getElementById('stat-inprogress').innerText = statsCount['В роботі'];
-            document.getElementById('stat-pending').innerText    = statsCount['На погодження'];
-            document.getElementById('stat-revision').innerText   = statsCount['Потребує правок'];
-            document.getElementById('stat-done').innerText       = statsCount['Готово'];
+            document.getElementById('stat-ideas').innerText      = statsCount.ideas;
+            document.getElementById('stat-todo').innerText       = statsCount.todo;
+            document.getElementById('stat-inprogress').innerText = statsCount.inprogress;
+            document.getElementById('stat-pending').innerText    = statsCount.pending;
+            document.getElementById('stat-revision').innerText   = statsCount.revision;
+            document.getElementById('stat-overdue').innerText    = statsCount.overdue;
+            document.getElementById('stat-done').innerText       = statsCount.done;
         }
 
         function initSortable() {
