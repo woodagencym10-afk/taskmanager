@@ -154,18 +154,19 @@
         <p id="login-error" style="color: #F87171; font-size: 13px; display: none; margin-top: 15px; font-weight: 500;"></p>
     </div>
 
-    <div id="board-screen">
-        <div class="header">
+   <div class="header">
             <div class="header-title">
                 ✨ Маркетинг 
                 <span class="user-badge" id="user-info"></span>
             </div>
             <div style="display: flex; gap: 12px; align-items: center;">
+                <button class="btn-outline" onclick="window.location.href='knowledge.html'">📚 База знань</button>
+                
                 <button onclick="openCreateModal()">+ Створити картку</button>
                 <button class="btn-outline" onclick="logout()">Вийти</button>
             </div>
         </div>
-
+    
         <div id="stats-container" class="stats-container">
             <div class="stat-card">
                 <div class="stat-title">💡 Ідеї</div>
