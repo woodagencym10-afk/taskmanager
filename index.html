@@ -250,13 +250,11 @@
 
         function applyFilters() { renderTasks(); }
 
-        // ПОВНІСТЮ ОНОВЛЕНА ЛОГІКА ВІДОБРАЖЕННЯ ДАТ НА КАРТКАХ
         function renderTasks() {
             document.querySelectorAll('.task-list').forEach(col => col.innerHTML = '');
             const selectedResp = document.getElementById('filter-responsible').value;
             const selectedDir = document.getElementById('filter-direction').value;
 
-            // Отримуємо сьогоднішню дату (без часу) для порівняння дедлайнів
             const today = new Date();
             today.setHours(0,0,0,0);
 
@@ -275,14 +273,22 @@
                 let dateHtml = '';
 
                 if (task.Status === 'Ідеї') {
-                    // Для ідей дедлайн не показуємо взагалі
                     dateHtml = `<span style="color: #8993a4;">💡 Ідея</span>`;
                 } else if (task.Status === 'Готово') {
-                    // Для готових показуємо ДАТУ ФАКТИЧНОГО ВИКОНАННЯ
+                    // ФОРМАТУВАННЯ КОЛОНКИ ГОТОВО: ДЕДЛАЙН ТА ФАКТИЧНА ДАТА
                     let closedDate = new Date(task.UpdatedAt).toLocaleDateString('uk-UA');
-                    dateHtml = `<span style="color: #36b37e; font-weight: bold;">✅ Закрито: ${closedDate}</span>`;
+                    
+                    if (task.Deadline) {
+                        let dlDate = new Date(task.Deadline).toLocaleDateString('uk-UA');
+                        dateHtml = `
+                        <div style="display: flex; flex-direction: column; align-items: flex-end; font-size: 11px;">
+                            <span style="color: #8993a4;">📅 Дедлайн: ${dlDate}</span>
+                            <span style="color: #36b37e; font-weight: bold; margin-top: 2px;">✅ Закрито: ${closedDate}</span>
+                        </div>`;
+                    } else {
+                        dateHtml = `<span style="color: #36b37e; font-weight: bold;">✅ Закрито: ${closedDate}</span>`;
+                    }
                 } else {
-                    // Для тих, що в процесі — показуємо дедлайн і перевіряємо протермінування
                     if (task.Deadline) {
                         let dlDate = new Date(task.Deadline);
                         let dateStr = dlDate.toLocaleDateString('uk-UA');
@@ -299,8 +305,8 @@
                 
                 card.innerHTML = `
                     <div class="task-title">${task.Title}</div>
-                    <div class="task-meta">
-                        <span>👤 ${task.Responsible}</span>
+                    <div class="task-meta" style="align-items: center;">
+                        <span style="margin-bottom: 2px;">👤 ${task.Responsible}</span>
                         ${dateHtml}
                     </div>
                 `;
@@ -321,7 +327,7 @@
 
                             const res = await apiRequest({ action: "updateStatus", taskId: taskId, status: newStatus, isApprovedAction: false });
                             if(!res.success) { alert(res.error); loadTasks(); }
-                            else { renderTasks(); } // Відразу перемальовуємо, щоб оновити статуси (напр. Ідея -> В роботі)
+                            else { renderTasks(); }
                         }
                     },
                 });
