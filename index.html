@@ -5,73 +5,161 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Маркетинг Таск-Менеджер</title>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root { --bg-color: #f4f5f7; --col-bg: #ebecf0; --card-bg: #ffffff; --primary: #0052cc; --text: #172b4d; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); color: var(--text); margin: 0; padding: 20px; }
-        #login-screen { max-width: 300px; margin: 100px auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); text-align: center; }
-        #login-screen input, #login-screen select { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        button { background-color: var(--primary); color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; }
-        button:hover { background-color: #0043a6; }
+        :root { 
+            --bg-color: #F7F8F6; /* М'який природний фон */
+            --col-bg: #EAECE7;   /* Фон колонок */
+            --card-bg: #ffffff;
+            --primary: #2D5A27;  /* Глибокий зелений */
+            --primary-hover: #1E401A;
+            --accent: #C08A53;   /* Теплий деревний акцент */
+            --text: #2C362F;     /* Темно-сірий/зелений для тексту */
+            --text-muted: #6B7280;
+            --border-radius-lg: 12px;
+            --border-radius-md: 8px;
+        }
+        
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: var(--bg-color); 
+            color: var(--text); 
+            margin: 0; 
+            padding: 20px; 
+            line-height: 1.5;
+        }
+        
+        /* Скролбари */
+        ::-webkit-scrollbar { height: 8px; width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        /* ЕКРАН ВХОДУ */
+        #login-screen { 
+            max-width: 340px; margin: 100px auto; background: white; padding: 40px 30px; 
+            border-radius: var(--border-radius-lg); box-shadow: 0 10px 25px rgba(0,0,0,0.05); text-align: center; 
+        }
+        #login-screen h2 { margin-top: 0; margin-bottom: 25px; color: var(--primary); }
+        #login-screen input { 
+            width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #E2E8F0; 
+            border-radius: var(--border-radius-md); box-sizing: border-box; font-family: 'Inter'; font-size: 14px;
+            transition: border-color 0.2s;
+        }
+        #login-screen input:focus { outline: none; border-color: var(--primary); }
+        
+        button { 
+            background-color: var(--primary); color: white; border: none; padding: 10px 16px; 
+            border-radius: var(--border-radius-md); cursor: pointer; font-weight: 600; font-family: 'Inter';
+            transition: all 0.2s ease; font-size: 14px; display: inline-flex; align-items: center; justify-content: center;
+        }
+        button:hover { background-color: var(--primary-hover); transform: translateY(-1px); box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         
         #board-screen { display: none; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;}
         
-        .filters-bar { display: none; background: #dfe1e6; padding: 10px 15px; border-radius: 8px; margin-bottom: 20px; align-items: center; gap: 15px; flex-wrap: wrap; }
-        .filters-bar select, .filters-bar input[type="date"] { padding: 6px; border-radius: 4px; border: 1px solid #ccc; font-family: inherit; }
+        /* ШАПКА */
+        .header { 
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; 
+            flex-wrap: wrap; gap: 15px; background: white; padding: 15px 25px; 
+            border-radius: var(--border-radius-lg); box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+        }
+        .header h2 { margin: 0 0 4px 0; font-size: 20px; color: var(--text); }
         
-        .board { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 10px; }
-        .column { background-color: var(--col-bg); border-radius: 8px; width: 280px; min-width: 280px; display: flex; flex-direction: column; max-height: 80vh; }
-        .column-header { padding: 10px 15px; font-weight: bold; border-bottom: 2px solid #dfe1e6; }
-        .task-list { padding: 10px; flex-grow: 1; overflow-y: auto; min-height: 50px; }
-        .task-card { background-color: var(--card-bg); padding: 10px; border-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); margin-bottom: 10px; cursor: pointer; border-left: 4px solid var(--primary); }
-        .task-card:hover { background-color: #f9fafc; }
-        .task-title { font-weight: bold; margin-bottom: 5px; font-size: 14px; }
-        .task-meta { font-size: 12px; color: #5e6c84; display: flex; justify-content: space-between;}
+        /* ПАНЕЛЬ ФІЛЬТРІВ */
+        .filters-bar { 
+            display: none; background: white; padding: 15px 25px; border-radius: var(--border-radius-lg); 
+            margin-bottom: 25px; align-items: center; gap: 15px; flex-wrap: wrap; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.02); border: 1px solid #F1F5F9;
+        }
+        .filters-bar select, .filters-bar input[type="date"] { 
+            padding: 8px 12px; border-radius: var(--border-radius-md); border: 1px solid #E2E8F0; 
+            font-family: inherit; font-size: 14px; color: var(--text); outline: none; transition: border-color 0.2s;
+        }
+        .filters-bar select:focus, .filters-bar input[type="date"]:focus { border-color: var(--primary); }
+        
+        /* ДОШКА */
+        .board { display: flex; gap: 20px; overflow-x: auto; padding-bottom: 15px; align-items: flex-start; }
+        .column { 
+            background-color: var(--col-bg); border-radius: var(--border-radius-lg); 
+            width: 300px; min-width: 300px; display: flex; flex-direction: column; max-height: 82vh; 
+        }
+        .column-header { 
+            padding: 15px; font-weight: 600; font-size: 15px; color: var(--text);
+            display: flex; align-items: center; gap: 8px;
+        }
+        .task-list { padding: 0 15px 15px 15px; flex-grow: 1; overflow-y: auto; min-height: 50px; }
+        
+        /* КАРТКА */
+        .task-card { 
+            background-color: var(--card-bg); padding: 15px; border-radius: var(--border-radius-md); 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 12px; cursor: pointer; 
+            border-left: 4px solid var(--accent); transition: all 0.2s ease;
+        }
+        .task-card:hover { transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.08); }
+        .task-title { font-weight: 600; margin-bottom: 8px; font-size: 14px; color: var(--text); line-height: 1.4; }
+        .task-meta { font-size: 12px; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
 
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; }
-        .modal { background: white; padding: 25px; border-radius: 8px; width: 450px; max-width: 90%; max-height: 90vh; overflow-y: auto; }
-        .modal input, .modal select, .modal textarea { width: 100%; padding: 8px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-family: inherit; }
-        .close-btn { float: right; cursor: pointer; font-size: 20px; font-weight: bold; }
+        /* МОДАЛЬНІ ВІКНА */
+        .modal-overlay { 
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(2px);
+            justify-content: center; align-items: center; z-index: 1000; 
+        }
+        .modal { 
+            background: white; padding: 30px; border-radius: var(--border-radius-lg); 
+            width: 500px; max-width: 90%; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        .modal label { font-size: 13px; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 6px; margin-top: 15px; }
+        .modal input[type="text"], .modal input[type="date"], .modal select, .modal textarea { 
+            width: 100%; padding: 10px 12px; margin-bottom: 5px; border: 1px solid #E2E8F0; 
+            border-radius: var(--border-radius-md); box-sizing: border-box; font-family: inherit; font-size: 14px;
+            transition: all 0.2s;
+        }
+        .modal input:focus, .modal select:focus, .modal textarea:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(45, 90, 39, 0.1); }
+        .close-btn { float: right; cursor: pointer; font-size: 24px; font-weight: normal; color: #94A3B8; transition: color 0.2s; line-height: 1;}
+        .close-btn:hover { color: #0F172A; }
         
-        .comment-box { background: #f4f5f7; padding: 8px; border-radius: 4px; margin-bottom: 5px; font-size: 13px;}
-        .comment-author { font-weight: bold; color: var(--primary); }
-        .comment-date { font-size: 10px; color: #777; margin-left: 5px; }
+        /* Коментарі */
+        .comment-box { background: #F8FAFC; border: 1px solid #E2E8F0; padding: 12px; border-radius: var(--border-radius-md); margin-bottom: 10px; font-size: 13px;}
+        .comment-author { font-weight: 600; color: var(--primary); }
+        .comment-date { font-size: 11px; color: var(--text-muted); margin-left: 8px; }
 
-        .btn-success { background-color: #36b37e; margin-top: 15px; width: 100%;}
-        .btn-success:hover { background-color: #2b9065; }
-        .btn-logout { background-color: #ff5630; }
-        .inline-edit-date { padding: 2px 5px !important; margin: 0 !important; width: auto !important; display: inline-block; font-size: 13px; }
+        .btn-success { background-color: #059669; margin-top: 20px; width: 100%; font-size: 15px; padding: 12px;}
+        .btn-success:hover { background-color: #047857; }
+        .btn-logout { background-color: #EF4444; }
+        .btn-logout:hover { background-color: #DC2626; }
+        .inline-edit-date { padding: 4px 8px !important; margin: 0 !important; width: auto !important; display: inline-block; font-size: 13px; }
     </style>
 </head>
 <body>
 
     <div id="login-screen">
-        <h2>Вхід в систему</h2>
+        <h2>Маркетинг Задачі</h2>
         <input type="text" id="login-username" placeholder="Ваше ім'я">
         <input type="password" id="login-password" placeholder="Пароль">
-        <button style="width: 100%;" onclick="appLogin()">Увійти</button>
-        <p id="login-error" style="color: red; font-size: 12px; display: none;"></p>
+        <button style="width: 100%; margin-top: 15px; padding: 12px;" onclick="appLogin()">Увійти</button>
+        <p id="login-error" style="color: #EF4444; font-size: 13px; display: none; margin-top: 15px;"></p>
     </div>
 
     <div id="board-screen">
         <div class="header">
             <div>
-                <h2 style="margin: 0 0 5px 0;">Маркетинг / Задачі</h2>
-                <span id="user-info" style="color: #5e6c84; font-size: 14px;"></span>
+                <h2 style="margin: 0 0 5px 0;">Маркетинг / Дошка</h2>
+                <span id="user-info" style="color: var(--text-muted); font-size: 14px;"></span>
             </div>
-            <div style="display: flex; gap: 10px; align-items: center;">
+            <div style="display: flex; gap: 12px; align-items: center;">
                 <button onclick="openCreateModal()">+ Нова картка</button>
                 <button class="btn-logout" onclick="logout()">Вийти</button>
             </div>
         </div>
 
         <div id="filters-container" class="filters-bar">
-            <span>📅 <b>Показати виконане за:</b></span>
+            <span style="color: var(--text-muted);">📅 <b style="color: var(--text);">Показати виконане за:</b></span>
             <input type="date" id="date-start" onchange="loadTasks()">
-            <span>до</span>
+            <span style="color: var(--text-muted);">до</span>
             <input type="date" id="date-end" onchange="loadTasks()">
             
-            <div style="border-left: 1px solid #aaa; padding-left: 15px; margin-left: 10px; display: flex; gap: 10px;">
+            <div style="border-left: 2px solid #E2E8F0; padding-left: 15px; margin-left: 5px; display: flex; gap: 10px;">
                 <select id="filter-responsible" onchange="applyFilters()"><option value="">Всі відповідальні</option></select>
                 <select id="filter-direction" onchange="applyFilters()"><option value="">Всі напрямки</option></select>
             </div>
@@ -87,11 +175,10 @@
         </div>
     </div>
 
-    <!-- СТВОРЕННЯ КАРТКИ -->
     <div id="create-modal" class="modal-overlay">
         <div class="modal">
             <span class="close-btn" onclick="closeModal('create-modal')">&times;</span>
-            <h3 style="margin-top: 0;">Створити</h3>
+            <h3 style="margin-top: 0; color: var(--primary); font-size: 22px;">Створити картку</h3>
             
             <label>Тип картки:</label>
             <select id="new-type" onchange="toggleDeadlineField()">
@@ -100,10 +187,10 @@
             </select>
 
             <label>Назва</label>
-            <input type="text" id="new-title" placeholder="Коротко...">
+            <input type="text" id="new-title" placeholder="Коротко про суть...">
             
             <label>Детальний опис</label>
-            <textarea id="new-description" rows="3" placeholder="Опишіть деталі..."></textarea>
+            <textarea id="new-description" rows="3" placeholder="Опишіть деталі, додайте посилання..."></textarea>
             
             <label>Напрямок</label>
             <select id="new-direction"></select>
@@ -116,35 +203,34 @@
                 <input type="date" id="new-deadline">
             </div>
 
-            <button style="width: 100%;" onclick="submitTask()">Зберегти</button>
+            <button style="width: 100%; margin-top: 25px; padding: 12px; font-size: 15px;" onclick="submitTask()">Зберегти картку</button>
         </div>
     </div>
 
-    <!-- ПЕРЕГЛЯД КАРТКИ -->
     <div id="task-modal" class="modal-overlay">
         <div class="modal">
             <span class="close-btn" onclick="closeModal('task-modal')">&times;</span>
-            <h3 id="view-title" style="margin-top: 0;">Назва</h3>
+            <h3 id="view-title" style="margin-top: 0; margin-bottom: 20px; font-size: 20px; color: var(--text);">Назва</h3>
             
-            <div style="font-size: 13px; color: #555; margin-bottom: 10px; display: flex; flex-direction: column; gap: 5px;">
-                <div>Напрямок: <b id="view-direction"></b> | Відповідальний: <b id="view-responsible"></b></div>
-                <div style="display: flex; align-items: center; gap: 5px;">
-                    Дедлайн: <input type="date" id="view-deadline-input" class="inline-edit-date" onchange="updateTaskDeadline(this.value)">
-                    <span id="deadline-save-msg" style="color: green; font-size: 11px; display: none;">✔ Збережено</span>
+            <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px; display: flex; flex-direction: column; gap: 10px; background: #F8FAFC; padding: 15px; border-radius: var(--border-radius-md); border: 1px solid #E2E8F0;">
+                <div>💼 Напрямок: <b id="view-direction" style="color: var(--text);"></b> &nbsp;|&nbsp; 👤 Відповідальний: <b id="view-responsible" style="color: var(--text);"></b></div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    📅 Дедлайн: <input type="date" id="view-deadline-input" class="inline-edit-date" onchange="updateTaskDeadline(this.value)">
+                    <span id="deadline-save-msg" style="color: #059669; font-size: 12px; display: none; font-weight: 500;">✔ Збережено</span>
                 </div>
             </div>
             
-            <div style="background: #f4f5f7; padding: 10px; border-radius: 4px; margin-bottom: 15px;">
-                <b style="font-size: 13px;">Опис:</b>
-                <div id="view-description" style="font-size: 14px; margin-top: 5px; white-space: pre-wrap;"></div>
+            <div style="margin-bottom: 25px;">
+                <b style="font-size: 14px; color: var(--text);">Опис:</b>
+                <div id="view-description" style="font-size: 14px; margin-top: 8px; white-space: pre-wrap; color: #475569;"></div>
             </div>
             
-            <hr style="border: 0; border-top: 1px solid #eee; margin: 15px 0;">
+            <hr style="border: 0; border-top: 1px solid #E2E8F0; margin: 20px 0;">
             
-            <h4 style="margin: 0 0 10px 0;">Коментарі</h4>
-            <div id="comments-container" style="max-height: 150px; overflow-y: auto; margin-bottom: 15px;"></div>
+            <h4 style="margin: 0 0 15px 0; color: var(--text);">Коментарі</h4>
+            <div id="comments-container" style="max-height: 200px; overflow-y: auto; margin-bottom: 15px; padding-right: 5px;"></div>
             <textarea id="new-comment" rows="2" placeholder="Написати коментар..."></textarea>
-            <button style="width: 100%;" onclick="addComment()">Додати коментар</button>
+            <button style="width: 100%; margin-top: 10px;" onclick="addComment()">Відправити</button>
 
             <button id="approve-btn" class="btn-success" style="display: none;" onclick="approveTask()">✅ Погодити (Перенести в Готово)</button>
         </div>
@@ -178,7 +264,7 @@
                     err.innerText = res.error; err.style.display = "block";
                     document.querySelector("#login-screen button").innerText = "Увійти";
                 }
-            } catch (e) { err.innerText = "Помилка."; err.style.display = "block"; }
+            } catch (e) { err.innerText = "Помилка з'єднання."; err.style.display = "block"; }
         }
 
         function logout() {
@@ -190,7 +276,7 @@
         function showBoard() {
             document.getElementById("login-screen").style.display = "none";
             document.getElementById("board-screen").style.display = "block";
-            document.getElementById("user-info").innerText = `Користувач: ${localStorage.getItem("userName")} (${localStorage.getItem("userRole")})`;
+            document.getElementById("user-info").innerText = `👤 ${localStorage.getItem("userName")} (${localStorage.getItem("userRole")})`;
             
             const role = localStorage.getItem("userRole");
             if (role === "manager" || role === "owner") document.getElementById("filters-container").style.display = "flex";
@@ -273,7 +359,7 @@
                 let dateHtml = '';
 
                 if (task.Status === 'Ідеї') {
-                    dateHtml = `<span style="color: #8993a4;">💡 Ідея</span>`;
+                    dateHtml = `<span style="color: #94A3B8; font-weight: 500;">💡 Ідея</span>`;
                 } else if (task.Status === 'Готово') {
                     let closedDate = new Date(task.UpdatedAt).toLocaleDateString('uk-UA');
                     
@@ -281,11 +367,11 @@
                         let dlDate = new Date(task.Deadline).toLocaleDateString('uk-UA');
                         dateHtml = `
                         <div style="display: flex; flex-direction: column; align-items: flex-end; font-size: 11px;">
-                            <span style="color: #8993a4;">📅 Дедлайн: ${dlDate}</span>
-                            <span style="color: #36b37e; font-weight: bold; margin-top: 2px;">✅ Закрито: ${closedDate}</span>
+                            <span style="color: #94A3B8;">📅 Дедлайн: ${dlDate}</span>
+                            <span style="color: #059669; font-weight: 600; margin-top: 3px;">✅ Закрито: ${closedDate}</span>
                         </div>`;
                     } else {
-                        dateHtml = `<span style="color: #36b37e; font-weight: bold;">✅ Закрито: ${closedDate}</span>`;
+                        dateHtml = `<span style="color: #059669; font-weight: 600;">✅ Закрито: ${closedDate}</span>`;
                     }
                 } else {
                     if (task.Deadline) {
@@ -293,23 +379,22 @@
                         let dateStr = dlDate.toLocaleDateString('uk-UA');
                         let isOverdue = dlDate < today;
                         
-                        let dateStyle = isOverdue ? 'color: #ff5630; font-weight: bold;' : 'color: #5e6c84;';
+                        let dateStyle = isOverdue ? 'color: #EF4444; font-weight: 600;' : 'color: #6B7280; font-weight: 500;';
                         let warningIcon = isOverdue ? ' ⚠️' : '';
                         
                         dateHtml = `<span style="${dateStyle}">📅 ${dateStr}${warningIcon}</span>`;
                     } else {
-                        dateHtml = `<span style="color: #8993a4;">📅 Без дедлайну</span>`;
+                        dateHtml = `<span style="color: #94A3B8; font-weight: 500;">📅 Без дедлайну</span>`;
                     }
                 }
                 
-                // ДОДАНО ВИВЕДЕННЯ НАПРЯМКУ У ВИГЛЯДІ БЕЙДЖИКА
                 card.innerHTML = `
                     <div class="task-title">${task.Title}</div>
-                    <div style="font-size: 11px; color: #42526e; margin-bottom: 8px; font-weight: 500; background: #dfe1e6; display: inline-block; padding: 2px 6px; border-radius: 3px;">
+                    <div style="font-size: 11px; color: var(--primary); margin-bottom: 12px; font-weight: 600; background: #F1F5F9; border: 1px solid #E2E8F0; display: inline-block; padding: 3px 8px; border-radius: 4px;">
                         📁 ${task.Direction}
                     </div>
                     <div class="task-meta" style="align-items: flex-end;">
-                        <span style="margin-bottom: 2px;">👤 ${task.Responsible}</span>
+                        <span style="margin-bottom: 2px; font-weight: 500;">👤 ${task.Responsible}</span>
                         ${dateHtml}
                     </div>
                 `;
@@ -320,7 +405,7 @@
         function initSortable() {
             document.querySelectorAll('.task-list').forEach(col => {
                 new Sortable(col, {
-                    group: 'kanban', animation: 150,
+                    group: 'kanban', animation: 200, ghostClass: 'sortable-ghost',
                     onEnd: async function (evt) {
                         const taskId = evt.item.dataset.id;
                         const newStatus = evt.to.dataset.status;
@@ -336,6 +421,11 @@
                 });
             });
         }
+        
+        /* Додаємо стиль для ефекту перетягування */
+        const style = document.createElement('style');
+        style.innerHTML = '.sortable-ghost { opacity: 0.4; background-color: #F1F5F9; }';
+        document.head.appendChild(style);
 
         function toggleDeadlineField() {
             const isIdea = document.getElementById('new-type').value === 'idea';
@@ -422,11 +512,11 @@
             let comments = [];
             try { comments = JSON.parse(commentsJson); } catch(e) {}
             
-            if (comments.length === 0) { container.innerHTML = '<span style="font-size:12px; color:#999;">Ще немає коментарів.</span>'; return; }
+            if (comments.length === 0) { container.innerHTML = '<span style="font-size:13px; color:#94A3B8;">Ще немає коментарів.</span>'; return; }
             comments.forEach(c => {
                 const dateObj = new Date(c.date);
                 const dateStr = dateObj.toLocaleDateString('uk-UA') + ' ' + dateObj.toLocaleTimeString('uk-UA', {hour: '2-digit', minute:'2-digit'});
-                container.innerHTML += `<div class="comment-box"><span class="comment-author">${c.user}</span> <span class="comment-date">${dateStr}</span><div style="margin-top: 4px;">${c.text}</div></div>`;
+                container.innerHTML += `<div class="comment-box"><span class="comment-author">${c.user}</span> <span class="comment-date">${dateStr}</span><div style="margin-top: 6px; color: #334155;">${c.text}</div></div>`;
             });
             container.scrollTop = container.scrollHeight;
         }
