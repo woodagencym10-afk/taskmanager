@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Marketing Portal — База Знань</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --blue: #3B82F6;
+    --blue-dark: #2563EB;
+    --blue-light: #EFF6FF;
+    --green: #22C55E;
+    --green-light: #F0FDF4;
+    --green-text: #16A34A;
+    --red: #EF4444;
+    --red-light: #FEF2F2;
+    --red-text: #DC2626;
+    --ink: #111827;
+    --ink-mid: #374151;
+    --ink-light: #6B7280;
+    --border: #E5E7EB;
+    --bg: #F3F4F6;
+    --white: #FFFFFF;
+  }
+
+  body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; }
+
+  .header {
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    height: 64px;
+    gap: 24px;
+    position: sticky; top: 0; z-index: 50;
+  }
+
+  .logo-icon {
+    width: 36px; height: 36px;
+    background: var(--blue); border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700; color: white; flex-shrink: 0;
+  }
+
+  .logo-text { font-size: 17px; font-weight: 700; color: var(--ink); margin-right: 8px; }
+
+  .nav { display: flex; gap: 4px; }
+
+  .nav-btn {
+    padding: 8px 16px; border-radius: 10px;
+    font-size: 14px; font-weight: 500;
+    color: var(--ink-light);
+    background: none; border: none; cursor: pointer;
+    text-decoration: none; transition: all 0.15s;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .nav-btn:hover { background: var(--bg); color: var(--ink); }
+  .nav-btn.active { background: var(--blue-light); color: var(--blue); }
+  .nav-btn.danger { color: var(--red); }
+  .nav-btn.danger:hover { background: var(--red-light); }
+
+  .header-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+
+  .loading-chip {
+    display: none; font-size: 12px; font-weight: 500;
+    color: var(--blue); background: var(--blue-light);
+    padding: 4px 12px; border-radius: 20px;
+  }
+
+  .page { max-width: 1200px; margin: 0 auto; padding: 28px 24px; }
+
+  .page-header { margin-bottom: 24px; }
+  .page-title { font-size: 22px; font-weight: 700; color: var(--ink); }
+  .page-sub { font-size: 14px; color: var(--ink-light); margin-top: 4px; }
+
+  .main-layout { display: grid; grid-template-columns: 1fr 320px; gap: 20px; }
+
+  /* search */
+  .search-bar {
+    position: relative; margin-bottom: 20px;
+  }
+
+  .search-icon {
+    position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+    font-size: 14px; color: var(--ink-light);
+  }
+
+  .search-input {
+    width: 100%; height: 44px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 0 16px 0 40px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px; color: var(--ink);
+    outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .search-input:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+  }
+
+  .search-input::placeholder { color: #9CA3AF; }
+
+  /* kb grid */
+  .kb-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+  .kb-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    display: flex; flex-direction: column;
+    transition: box-shadow 0.2s, border-color 0.2s;
+  }
+
+  .kb-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); border-color: #D1D5DB; }
+
+  .kb-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; }
+
+  .kb-cat {
+    display: inline-block;
+    background: var(--blue-light);
+    color: var(--blue);
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.3px;
+    padding: 3px 10px;
+    border-radius: 6px;
+    text-transform: uppercase;
+  }
+
+  .kb-title {
+    font-size: 15px; font-weight: 700;
+    color: var(--ink); line-height: 1.3;
+    margin-bottom: 8px;
+  }
+
+  .kb-desc {
+    font-size: 13px; color: var(--ink-light);
+    line-height: 1.55; flex: 1; margin-bottom: 16px;
+  }
+
+  .kb-footer {
+    display: flex; align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid var(--border);
+    padding-top: 14px;
+  }
+
+  .kb-author {
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .author-avatar {
+    width: 26px; height: 26px;
+    background: var(--blue-light);
+    color: var(--blue);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 700;
+  }
+
+  .author-name { font-size: 12px; color: var(--ink-light); font-weight: 500; }
+
+  .btn-read {
+    padding: 7px 16px;
+    background: var(--ink);
+    color: white;
+    border: none; border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px; font-weight: 600;
+    cursor: pointer; transition: background 0.15s;
+  }
+
+  .btn-read:hover { background: var(--blue); }
+
+  .empty-state {
+    grid-column: 1/-1;
+    padding: 60px 20px;
+    text-align: center;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    color: var(--ink-light); font-size: 14px;
+  }
+
+  /* FORM */
+  .form-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    height: fit-content;
+    position: sticky; top: 84px;
+  }
+
+  .form-title { font-size: 16px; font-weight: 700; color: var(--ink); margin-bottom: 20px; }
+
+  .field { margin-bottom: 14px; }
+
+  .field label {
+    display: block;
+    font-size: 12px; font-weight: 500;
+    color: var(--ink-light); margin-bottom: 5px;
+  }
+
+  .field input, .field textarea {
+    width: 100%;
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px; color: var(--ink);
+    outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+    resize: none;
+  }
+
+  .field input { height: 42px; padding: 0 12px; }
+
+  .field input:focus, .field textarea:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+    background: var(--white);
+  }
+
+  .field input::placeholder, .field textarea::placeholder { color: #9CA3AF; }
+
+  .btn-submit {
+    width: 100%; height: 44px;
+    background: var(--blue); color: white;
+    border: none; border-radius: 10px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px; font-weight: 600;
+    cursor: pointer; transition: background 0.2s;
+    margin-top: 8px;
+  }
+
+  .btn-submit:hover { background: var(--blue-dark); }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 100; align-items: center; justify-content: center;
+    padding: 20px; backdrop-filter: blur(4px);
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal-box {
+    background: var(--white);
+    width: 100%; max-width: 1000px;
+    height: 88vh;
+    border-radius: 20px;
+    overflow: hidden;
+    display: flex; flex-direction: column;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.2);
+  }
+
+  .modal-header {
+    display: flex; align-items: center;
+    justify-content: space-between;
+    padding: 18px 24px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .modal-title { font-size: 16px; font-weight: 700; color: var(--ink); }
+
+  .modal-close {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    background: var(--bg); border: none;
+    cursor: pointer; font-size: 15px; color: var(--ink-light);
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+  }
+
+  .modal-close:hover { background: var(--red-light); color: var(--red); }
+
+  .modal-iframe-wrap { flex: 1; position: relative; background: #f8f8f8; }
+
+  .modal-iframe-wrap iframe { width: 100%; height: 100%; border: none; position: relative; z-index: 1; }
+
+  .iframe-loading {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ink-light); font-size: 14px;
+    z-index: 0;
+  }
+
+  @media (max-width: 900px) {
+    .main-layout { grid-template-columns: 1fr; }
+    .form-card { position: static; }
+    .kb-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="logo-icon">MKT</div>
+  <div class="logo-text">Portal</div>
+  <nav class="nav">
+    <a href="index.html" class="nav-btn">Команда</a>
+    <a href="knowledge.html" class="nav-btn active">База знань</a>
+  </nav>
+  <div class="header-right">
+    <div id="loading" class="loading-chip">Оновлення...</div>
+    <button onclick="logout()" class="nav-btn danger">Вийти</button>
+  </div>
+</header>
+
+<div class="page">
+  <div class="page-header">
+    <div class="page-title">Маркетинг: База Знань</div>
+    <div class="page-sub">Централізований доступ до всіх маркетингових інструкцій, креативів та регламентів</div>
+  </div>
+
+  <div class="main-layout">
+    <div>
+      <div class="search-bar">
+        <span class="search-icon">🔍</span>
+        <input type="text" class="search-input" id="search-kb" oninput="renderKnowledge()" placeholder="Шукати за назвою, темою або описом...">
+      </div>
+      <div class="kb-grid" id="kb-container"></div>
+    </div>
+
+    <div class="form-card">
+      <div class="form-title">Додати статтю</div>
+      <form id="kb-form" onsubmit="submitKbForm(event)">
+        <div class="field">
+          <label>Назва статті</label>
+          <input type="text" id="kb-title" required placeholder="Наприклад: Налаштування UTM-міток">
+        </div>
+        <div class="field">
+          <label>Категорія</label>
+          <input type="text" id="kb-category" required placeholder="SMM, PPC, Дизайн або CRM">
+        </div>
+        <div class="field">
+          <label>Короткий опис</label>
+          <textarea id="kb-desc" rows="3" required placeholder="Про що ця інструкція?"></textarea>
+        </div>
+        <div class="field">
+          <label>Посилання на Google Doc</label>
+          <input type="url" id="kb-url" required placeholder="https://docs.google.com/...">
+        </div>
+        <button type="submit" class="btn-submit">Зберегти статтю</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div id="doc-modal" class="modal-overlay" onclick="handleModalClick(event)">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-title">Документ</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-iframe-wrap">
+      <div class="iframe-loading" id="iframe-loading">Відкриваємо документ...</div>
+      <iframe id="doc-iframe" src="" onload="document.getElementById('iframe-loading').style.display='none'"></iframe>
+    </div>
+  </div>
+</div>
+
+<script>
+if (!localStorage.getItem('mkt_logged')) window.location.href = 'login.html';
+
+// Оновлене посилання для відділу маркетингу
+const API_URL = 'https://script.google.com/macros/s/AKfycbyOTEc7GxwlQJTXehW6zmDbSdFkwBswC9mIGdknwEufNIpeYrAjaSuhXw5rW3Is60ME/exec';
+let allKnowledge = [];
+
+function showLoading(v) { document.getElementById('loading').style.display = v ? 'block' : 'none'; }
+function logout() { localStorage.clear(); window.location.href = 'login.html'; }
+
+function getInitials(name) {
+  const p = (name||'').trim().split(/\s+/);
+  return p.length >= 2 ? (p[0][0]+p[1][0]).toUpperCase() : (name||'?')[0].toUpperCase();
+}
+
+function getPreviewUrl(url) {
+  if (!url) return '';
+  if (url.includes('docs.google.com') && url.includes('/edit'))
+    return url.replace(/\/edit.*$/, '/preview?rm=minimal');
+  return url;
+}
+
+function openModal(url, title) {
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('iframe-loading').style.display = 'flex';
+  document.getElementById('doc-iframe').src = getPreviewUrl(url);
+  document.getElementById('doc-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('doc-modal').classList.remove('open');
+  document.getElementById('doc-iframe').src = '';
+  document.body.style.overflow = '';
+}
+
+function handleModalClick(e) { if (e.target === document.getElementById('doc-modal')) closeModal(); }
+
+window.onload = loadKnowledge;
+
+async function loadKnowledge() {
+  const cached = localStorage.getItem('mkt_knowledge_cache');
+  if (cached) { allKnowledge = JSON.parse(cached); renderKnowledge(); }
+  else showLoading(true);
+  try {
+    const login = localStorage.getItem('mkt_user');
+    const password = localStorage.getItem('mkt_pass');
+    const res = await fetch(API_URL + '?action=getKnowledge&login=' + encodeURIComponent(login) + '&password=' + encodeURIComponent(password));
+    const result = await res.json();
+    if (result.success) {
+      allKnowledge = result.data || [];
+      localStorage.setItem('mkt_knowledge_cache', JSON.stringify(allKnowledge));
+      renderKnowledge();
+    } else { localStorage.clear(); window.location.href = 'login.html'; }
+  } catch(e) {
+    console.error(e);
+    if (!cached) document.getElementById('kb-container').innerHTML = `<div class="empty-state">Помилка завантаження даних</div>`;
+  }
+  showLoading(false);
+}
+
+function renderKnowledge() {
+  const container = document.getElementById('kb-container');
+  container.innerHTML = '';
+  const q = document.getElementById('search-kb').value.toLowerCase();
+  const filtered = allKnowledge.filter(item => {
+    if (!item['Назва статті']) return false;
+    return (item['Назва статті']||'').toLowerCase().includes(q)
+      || (item['Категорія']||'').toLowerCase().includes(q)
+      || (item['Короткий опис']||'').toLowerCase().includes(q);
+  });
+
+  if (!filtered.length) {
+    container.innerHTML = `<div class="empty-state">${q ? 'Нічого не знайдено' : 'Поки що жодних інструкцій немає'}</div>`;
+    return;
+  }
+
+  filtered.forEach(item => {
+    const title = item['Назва статті'] || '';
+    const url = item['Посилання на Google Doc'] || '';
+    const author = item['Автор (хто додав)'] || 'Marketing';
+    const safeTitle = title.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+    const safeUrl = url.replace(/'/g, "\\'");
+
+    const card = document.createElement('div');
+    card.className = 'kb-card';
+    card.innerHTML = `
+      <div class="kb-top">
+        <span class="kb-cat">${item['Категорія'] || 'Інше'}</span>
+      </div>
+      <div class="kb-title">${title}</div>
+      <div class="kb-desc">${item['Короткий опис'] || ''}</div>
+      <div class="kb-footer">
+        <div class="kb-author">
+          <div class="author-avatar">${getInitials(author)}</div>
+          <span class="author-name">${author}</span>
+        </div>
+        <button class="btn-read" onclick="openModal('${safeUrl}', '${safeTitle}')">Читати</button>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+async function submitKbForm(e) {
+  e.preventDefault();
+  showLoading(true);
+  const payload = {
+    action: 'addKnowledge',
+    login: localStorage.getItem('mkt_user'),
+    password: localStorage.getItem('mkt_pass'),
+    title: document.getElementById('kb-title').value,
+    category: document.getElementById('kb-category').value,
+    description: document.getElementById('kb-desc').value,
+    docUrl: document.getElementById('kb-url').value,
+    author: localStorage.getItem('mkt_user')
+  };
+  try {
+    const res = await fetch(API_URL, { method:'POST', body: JSON.stringify(payload) });
+    const result = await res.json();
+    if (result.success) {
+      document.getElementById('kb-form').reset();
+      localStorage.removeItem('mkt_knowledge_cache');
+      await loadKnowledge();
+      alert('Статтю додано');
+    } else { alert('Помилка: ' + (result.error || 'Unknown error')); }
+  } catch(err) { console.error(err); alert('Помилка сервера'); }
+  showLoading(false);
+}
+</script>
+</body>
+</html>
