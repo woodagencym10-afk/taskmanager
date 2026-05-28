@@ -59,6 +59,7 @@
         .btn-outline { background-color: transparent; color: var(--text-sec); border: 1px solid var(--border-light); }
         .btn-outline:hover { background-color: var(--bg-card); color: var(--text-main); transform: none; }
         
+        /* ====== BOARD SCREEN ====== */
         #board-screen { display: none; }
         
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
@@ -90,10 +91,8 @@
         
         .task-card { background-color: var(--bg-card); padding: 16px; border-radius: var(--radius-md); box-shadow: var(--shadow-card); margin-bottom: 10px; cursor: pointer; border: 1px solid var(--border-light); transition: all 0.2s ease; position: relative; }
         .task-card:hover { box-shadow: var(--shadow-hover); border-color: #64748B; transform: translateY(-2px); }
-        /* Жовта картка — на погодженні */
         .task-card.card-pending { background-color: rgba(234, 179, 8, 0.08); border-color: rgba(234, 179, 8, 0.4); }
         .task-card.card-pending:hover { border-color: rgba(234, 179, 8, 0.7); }
-        /* Червона картка — прострочена */
         .task-card.card-overdue { background-color: rgba(239, 68, 68, 0.07); border-color: rgba(239, 68, 68, 0.4); }
         .task-card.card-overdue:hover { border-color: rgba(239, 68, 68, 0.7); }
 
@@ -120,10 +119,8 @@
         .meta-label { font-size: 11px; text-transform: uppercase; font-weight: 700; color: var(--text-sec); letter-spacing: 0.5px;}
         .meta-value { font-size: 14px; font-weight: 600; color: var(--text-main); display: flex; align-items: center; gap: 5px;}
         
-        /* Блок опису — режим перегляду / редагування */
         .desc-view-block { font-size: 14px; margin-top: 8px; white-space: pre-wrap; color: var(--text-main); line-height: 1.6; min-height: 40px; }
         .desc-view-block.empty { color: var(--text-sec); font-style: italic; }
-        .desc-edit-row { display: flex; gap: 8px; align-items: flex-start; margin-top: 6px; }
         .btn-desc-edit { background: transparent; border: 1px solid var(--border-light); color: var(--text-sec); padding: 4px 10px; font-size: 12px; border-radius: var(--radius-sm); }
         .btn-desc-edit:hover { background: var(--bg-card); color: var(--text-main); transform: none; }
         .btn-desc-save { background: #10B981; color: #064E3B; padding: 4px 12px; font-size: 12px; border-radius: var(--radius-sm); }
@@ -146,7 +143,8 @@
 </head>
 <body>
 
-   <div id="login-screen">
+    <!-- ====== ЕКРАН ЛОГІНУ ====== -->
+    <div id="login-screen">
         <h2>Маркетинг / Задачі</h2>
         <input type="text" id="login-username" placeholder="Ваше ім'я">
         <input type="password" id="login-password" placeholder="Пароль">
@@ -154,7 +152,10 @@
         <p id="login-error" style="color: #F87171; font-size: 13px; display: none; margin-top: 15px; font-weight: 500;"></p>
     </div>
 
-   <div class="header">
+    <!-- ====== ЕКРАН ДОШКИ ====== -->
+    <div id="board-screen">
+
+        <div class="header">
             <div class="header-title">
                 ✨ Маркетинг 
                 <span class="user-badge" id="user-info"></span>
@@ -165,6 +166,7 @@
                 <button class="btn-outline" onclick="logout()">Вийти</button>
             </div>
         </div>
+
         <div id="stats-container" class="stats-container">
             <div class="stat-card">
                 <div class="stat-title">💡 Ідеї</div>
@@ -207,16 +209,35 @@
         </div>
 
         <div class="board">
-            <div class="column"><div class="column-header"><span>💡 Ідеї</span><span class="col-count" id="count-Ідеї">0</span></div><div class="task-list" id="col-Ідеї" data-status="Ідеї"></div></div>
-            <div class="column"><div class="column-header"><span>📝 Треба зробити</span><span class="col-count" id="count-Треба-зробити">0</span></div><div class="task-list" id="col-Треба зробити" data-status="Треба зробити"></div></div>
-            <div class="column"><div class="column-header"><span>⚙️ В роботі</span><span class="col-count" id="count-В-роботі">0</span></div><div class="task-list" id="col-В роботі" data-status="В роботі"></div></div>
-            <div class="column"><div class="column-header"><span>👀 На погодження</span><span class="col-count" id="count-На-погодження">0</span></div><div class="task-list" id="col-На погодження" data-status="На погодження"></div></div>
-            <div class="column"><div class="column-header"><span>⚠️ Потребує правок</span><span class="col-count" id="count-Потребує-правок">0</span></div><div class="task-list" id="col-Потребує правок" data-status="Потребує правок"></div></div>
-            <div class="column"><div class="column-header"><span>✅ Готово</span><span class="col-count" id="count-Готово">0</span></div><div class="task-list" id="col-Готово" data-status="Готово"></div></div>
+            <div class="column">
+                <div class="column-header"><span>💡 Ідеї</span><span class="col-count" id="count-Ідеї">0</span></div>
+                <div class="task-list" id="col-Ідеї" data-status="Ідеї"></div>
+            </div>
+            <div class="column">
+                <div class="column-header"><span>📝 Треба зробити</span><span class="col-count" id="count-Треба-зробити">0</span></div>
+                <div class="task-list" id="col-Треба зробити" data-status="Треба зробити"></div>
+            </div>
+            <div class="column">
+                <div class="column-header"><span>⚙️ В роботі</span><span class="col-count" id="count-В-роботі">0</span></div>
+                <div class="task-list" id="col-В роботі" data-status="В роботі"></div>
+            </div>
+            <div class="column">
+                <div class="column-header"><span>👀 На погодження</span><span class="col-count" id="count-На-погодження">0</span></div>
+                <div class="task-list" id="col-На погодження" data-status="На погодження"></div>
+            </div>
+            <div class="column">
+                <div class="column-header"><span>⚠️ Потребує правок</span><span class="col-count" id="count-Потребує-правок">0</span></div>
+                <div class="task-list" id="col-Потребує правок" data-status="Потребує правок"></div>
+            </div>
+            <div class="column">
+                <div class="column-header"><span>✅ Готово</span><span class="col-count" id="count-Готово">0</span></div>
+                <div class="task-list" id="col-Готово" data-status="Готово"></div>
+            </div>
         </div>
-    </div>
 
-    <!-- МОДАЛКА СТВОРЕННЯ -->
+    </div><!-- /board-screen -->
+
+    <!-- ====== МОДАЛКА СТВОРЕННЯ ====== -->
     <div id="create-modal" class="modal-overlay">
         <div class="modal">
             <span class="close-btn" onclick="closeModal('create-modal')">&times;</span>
@@ -268,7 +289,7 @@
         </div>
     </div>
 
-    <!-- МОДАЛКА ПЕРЕГЛЯДУ -->
+    <!-- ====== МОДАЛКА ПЕРЕГЛЯДУ ====== -->
     <div id="task-modal" class="modal-overlay">
         <div class="modal">
             <span class="close-btn" onclick="closeModal('task-modal')">&times;</span>
@@ -289,7 +310,6 @@
                 </div>
             </div>
             
-            <!-- Блок опису з inline-редагуванням -->
             <div style="margin-bottom: 30px;">
                 <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
                     <b style="font-size: 13px; font-weight: 600; color: var(--text-sec); text-transform: uppercase; letter-spacing: 0.5px;">Опис задачі</b>
@@ -298,9 +318,7 @@
                         <button class="btn-desc-edit" id="desc-edit-btn" onclick="toggleDescEdit()">✏️ Редагувати</button>
                     </div>
                 </div>
-                <!-- Режим перегляду -->
                 <div id="desc-view" class="desc-view-block empty">Немає опису. Натисніть «Редагувати», щоб додати.</div>
-                <!-- Режим редагування (прихований) -->
                 <div id="desc-edit-area" style="display: none;">
                     <textarea id="desc-edit-input" rows="5" placeholder="ТЗ, посилання, деталі..."></textarea>
                     <div style="display: flex; gap: 8px; margin-top: 6px;">
@@ -420,7 +438,6 @@
             today.setHours(0, 0, 0, 0);
 
             const statusCounts = { 'Ідеї': 0, 'Треба зробити': 0, 'В роботі': 0, 'На погодження': 0, 'Потребує правок': 0, 'Готово': 0 };
-            // Статистика для швидкого звіту (враховує логіку прострочення)
             const statsCount = { ideas: 0, todo: 0, inprogress: 0, pending: 0, revision: 0, overdue: 0, done: 0 };
 
             currentTasks.forEach(task => {
@@ -432,12 +449,10 @@
 
                 statusCounts[task.Status] = (statusCounts[task.Status] || 0) + 1;
 
-                // --- Базові прапори ---
                 const isIdea    = task.Status === 'Ідеї';
                 const isDone    = task.Status === 'Готово';
                 const isPending = task.Status === 'На погодження';
 
-                // Прострочена по дедлайну (дедлайн < сьогодні, тобто строго минув)
                 let isDeadlineOverdue = false;
                 if (task.Deadline && !isDone && !isIdea && !isPending) {
                     let dlDate = new Date(task.Deadline);
@@ -445,30 +460,21 @@
                     if (dlDate < today) isDeadlineOverdue = true;
                 }
 
-                // --- Логіка "Потребує правок" ---
-                // НЕ прострочена якщо:
-                //   (а) UpdatedAt — сьогодні між 16:00–18:00 (працівник здав ввечері)
-                //   (б) дедлайн не сьогодні (ще є час)
                 let isRevisionOverdue = false;
                 if (task.Status === 'Потребує правок') {
                     if (isDeadlineOverdue) {
-                        // Перевіряємо виняток: UpdatedAt сьогодні між 16–18 год
                         const updDate = task.UpdatedAt ? new Date(task.UpdatedAt) : null;
                         const updIsToday = updDate && updDate.toDateString() === new Date().toDateString();
                         const updHour   = updDate ? updDate.getHours() : -1;
                         const updInWindow = updIsToday && updHour >= 16 && updHour < 18;
-                        // Якщо оновлено у вікні — не прострочена
                         isRevisionOverdue = !updInWindow;
                     }
-                    // Якщо дедлайн ще не минув — не прострочена (лишається в "Потребує правок")
                 }
 
-                // Загальний прапор прострочення (для кольору картки та статистики)
                 const isOverdue = (task.Status === 'Треба зробити' || task.Status === 'В роботі')
                     ? isDeadlineOverdue
                     : isRevisionOverdue;
 
-                // --- Статистика швидкого звіту ---
                 if (isIdea)         statsCount.ideas++;
                 else if (isDone)    statsCount.done++;
                 else if (isPending) statsCount.pending++;
@@ -487,7 +493,6 @@
                 card.dataset.id = task.ID;
                 card.onclick = () => openTaskModal(task.ID);
 
-                // --- Дата на картці ---
                 let dateHtml = '';
                 if (isIdea) {
                     dateHtml = `<span style="color: var(--text-sec); font-weight: 600;">💡 Ідея</span>`;
@@ -504,28 +509,21 @@
                         dateHtml = `<span style="color: #34D399; font-weight: 700;">✅ ${closedDate}</span>`;
                     }
                 } else if (isPending) {
-                    // На погодженні — перевіряємо чи здано вчасно (UpdatedAt після дедлайну)
                     if (task.Deadline) {
                         let dlDate = new Date(task.Deadline);
                         dlDate.setHours(0, 0, 0, 0);
                         let dateStr = new Date(task.Deadline).toLocaleDateString('uk-UA', {day: 'numeric', month: 'short'});
 
-                        // Якщо дедлайн уже минув — перевіряємо чи UpdatedAt був ДО або В ДЕНЬ дедлайну
                         const pendingDeadlinePassed = dlDate < today;
                         let submittedOnTime = false;
                         if (pendingDeadlinePassed && task.UpdatedAt) {
                             const updDate = new Date(task.UpdatedAt);
                             updDate.setHours(0, 0, 0, 0);
-                            // Здано вчасно = UpdatedAt <= дедлайн
                             submittedOnTime = updDate <= dlDate;
                         }
 
                         if (pendingDeadlinePassed && submittedOnTime) {
-                            // Здали вчасно, але дедлайн уже минув — показуємо "Здано вчасно"
                             dateHtml = `<span style="color: #34D399; font-size: 11px; font-weight: 700; background: rgba(52,211,153,0.12); padding: 2px 7px; border-radius: 4px; border: 1px solid rgba(52,211,153,0.3);">✓ здано вчасно</span>`;
-                        } else if (pendingDeadlinePassed) {
-                            // Дедлайн минув, але здали пізніше дедлайну
-                            dateHtml = `<span style="color: #FBBF24; font-weight: 700;">👀 ${dateStr}</span>`;
                         } else {
                             dateHtml = `<span style="color: #FBBF24; font-weight: 700;">👀 ${dateStr}</span>`;
                         }
@@ -548,7 +546,6 @@
 
                 let avatarInitial = task.Responsible ? task.Responsible.charAt(0).toUpperCase() : '?';
 
-                // Мікро-бейдж під назвою для "На погодженні здано вчасно"
                 let submittedBadge = '';
                 if (isPending && task.Deadline && task.UpdatedAt) {
                     const dlDate  = new Date(task.Deadline);  dlDate.setHours(0,0,0,0);
@@ -669,7 +666,6 @@
             document.getElementById('view-title').innerText = task.Title;
             document.getElementById('view-direction').innerText = task.Direction || '';
             
-            // Опис — режим перегляду
             const descView = document.getElementById('desc-view');
             if (task.Description && task.Description.trim() !== '') {
                 descView.innerText = task.Description;
@@ -699,7 +695,6 @@
             document.getElementById('task-modal').style.display = 'flex';
         }
 
-        // --- Редагування опису ---
         function toggleDescEdit() {
             const task = currentTasks.find(t => t.ID.toString() === openedTaskId.toString());
             document.getElementById('desc-edit-input').value = (task && task.Description) ? task.Description : '';
